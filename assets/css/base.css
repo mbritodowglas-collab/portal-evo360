@@ -76,3 +76,27 @@ input,select{background:#0f1318;border:1px solid var(--border);color:var(--text)
   .sidebar.open{transform:none}
   .layout-with-sidebar{padding-left:0}
 }
+
+/* Botão de menu (aparece só no mobile) */
+.sb-toggle{
+  display:none; position:fixed; top:12px; right:12px; z-index:60;
+  height:40px; padding:0 14px; border-radius:12px;
+  background:transparent; color:#CBE5FF; border:1px solid #CBE5FF;
+  font-weight:600;
+}
+.sb-toggle:hover{ box-shadow:inset 0 0 0 1px rgba(203,229,255,.6); }
+
+/* Backdrop */
+.sb-backdrop{
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:50;
+}
+.sb-backdrop.show{ display:block; }
+
+/* Mobile: sidebar off-canvas */
+@media (max-width:1024px){
+  .sb-toggle{ display:inline-flex; align-items:center; justify-content:center; }
+  .sidebar{ position:fixed; left:0; top:0; bottom:0; z-index:70;
+            transform:translateX(-100%); transition:transform .2s ease; }
+  .sidebar.open{ transform:none; }
+  .content{ padding-top:60px; } /* espaço pro botão no topo */
+}
