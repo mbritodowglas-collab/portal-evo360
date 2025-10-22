@@ -100,3 +100,41 @@ input,select{background:#0f1318;border:1px solid var(--border);color:var(--text)
   .sidebar.open{ transform:none; }
   .content{ padding-top:60px; } /* espaço pro botão no topo */
 }
+
+/* Sidebar sempre visível, inclusive no mobile */
+.sb-toggle{ display:none !important; }     /* esconde o botão Menu */
+.sb-backdrop{ display:none !important; }   /* sem backdrop */
+
+/* Layout base continua usando flex */
+.layout-with-sidebar{ display:flex; min-height:100vh; background:#0B0D10; color:#E8EEF6; }
+
+/* Desktop (já estava ok) */
+.sidebar{ width:280px; min-width:260px; background:#0B0D10; border-right:1px solid #1F2937; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+.content{ flex:1; padding:24px; max-width:1040px; margin:0 auto; }
+
+/* MOBILE: sidebar fixa à esquerda, conteúdo ao lado */
+@media (max-width: 1024px){
+  .sidebar{
+    position:fixed; left:0; top:0; bottom:0; height:100vh;
+    width:220px; min-width:220px; z-index:5; /* sempre visível */
+  }
+  .sb-header{ padding:16px; }
+  .sb-nav{ padding:8px; overflow:auto; height:calc(100vh - 56px - 64px); } /* scroll interno (ajuste o -64 se quiser) */
+  .sb-footer{ padding:12px; font-size:.85rem; }
+
+  .content{
+    margin-left:220px;          /* dá espaço pro conteúdo ao lado */
+    padding:16px;               /* um pouco menos de padding no mobile */
+    max-width:none;             /* usa a largura restante */
+  }
+
+  /* Cards e grids um pouco mais compactos */
+  .card{ border-radius:16px; padding:16px; margin-bottom:14px; }
+  .grid.two{ grid-template-columns:1fr; } /* dicas empilhadas no mobile */
+  .grid.mini{ grid-template-columns:1fr 1fr 1fr; gap:10px; }
+}
+
+@media (max-width: 390px){
+  .sidebar{ width:200px; min-width:200px; }
+  .content{ margin-left:200px; }
+}
