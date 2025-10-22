@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Dia 1 — O Despertar",
+    "treino": "Treino A (30min) — base motora",
+    "nutricao": "Beber 35 ml/kg de água e revisar café da manhã",
+    "dica": "Defina seu horário fixo de treino"
+  },
+  {
+    "title": "Dia 2 — Consistência",
+    "treino": "Treino B — corpo todo",
+    "nutricao": "Inclua uma fruta no lanche da tarde",
+    "dica": "Roupa de treino pronta na noite anterior"
+  },
+  {
+    "title": "Dia 3 — Postura",
+    "treino": "Técnica (agacho, empurrar, puxar)",
+    "nutricao": "Aumente 20–30g de proteína",
+    "dica": "Registre 3 ajustes de técnica"
+  },
+  {
+    "title": "Dia 4 — Respiração",
+    "treino": "Full Body leve (cadência 3-1)",
+    "nutricao": "Planeje 3 refeições simples",
+    "dica": "Respiração 4-4-6 por 2 min antes"
+  },
+  {
+    "title": "Dia 5 — Força Base",
+    "treino": "Inferior + core",
+    "nutricao": "Hidratação mínima mantida",
+    "dica": "Foto de postura hoje"
+  },
+  {
+    "title": "Dia 6 — Recuperação",
+    "treino": "Caminhada + mobilidade",
+    "nutricao": "Vegetais em 2 refeições",
+    "dica": "Checklist do sono (7h+)"
+  },
+  {
+    "title": "Dia 7 — Revisão",
+    "treino": "Full Body moderado",
+    "nutricao": "Planeje café da manhã da semana",
+    "dica": "Revise a semana e marque 1 microvitória"
+  }
+]
