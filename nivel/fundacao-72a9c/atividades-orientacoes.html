@@ -1,26 +1,28 @@
 <!doctype html><html lang="pt-br">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Atividades e Orientações</title>
+  <title>EVO360 · Fundação · Tarefas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    /* ajustes locais */
+    /* Texto justificado no conteúdo desta página */
     .content p, .content li { text-align: justify; }
-    .tabs {display:flex; gap:8px; margin:12px 0}
-    .tab {padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:#0f1318; cursor:pointer}
-    .tab.active {border-color: rgba(203,229,255,.35); background:#12161B}
-    .panel {display:none}
-    .panel.active {display:block}
-    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    @media (max-width: 780px){ .grid-2{grid-template-columns:1fr} }
-    .calc-out{margin-top:10px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#0f1318}
+
+    /* Abas e painéis (calculadoras) */
+    .tabs{display:flex;gap:8px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}
+    .panel.active{display:block}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
   </style>
 </head>
 <body class="layout-with-sidebar">
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
@@ -28,23 +30,26 @@
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
-      <a class="sb-item active" href="./atividades-orientacoes.html">Atividades e Orientações</a>
+      <a class="sb-item active" href="./tarefas-orientacoes.html">Tarefas e Orientações</a>
       <a class="sb-item" href="./plano.html">Plano e Neuro-hábitos</a>
       <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+    <div class="sb-footer">
+      <div class="quote">Você está florescendo.</div>
+      <div class="ver">v1.0 · © Bella Prime</div>
+    </div>
   </aside>
 
-  <!-- CONTEÚDO -->
+  <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner do nível -->
+    <!-- Banner (sem título por cima) -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- DICA DO DIA -->
+    <!-- Dica/Tarefa do dia (gotejamento) -->
     <section class="card" id="dica-dia">
-      <h2>Dica do dia</h2>
+      <h2>Tarefa & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
       <p id="dica-texto">Carregando…</p>
       <div class="row" style="margin-top:12px">
@@ -54,7 +59,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- CALCULADORAS -->
+    <!-- Calculadoras -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -62,7 +67,7 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- KARVONEN -->
+      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
@@ -90,10 +95,9 @@
   </main>
 
   <script>
-    window.NIVEL = "fundacao-72a9c";
-    window.DATA_DICAS = "../../_data/dicas-fundacao.json";
+    window.NIVEL="fundacao-72a9c";
+    window.DATA_DICAS="../../_data/dicas-fundacao.json";
   </script>
   <script src="../../assets/js/drip.js?v=14"></script>
-  <script src="./atividades-orientacoes.js?v=14"></script>
-</body>
-</html>
+  <script src="./tarefas-orientacoes.js?v=14"></script>
+</body></html>
