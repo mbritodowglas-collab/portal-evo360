@@ -232,3 +232,46 @@
   body.layout-with-sidebar .content{ padding:14px !important; }
 }
 
+/* Banner com fallback */
+.banner-full {
+  background: #0b0d10 url("../../assets/img/hub/banner-fundacao-abstract.webp") center/cover no-repeat;
+}
+.banner-full[data-img="real"] {
+  background-image: url("../../assets/img/hub/banner-fundacao-real.webp");
+}
+.banner-full[data-img="illustration"] {
+  background-image: url("../../assets/img/hub/banner-fundacao-illustration.webp");
+}
+
+/* Tiles com imagem */
+.tile.has-bg {
+  position: relative;
+  overflow: hidden;
+  background: #12161b;
+  border: 1px solid var(--line);
+}
+.tile.has-bg::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--tile-bg, none) center/cover no-repeat;
+  filter: brightness(.8) saturate(1.05);
+  transform: scale(1.02); /* leve zoom */
+}
+.tile.has-bg::after {
+  /* overlay para legibilidade do texto */
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,13,16,.25) 0%, rgba(10,13,16,.75) 70%, rgba(10,13,16,.95) 100%);
+}
+.tile.has-bg > * { position: relative; z-index: 1; }
+
+/* helpers por card (muda só a var com a URL) */
+.tile.bg-tarefas  { --tile-bg: url("../../assets/img/hub/tile-tarefas-real.webp"); }
+.tile.bg-plano    { --tile-bg: url("../../assets/img/hub/tile-plano-real.webp"); }
+.tile.bg-habitos  { --tile-bg: url("../../assets/img/hub/tile-habitos-real.webp"); }
+.tile.bg-praticas { --tile-bg: url("../../assets/img/hub/tile-praticas-real.webp"); }
+.tile.bg-suporte  { --tile-bg: url("../../assets/img/hub/tile-suporte-real.webp"); }
+
+/* ajuste de espaçamento para texto sobre imagem */
+.tile.has-bg h3 { margin-bottom: 8px; }
+.tile.has-bg p  { margin-bottom: 0; }
