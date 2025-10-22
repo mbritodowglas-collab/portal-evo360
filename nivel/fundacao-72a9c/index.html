@@ -5,67 +5,57 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=11">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=11">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=12">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=12">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
-    /* ===== Ajustes desta página ===== */
+    /* ===== Ajustes locais desta página ===== */
 
-    /* texto justificado aqui (e em qualquer outra seção desta página) */
+    /* Texto justificado no conteúdo */
     .content p, .content li { text-align: justify; }
 
-    /* banner claro (sem escurecer) */
+    /* Banner claro usando seu JPG, sem escurecer */
     .banner-full{
-      position:relative;
-      width:100%;
-      height:240px;
+      position:relative; width:100%; height:240px;
       background:url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat;
-      border-radius:0 0 18px 18px;
-      overflow:hidden;
-      box-shadow:0 6px 24px rgba(0,0,0,.25);
-      margin:0 0 24px 0;
+      border-radius:0 0 18px 18px; overflow:hidden;
+      box-shadow:0 6px 24px rgba(0,0,0,.25); margin:0 0 24px 0;
     }
-    /* apenas um leve fade embaixo para leitura (bem sutil) */
+    /* leve fade só no rodapé do banner para legibilidade geral da página */
     .banner-full::after{
-      content:"";
-      position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(11,13,16,.28) 100%);
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(11,13,16,.28) 100%);
       pointer-events:none;
     }
 
-    /* GRID dos cards */
-    .tiles.tiles-modern{
-      display:grid; gap:18px; grid-template-columns:1fr;
-    }
-    @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr); } }
-    @media (min-width:1040px){ .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr); } }
+    /* Grade dos cards */
+    .tiles.tiles-modern{ display:grid; gap:18px; grid-template-columns:1fr; }
+    @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr);} }
+    @media (min-width:1040px){ .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr);} }
 
-    /* CARD com imagem de fundo (via custom property --bg) */
+    /* Card-botão com imagem de fundo */
     .tile{
       position:relative; display:flex; flex-direction:column;
       align-items:center; justify-content:center; text-align:center;
-      height:200px; /* todos com a MESMA altura */
-      border-radius:18px; border:1px solid rgba(203,229,255,.16);
-      overflow:hidden; color:#fff; isolation:isolate;
-      background-image:var(--bg); background-position:center;
-      background-size:cover; background-repeat:no-repeat;
+      height:220px; /* todos com a mesma altura */
+      border-radius:18px; overflow:hidden; color:#fff;
+      border:1px solid rgba(203,229,255,.16);
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+      background-position:center; background-size:cover; background-repeat:no-repeat;
       transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    /* overlay suave p/ contraste do texto */
-    .tile::before{
-      content:""; position:absolute; inset:0; z-index:1;
-      background:linear-gradient(180deg, rgba(10,13,16,.18), rgba(10,13,16,.68) 85%);
-    }
-    /* remove qualquer seta herdada */
+    /* remove qualquer seta herdada de outros estilos */
     .tile::after{ content:none !important; }
 
-    .tile h3, .tile p{ position:relative; z-index:2; margin:0; }
-    .tile h3{
-      font-weight:800; font-size:1.18rem; margin-bottom:8px;
-      color:var(--serenity-2);
+    /* Overlay suave para contraste do texto sobre a foto */
+    .tile::before{
+      content:""; position:absolute; inset:0; z-index:1;
+      background:linear-gradient(180deg, rgba(10,13,16,.14), rgba(10,13,16,.66) 88%);
     }
-    .tile p{ color:var(--silver); font-size:.96rem; max-width:58ch; }
+    .tile h3, .tile p{ position:relative; z-index:2; margin:0; }
+    .tile h3{ font-weight:800; font-size:1.18rem; margin-bottom:10px; color:var(--serenity-2); }
+    .tile p{ color:var(--silver); font-size:.98rem; max-width:62ch; }
 
     .tile:hover{
       transform:translateY(-2px);
@@ -73,15 +63,15 @@
       box-shadow:0 10px 28px rgba(22,28,36,.55);
     }
 
-    /* Mobile: esconder sidebar e usar largura total */
+    /* Mobile: sidebar fora e conteúdo 100% */
     @media (max-width:1024px){
-      body.layout-with-sidebar .sidebar{display:none!important}
+      body.layout-with-sidebar .sidebar{ display:none !important; }
       body.layout-with-sidebar .content{
-        margin:0!important; padding:16px!important;
-        width:100vw!important; max-width:100vw!important; box-sizing:border-box!important;
+        margin:0 !important; padding:16px !important;
+        width:100vw !important; max-width:100vw !important; box-sizing:border-box !important;
       }
-      html,body{overflow-x:hidden!important}
-      .banner-full{height:220px;}
+      html,body{ overflow-x:hidden !important; }
+      .banner-full{ height:220px; }
     }
   </style>
 </head>
@@ -114,8 +104,7 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-
-    <!-- BANNER (apenas imagem; sem título/subtítulo por cima) -->
+    <!-- BANNER (só a imagem) -->
     <header class="banner-full" aria-hidden="true"></header>
 
     <!-- INTRO DO NÍVEL -->
@@ -153,49 +142,43 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (com imagens definidas inline) -->
+    <!-- HUB DE CARDS (imagens definidas inline para não haver conflito) -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
-      <button type="button"
-              class="tile"
-              style="--bg:url('../../assets/img/hub/tile-tarefas.jpg')"
+      <button type="button" class="tile"
+              style="background-image:url('../../assets/img/hub/tile-tarefas.jpg')"
               onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos com orientações práticas e dicas diárias.</p>
       </button>
 
-      <button type="button"
-              class="tile"
-              style="--bg:url('../../assets/img/hub/tile-plano.jpg')"
+      <button type="button" class="tile"
+              style="background-image:url('../../assets/img/hub/tile-plano.jpg')"
               onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
-      <button type="button"
-              class="tile"
-              style="--bg:url('../../assets/img/hub/tile-habitos.jpg')"
+      <button type="button" class="tile"
+              style="background-image:url('../../assets/img/hub/tile-habitos.jpg')"
               onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
-      <button type="button"
-              class="tile"
-              style="--bg:url('../../assets/img/hub/tile-praticas.jpg')"
+      <button type="button" class="tile"
+              style="background-image:url('../../assets/img/hub/tile-praticas.jpg')"
               onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
-      <button type="button"
-              class="tile"
-              style="--bg:url('../../assets/img/hub/tile-suporte.jpg')"
+      <button type="button" class="tile"
+              style="background-image:url('../../assets/img/hub/tile-suporte.jpg')"
               onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
     </section>
-
   </main>
 
   <script> window.NIVEL = "fundacao-72a9c"; </script>
