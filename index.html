@@ -1,0 +1,31 @@
+<!doctype html><html lang="pt-br"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EVO360 — Portal do Aluno</title>
+<meta name="description" content="Sistema educacional e motivacional baseado em níveis de evolução física e mental.">
+<link rel="stylesheet" href="./assets/css/base.css">
+<link rel="icon" href="./assets/img/icons/icon-192.png">
+<meta name="theme-color" content="#0b0d10">
+</head><body class="home">
+<header class="topbar">
+  <img src="./assets/img/logo.svg" alt="EVO360" class="logo">
+  <nav class="menu"><span class="muted">Links dos níveis são privados.</span></nav>
+</header>
+<main class="container">
+  <section class="card">
+    <h1>EVO360 — Portal do Aluno</h1>
+    <p>App web estático com progressão por níveis: Fundação, Ascensão, Domínio, OverPrime e OverLord.</p>
+    <ul class="muted">
+      <li>Gotejamento diário do conteúdo</li>
+      <li>Ferramentas locais: hábitos, recompensas, visualização</li>
+      <li>Check-in diário inteligente com recomendação de treino</li>
+      <li>Progresso salvo no seu navegador (localStorage)</li>
+    </ul>
+  </section>
+</main>
+<footer class="footer"><small>© EVO360</small></footer>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js', { scope: './' });
+}
+</script>
+</body></html>
