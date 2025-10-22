@@ -150,3 +150,50 @@
   .banner-full{height:170px; border-radius:0 0 16px 16px}
   .tile{padding:18px; border-radius:16px}
 }
+
+/* Intro do nível */
+.card-intro {
+  background: var(--bg-elev-2);
+  border: 1px solid rgba(203,229,255,.15);
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+  padding: 24px 22px;
+  border-radius: 18px;
+  margin-bottom: 28px;
+}
+.card-intro h2 {
+  color: var(--serenity-2);
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+.card-intro h3 {
+  color: var(--silver);
+  font-size: 1.1rem;
+  margin: 16px 0 8px;
+}
+.card-intro p {
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.card-intro .criteria {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 12px;
+}
+.card-intro .criteria li {
+  background: rgba(203,229,255,.05);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(203,229,255,.08);
+}
+.card-intro .criteria strong { color: var(--serenity-2); }
+.card-intro .divisor {
+  border: 0;
+  border-top: 1px solid rgba(203,229,255,.15);
+  margin: 20px 0;
+}
+.card-intro em {
+  color: var(--silver);
+  opacity: 0.9;
+}
