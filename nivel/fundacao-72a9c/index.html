@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=13">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=13">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
@@ -18,12 +18,11 @@
     /* Banner claro usando seu JPG, sem escurecer */
     .banner-full{
       position:relative; width:100%; height:240px;
-      background-image:url("/assets/img/hub/banner-fundacao-hero.jpg") !important;
+      background-image:url("../../assets/img/hub/banner-fundacao-hero.jpg") !important;
       background-position:center; background-size:cover; background-repeat:no-repeat;
       border-radius:0 0 18px 18px; overflow:hidden;
       box-shadow:0 6px 24px rgba(0,0,0,.25); margin:0 0 24px 0;
     }
-    /* leve fade só no rodapé do banner para legibilidade geral da página */
     .banner-full::after{
       content:""; position:absolute; inset:0;
       background:linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(11,13,16,.28) 100%);
@@ -39,14 +38,13 @@
     .tile{
       position:relative; display:flex; flex-direction:column;
       align-items:center; justify-content:center; text-align:center;
-      height:220px; /* todos com a mesma altura */
+      height:220px;
       border-radius:18px; overflow:hidden; color:#fff;
       border:1px solid rgba(203,229,255,.16);
       box-shadow:0 6px 24px rgba(0,0,0,.25);
       background-position:center; background-size:cover; background-repeat:no-repeat;
       transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    /* remove qualquer seta herdada de outros estilos */
     .tile::after{ content:none !important; }
 
     /* Overlay suave para contraste do texto sobre a foto */
@@ -64,7 +62,6 @@
       box-shadow:0 10px 28px rgba(22,28,36,.55);
     }
 
-    /* Mobile: sidebar fora e conteúdo 100% */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{ display:none !important; }
       body.layout-with-sidebar .content{
@@ -105,10 +102,10 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-    <!-- BANNER (só a imagem) -->
+    <!-- BANNER -->
     <header class="banner-full" aria-hidden="true"></header>
 
-    <!-- INTRO DO NÍVEL -->
+    <!-- INTRO -->
     <section class="card card-intro">
       <h2>Sobre o Nível Fundação</h2>
       <p>
@@ -143,38 +140,38 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (imagens com caminho absoluto e prioridade) -->
+    <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
       <button type="button" class="tile"
-              style="background-image:url('/assets/img/hub/tile-tarefas.jpg') !important"
+              style="background-image:url('../../assets/img/hub/tile-tarefas.jpg') !important"
               onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos com orientações práticas e dicas diárias.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('/assets/img/hub/tile-plano.jpg') !important"
+              style="background-image:url('../../assets/img/hub/tile-plano.jpg') !important"
               onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('/assets/img/hub/tile-habitos.jpg') !important"
+              style="background-image:url('../../assets/img/hub/tile-habitos.jpg') !important"
               onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('/assets/img/hub/tile-praticas.jpg') !important"
+              style="background-image:url('../../assets/img/hub/tile-praticas.jpg') !important"
               onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('/assets/img/hub/tile-suporte.jpg') !important"
+              style="background-image:url('../../assets/img/hub/tile-suporte.jpg') !important"
               onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
