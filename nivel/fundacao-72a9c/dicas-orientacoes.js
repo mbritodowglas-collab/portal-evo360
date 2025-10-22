@@ -1,184 +1,168 @@
-/* ==========================================================
+/* ======================================================================
    EVO360 · Fundação · Dicas e Orientações
-   Arquivo: (use o mesmo nome referenciado no seu HTML)
-   Dependências: drip.js (para o gotejamento)
-   ========================================================== */
+   Arquivo: dicas-orientacoes.js
+   ====================================================================== */
 
-/* Utilitários pequenos */
-const $$ = sel => document.querySelector(sel);
-
-/* ============================
-   Dica do Dia (Drip/Start Local)
-   ============================ */
+/* =========================
+   1) Dica / orientação (drip)
+   ========================= */
 (async function initDica(){
-  if (!window.Drip) {
-    console.warn('drip.js não carregado — o drip ficará inativo.');
-    return;
-  }
-
   const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
-  const DRIP_ID  = 'card1_dicas_orientacoes'; // id lógico do drip deste card
+  const DRIP_ID  = 'card1_dicas_orientacoes';
   const MAX_DAYS = 60;
 
-  // Inicia (ou recupera) a data de início deste drip
-  const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
-  const todayIdx = Math.max(1, Math.min(MAX_DAYS, Drip.getTodayIndex(startISO, MAX_DAYS)));
-
-  // loader de JSON
-  async function load(url){
-    try{
-      const r = await fetch(url, { cache: 'no-store' });
-      if(!r.ok) throw 0;
-      return await r.json();
-    }catch(_){ return null; }
+  // util local
+  const $ = s => document.querySelector(s);
+  async function loadJSON(url){
+    try{ const r = await fetch(url, {cache:'no-store'}); if(!r.ok) throw 0; return await r.json(); }
+    catch(_){ return null; }
   }
 
-  // arquivo JSON configurado no HTML: window.DATA_DICAS
-  const data = await load(window.DATA_DICAS);
+  // integra com drip.js (persistência por nível + card)
+  const startISO = (window.Drip && Drip.ensureStart)
+    ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
+    : new Date().toISOString().slice(0,10);
 
-  // elementos
-  const meta  = $$('#dica-meta');
-  const texto = $$('#dica-texto');
-  const prev  = $$('#btnPrev');
-  const next  = $$('#btnNext');
+  const todayIdx = (window.Drip && Drip.getTodayIndex)
+    ? Drip.getTodayIndex(startISO, MAX_DAYS)
+    : 1;
 
-  // estado de visualização (lembra o último dia visto)
+  const data = await loadJSON(window.DATA_DICAS);
+  const meta  = $('#dica-meta');
+  const texto = $('#dica-texto');
+  const prev  = $('#btnPrev');
+  const next  = $('#btnNext');
+
   const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-  let day = Drip.LS.get(VIEW_KEY, todayIdx);
+  const LS = {
+    get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+    set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+  };
+  let day = LS.get(VIEW_KEY, todayIdx);
 
   function render(){
-    // trava para não avançar além do dia liberado
-    day = Math.max(1, Math.min(day, todayIdx));
+    day = Math.max(1, Math.min(day, todayIdx));     // não deixa avançar pro futuro
+    const item = (data && data[day-1]) || null;
 
-    const item = data && data[day-1];
     if(item){
-      const cat = item.categoria === 'treino' ? 'Treino' : 'Nutrição';
-      if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${cat}`;
-      if (texto) texto.textContent = item.texto || 'Dica indisponível.';
-    } else {
-      if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
-      if (texto) texto.textContent = 'Dica indisponível.';
+      const cat = item.categoria === 'treino' ? 'Treino' :
+                  item.categoria === 'nutricao' ? 'Nutrição' : 'Dica';
+      meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${cat}`;
+      texto.textContent = item.texto;
+    }else{
+      meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
+      texto.textContent = 'Dica indisponível.';
     }
-
-    if (prev) prev.disabled = (day <= 1);
-    if (next) next.disabled = (day >= todayIdx); // não deixa ir para o futuro
-
-    Drip.LS.set(VIEW_KEY, day);
+    prev.disabled = (day <= 1);
+    next.disabled = (day >= todayIdx);
+    LS.set(VIEW_KEY, day);
   }
 
-  if (prev) prev.addEventListener('click', ()=>{ day--; render(); });
-  if (next) next.addEventListener('click', ()=>{ day++; render(); });
-
+  prev?.addEventListener('click', ()=>{ day--; render(); });
+  next?.addEventListener('click', ()=>{ day++; render(); });
   render();
 })();
 
-/* ============================
-   Abas (Calculadoras)
-   ============================ */
+/* =========================
+   2) Abas das calculadoras
+   ========================= */
 (function tabs(){
   const tabs = document.querySelectorAll('.tab');
-  if (!tabs.length) return;
-
-  const panels = {
-    karvonen: '#panel-karvonen',
-    tmb:      '#panel-tmb'
-  };
-
+  const panels = { karvonen: '#panel-karvonen', tmb: '#panel-tmb' };
   tabs.forEach(tb=>{
     tb.addEventListener('click', ()=>{
       tabs.forEach(x=>x.classList.remove('active'));
       tb.classList.add('active');
-
       document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
       const sel = panels[tb.dataset.tab];
-      if (sel) document.querySelector(sel)?.classList.add('active');
+      if(sel) document.querySelector(sel).classList.add('active');
     });
   });
 })();
 
-/* ============================
-   Karvonen · Tabela 50–90%
-   ============================ */
+/* ===============================================================
+   3) FC de Reserva (Karvonen) — com botão "Calcular" e tabela 50–80
+   Fórmula: alvo = ((FCmáx − FCrepouso) * intensidade) + FCrepouso
+             FCmáx = 220 − idade
+   =============================================================== */
 (function karvonen(){
   const idade = document.getElementById('k_idade');
   const fcr   = document.getElementById('k_fcr');
-  const inten = document.getElementById('k_int'); // usado para destacar 1 linha
+  const inten = document.getElementById('k_int'); // valor livre, mas a tabela vai 50–80
   const out   = document.getElementById('k_out');
 
-  if (!idade || !fcr || !out) return;
-
-  function alvoKarvonen(fcMax, fcr, i){ // i = 0.50 ... 0.90
-    return Math.round(((fcMax - fcr) * i) + fcr);
+  // se o botão "Calcular" não existir no HTML, cria dinamicamente:
+  let btn = document.getElementById('k_go');
+  if(!btn){
+    btn = document.createElement('button');
+    btn.id = 'k_go';
+    btn.className = 'btn';
+    btn.type = 'button';
+    btn.textContent = 'Calcular';
+    // insere o botão logo após o campo de intensidade
+    if(inten && inten.parentElement) inten.parentElement.appendChild(btn);
   }
 
-  function calc(){
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function fmtBpm(n){ return `${Math.round(n)} bpm`; }
+
+  function computeRow(fcMax, fcRest, pct){
+    const i = pct / 100;
+    const alvo = ((fcMax - fcRest) * i) + fcRest;
+    return `<tr><td>${pct}%</td><td>${fmtBpm(alvo)}</td></tr>`;
+  }
+
+  function calcular(){
     const a = +idade.value || 0;
-    const r = +fcr.value    || 0;
-    const selI = Math.min(0.90, Math.max(0.30, (+inten?.value || 60)/100)); // intensidade “selecionada” p/ destaque
+    const r = +fcr.value || 0;
+    const i = clamp((+inten.value || 0), 30, 90); // só para calcular FC alvo único
 
-    if (a > 0 && r > 0){
-      const fcMax = 220 - a; // estimativa clássica suficiente para Fundação
-      const alvoSel = alvoKarvonen(fcMax, r, selI);
+    if(a <= 0 || r <= 0){
+      out.textContent = 'Informe idade e FC de repouso para calcular.';
+      return;
+    }
 
-      // faixa recomendada para Fundação
-      const faixa50 = alvoKarvonen(fcMax, r, 0.50);
-      const faixa65 = alvoKarvonen(fcMax, r, 0.65);
+    const fcMax = 220 - a;
+    const alvo  = ((fcMax - r) * (i/100)) + r;
 
-      // monta tabela 50%..90% (passo 5%)
-      let rows = '';
-      for (let p = 50; p <= 90; p += 5){
-        const i   = p / 100;
-        const val = alvoKarvonen(fcMax, r, i);
-        const highlight = Math.abs(i - selI) < 0.001
-          ? ' style="font-weight:700;background:#10151b;border-left:3px solid #CBE5FF;"'
-          : '';
-        rows += `<tr${highlight}><td>${p}%</td><td>${val} bpm</td></tr>`;
-      }
+    // tabela 50–80% (passo 5%)
+    const rows = [];
+    for(let pct=50; pct<=80; pct+=5){
+      rows.push(computeRow(fcMax, r, pct));
+    }
 
-      out.innerHTML = `
-        <div style="margin-bottom:10px">
-          FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-          FC alvo (intensidade selecionada): <strong>${alvoSel} bpm</strong><br>
-          <span class="small muted">Faixa sugerida (Fundação): ${faixa50}–${faixa65} bpm</span>
-        </div>
-
-        <div class="small muted" style="margin:8px 0">
-          Tabela de referência (Karvonen · FC de Reserva)
-        </div>
-
-        <table style="width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:12px">
+    out.innerHTML = `
+      <div style="margin-bottom:8px">
+        FC máxima estimada: <strong>${Math.round(fcMax)} bpm</strong><br>
+        FC alvo em <strong>${i}%</strong>: <strong>${fmtBpm(alvo)}</strong>
+      </div>
+      <div class="small muted" style="margin:6px 0 8px">Tabela de referência (método Karvonen):</div>
+      <div style="overflow:auto">
+        <table style="width:100%; border-collapse:collapse">
           <thead>
-            <tr style="background:#0f1318">
-              <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)">Intensidade</th>
-              <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)">FC alvo</th>
+            <tr>
+              <th style="text-align:left;border-bottom:1px solid var(--line);padding:6px 0">Intensidade</th>
+              <th style="text-align:left;border-bottom:1px solid var(--line);padding:6px 0">FC alvo</th>
             </tr>
           </thead>
           <tbody>
-            ${rows}
+            ${rows.join('')}
           </tbody>
         </table>
-
-        <div class="small muted" style="margin-top:8px">
-          Dica: ajuste “Intensidade (%)” para destacar a linha correspondente.
-        </div>
-      `;
-    } else {
-      out.textContent = 'Informe idade e FC de repouso para gerar a tabela.';
-    }
+      </div>
+      <div class="small muted" style="margin-top:8px">
+        Sugestão Fundação: 50–65% (cardio leve/moderado).
+      </div>
+    `;
   }
 
-  ['input','change'].forEach(ev=>{
-    idade.addEventListener(ev, calc);
-    fcr.addEventListener(ev, calc);
-    inten?.addEventListener(ev, calc);
-  });
-
-  calc();
+  btn.addEventListener('click', calcular);
 })();
 
-/* ============================
-   TMB (Mifflin–St Jeor)
-   ============================ */
+/* =========================
+   4) TMB (Mifflin–St Jeor)
+   ========================= */
 (function tmb(){
   const peso = document.getElementById('t_peso');
   const alt  = document.getElementById('t_altura');
@@ -186,30 +170,25 @@ const $$ = sel => document.querySelector(sel);
   const sex  = document.getElementById('t_sexo');
   const out  = document.getElementById('t_out');
 
-  if (!peso || !alt || !ida || !sex || !out) return;
-
   function calc(){
     const p = +peso.value || 0;
     const h = +alt.value  || 0;
     const i = +ida.value  || 0;
     const s = sex.value || 'f';
-
-    if (p>0 && h>0 && i>0){
+    if(p>0 && h>0 && i>0){
       const base = (10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5);
-      out.innerHTML =
-        `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br>` +
-        `<span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+      out.innerHTML = `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br>
+      <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
     } else {
       out.textContent = 'Preencha peso, altura e idade.';
     }
   }
 
   ['input','change'].forEach(ev=>{
-    peso.addEventListener(ev, calc);
-    alt.addEventListener(ev, calc);
-    ida.addEventListener(ev, calc);
-    sex.addEventListener(ev, calc);
+    peso?.addEventListener(ev, calc);
+    alt?.addEventListener(ev, calc);
+    ida?.addEventListener(ev, calc);
+    sex?.addEventListener(ev, calc);
   });
-
   calc();
 })();
