@@ -5,73 +5,99 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=6">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=6">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=7">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=7">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
-    /* ===== ajustes rápidos desta página ===== */
+    /* ================================
+       AJUSTES ESPECÍFICOS DESTA PÁGINA
+       ================================ */
 
-    /* Texto justificado em todo o app (sem afetar headings / botões) */
+    /* Texto justificado em todo o app (sem afetar headings/botões) */
     .content p, .content li { text-align: justify; }
 
-    /* Banner: só a imagem + overlay, sem título/sub */
-    .banner-full { 
-      position: relative;
-      width: 100%;
-      height: 240px;
-      background: url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
-      border-radius: 0 0 18px 18px;
-      overflow: hidden;
-      box-shadow: 0 6px 24px rgba(0,0,0,.25);
-      margin: 0 0 18px 0;
+    /* --- Banner (somente imagem, sem texto por cima) --- */
+    .banner-full{
+      position:relative; width:100%;
+      height:240px;
+      background:url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
+      border-radius:0 0 18px 18px;
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+      overflow:hidden; margin:0 0 18px 0;
     }
     .banner-full .banner-overlay{
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.32) 40%, rgba(10,13,16,.82) 100%);
-      pointer-events:none;
+      position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(180deg,rgba(10,13,16,.10),rgba(10,13,16,.32) 40%,rgba(10,13,16,.82) 100%);
     }
 
-    /* Cards do hub — todos com a mesma altura e conteúdo centralizado */
-    .tiles.tiles-modern { display:grid; gap:16px; }
-    .tile {
-      position: relative;
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
-      min-height: 132px; height: 148px; /* mesma altura para todos */
-      padding: 18px 16px;
-      border-radius: 18px;
+    /* --- Hub de cards (botões) --- */
+    .tiles.tiles-modern{
+      display:grid; gap:16px;
+      grid-template-columns: 1fr;  /* 1 coluna no mobile */
+    }
+
+    .tile{
+      /* layout base */
+      position:relative; z-index:0;
+      display:flex; flex-direction:column;
+      justify-content:center; align-items:center;
+      width:100%;
+      height:168px;              /* mesma altura para todos */
+      padding:18px 16px;
+      border-radius:18px;
       border:1px solid var(--line);
-      background: var(--bg-elev-1);
-      box-shadow: 0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
       text-align:center;
+      box-shadow:0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
       transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+      overflow:hidden;
+      background: var(--bg-elev-1);
     }
-    .tile h3{ margin:0 0 6px; font-weight:800; color:var(--serenity-2); }
-    .tile p{ margin:0; color:var(--ink-2); max-width:52ch; }
 
-    .tile.has-bg{
-      color: var(--ink);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      /* véu para legibilidade sobre imagens variadas */
-      isolation:isolate;
+    /* conteúdo sempre acima dos overlays */
+    .tile > *{ position:relative; z-index:2; }
+
+    .tile h3{
+      margin:0 0 8px; font-weight:800;
+      color:var(--serenity-2);
     }
-    .tile.has-bg::after{
-      content:""; position:absolute; inset:0; border-radius:18px; z-index:-1;
-      background: radial-gradient(120% 120% at 20% 0%, rgba(8,12,16,.35), rgba(8,12,16,.6) 60%, rgba(8,12,16,.75) 100%);
+    .tile p{
+      margin:0; color:var(--ink-2);
+      max-width: 58ch;
+    }
+
+    .tile:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 28px rgba(22,28,36,.45);
+      border-color:rgba(203,229,255,.35);
+    }
+
+    /* --- Cards com IMAGEM de fundo --- */
+    .tile.has-bg{
+      background: none; /* remove o fundo sólido para a imagem aparecer */
+    }
+    /* a imagem vem no próprio background do card */
+    .tile.has-bg{
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    /* véu para legibilidade (acima da imagem, abaixo do texto) */
+    .tile.has-bg::before{
+      content:""; position:absolute; inset:0; z-index:1; border-radius:18px;
+      background: radial-gradient(120% 120% at 20% 0%,
+                   rgba(8,12,16,.24), rgba(8,12,16,.55) 60%, rgba(8,12,16,.72));
       border:1px solid rgba(203,229,255,.16);
     }
-    .tile:hover{ transform: translateY(-1px); box-shadow:0 10px 28px rgba(22,28,36,.45); border-color:rgba(203,229,255,.35); }
 
-    /* Imagens dos cards (troque os caminhos se os seus arquivos estiverem em outra pasta) */
-    .bg-tarefas  { background-image: url("../../assets/img/hub/tarefas-orientacoes.jpg"); }
-    .bg-plano    { background-image: url("../../assets/img/hub/plano-neuro.jpg"); }
-    .bg-habitos  { background-image: url("../../assets/img/hub/habitos-recompensas.jpg"); }
-    .bg-praticas { background-image: url("../../assets/img/hub/praticas-mentais.jpg"); }
-    .bg-suporte  { background-image: url("../../assets/img/hub/suporte.jpg"); }
+    /* Aponta para os ARQUIVOS de imagem dos cards */
+    .bg-tarefas  { background-image:url("../../assets/img/hub/tarefas-orientacoes.jpg"); }
+    .bg-plano    { background-image:url("../../assets/img/hub/plano-neuro.jpg"); }
+    .bg-habitos  { background-image:url("../../assets/img/hub/habitos-recompensas.jpg"); }
+    .bg-praticas { background-image:url("../../assets/img/hub/praticas-mentais.jpg"); }
+    .bg-suporte  { background-image:url("../../assets/img/hub/suporte.jpg"); }
 
-    /* Mobile: sidebar fora, conteúdo 100% */
+    /* Mobile: sidebar some e conteúdo pega 100% */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{display:none!important}
       body.layout-with-sidebar .content{
@@ -80,10 +106,7 @@
         box-sizing:border-box!important;
       }
       html,body{overflow-x:hidden!important}
-      .banner-full{height: 220px; border-radius:0 0 18px 18px;}
-    }
-    @media (max-width:560px){
-      .tile{ height:156px; }
+      .banner-full{height:220px;}
     }
   </style>
 </head>
@@ -117,12 +140,12 @@
   <!-- CONTEÚDO -->
   <main class="content">
 
-    <!-- BANNER (sem texto por cima) -->
+    <!-- BANNER -->
     <header class="banner-full">
       <div class="banner-overlay" aria-hidden="true"></div>
     </header>
 
-    <!-- INTRO DO NÍVEL (Tratamento Bella Prime) -->
+    <!-- INTRO DO NÍVEL -->
     <section class="card card-intro">
       <h2>Sobre o Nível Fundação</h2>
       <p>
@@ -136,9 +159,9 @@
         corpo. É o ponto onde você cria as raízes para sustentar tudo o que vem a seguir.
       </p>
       <p>
-        O <strong>Sistema EVO360</strong> é a estrutura que organiza o tratamento — ele distribui seus
-        treinos, hábitos e práticas mentais em etapas progressivas, garantindo uma evolução leve,
-        constante e consciente. A cada tarefa, você se aproxima da sua melhor versão.
+        O <strong>Sistema EVO360</strong> organiza o tratamento — ele distribui seus treinos, hábitos
+        e práticas mentais em etapas progressivas, garantindo uma evolução leve, constante e consciente.
+        A cada tarefa, você se aproxima da sua melhor versão.
       </p>
       <p>
         Este nível é sobre reconexão: com o corpo, com a disciplina e com aquilo que te faz sentir viva.
@@ -161,7 +184,7 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (com imagens de fundo) -->
+    <!-- HUB DE CARDS (com imagens e conteúdo centralizado) -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
       <button type="button" class="tile has-bg bg-tarefas" onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
@@ -188,10 +211,9 @@
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
     </section>
+
   </main>
 
-  <script>
-    window.NIVEL = "fundacao-72a9c";
-  </script>
+  <script> window.NIVEL = "fundacao-72a9c"; </script>
 </body>
 </html>
