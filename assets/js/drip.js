@@ -1,4 +1,3 @@
-// ===== DRIP CORE (genérico) =====
 const Drip = (() => {
   const iso = d => new Date(d).toISOString().slice(0,10);
   const todayISO = () => iso(new Date());
