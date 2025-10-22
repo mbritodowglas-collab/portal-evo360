@@ -1,281 +1,186 @@
-/* ===========================
-   HOME · Cards estilo site principal
-   =========================== */
-.content .tiles {
-  display: grid;
-  gap: 18px;
-  margin-top: 16px;
+/* =========================================================
+   TEMA — NÍVEL FUNDAÇÃO · EVO360 / TRATAMENTO BELLA PRIME
+   ========================================================= */
+
+:root {
+  --fundo: #0b0d10;
+  --serenity-2: #cbe5ff;
+  --silver: #b8c1ca;
+  --card-bg: #111418;
+  --card-border: rgba(203,229,255,0.12);
 }
 
-/* Card principal */
-.content .tile {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 20px 22px;
-  border-radius: 18px;
-  border: 1px solid rgba(203,229,255,.08);
-  background: linear-gradient(180deg, #12161B 0%, #0F1318 100%);
-  box-shadow: 0 6px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(203,229,255,.05);
-  color: #E8EEF6;
-  cursor: pointer;
-  position: relative;
-  transition: all .2s ease;
-}
-
-.content .tile h3 {
-  margin: 0 0 6px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #CBE5FF;
-}
-
-.content .tile p {
+/* ========= BASE GERAL ========= */
+body {
+  background: var(--fundo);
+  color: var(--silver);
+  font-family: "Inter", system-ui, sans-serif;
   margin: 0;
-  color: #AEB8C6;
-  font-size: 0.95rem;
-  line-height: 1.45;
+  line-height: 1.6;
 }
 
-/* Hover e foco */
-.content .tile:hover,
-.content .tile:focus-visible {
-  border-color: rgba(203,229,255,.3);
-  background: linear-gradient(180deg, #161B22 0%, #11161C 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(22,28,36,.5), inset 0 1px 0 rgba(203,229,255,.08);
+.content p,
+.content li {
+  text-align: justify;
 }
 
-/* Clique */
-.content .tile:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(22,28,36,.45);
+h1, h2, h3 {
+  color: var(--serenity-2);
+  margin-top: 0;
 }
 
-/* Iluminação sutil no topo */
-.content .tile::before {
+/* ========= BANNER SUPERIOR ========= */
+.banner-full {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat;
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+  margin-bottom: 24px;
+}
+
+.banner-full::after {
+  /* gradiente leve para leitura */
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(150% 120% at 20% 0%, rgba(203,229,255,.18), transparent 70%);
-  opacity: 0.12;
-  transition: opacity .25s;
-  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(11,13,16,.28) 100%);
 }
 
-.content .tile:hover::before {
-  opacity: 0.25;
-}
-
-/* Chevron à direita */
-.content .tile::after {
-  content: "";
-  position: absolute;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 16px;
-  -webkit-mask: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
-          mask: url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
-  background: #CBE5FF;
-  opacity: 0.8;
-  transition: opacity .2s;
-}
-.content .tile:hover::after { opacity: 1; }
-
-@media (max-width: 420px) {
-  .content .tile { padding: 18px; border-radius: 16px; }
-}
-
-/* --- Banner deve vir antes dos cards e não “escapar” --- */
-.banner-full{
-  display:block;
-  height:180px;                 /* 240px se quiser mais alto */
-  margin:0 0 20px 0;            /* tira o margin negativo que empurra */
-  border-radius:0 0 18px 18px;
-  background:url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
-  position:relative;
-  z-index:0;                    /* fica “atrás” dos cards sem se sobrepor */
-}
-.banner-overlay{
-  position:absolute; inset:0;
-  display:flex; flex-direction:column; justify-content:flex-end;
-  padding:0 24px 18px;
-  background:linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.80));
-  color:#fff;
-}
-.banner-title{color:#CBE5FF; font-weight:700; font-size:1.6rem; margin:0;}
-.banner-sub{color:#D4E4F2; opacity:.9; margin:.2rem 0 0}
-
-/* Os cards não precisam empurrar o banner pra baixo */
-.tiles{ margin-top:0; position:relative; z-index:1; }
-
-/* Cards como botões destacados (clique claro) */
-.tile{
-  display:block; width:100%;
-  padding:20px 22px; border-radius:18px;
-  background:linear-gradient(180deg,#12161B 0%,#0F1318 100%);
-  border:1px solid rgba(203,229,255,.10);
-  box-shadow:0 6px 24px rgba(0,0,0,.30), inset 0 1px 0 rgba(203,229,255,.05);
-  color:#E8EEF6; text-align:left; cursor:pointer;
-  transition:transform .12s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-}
-.tile h3{margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#CBE5FF}
-.tile p{margin:0; color:#AEB8C6; line-height:1.45}
-
-/* feedback */
-.tile:hover,.tile:focus-visible{
-  transform:translateY(-3px);
-  border-color:rgba(203,229,255,.30);
-  background:linear-gradient(180deg,#161B22 0%,#11161C 100%);
-  box-shadow:0 10px 28px rgba(22,28,36,.50), inset 0 1px 0 rgba(203,229,255,.08);
-  outline:none;
-}
-/* chevron de navegação à direita */
-.tile::after{
-  content:"";
-  position:absolute; right:18px; top:50%; transform:translateY(-50%);
-  width:10px; height:16px; opacity:.85; background:#CBE5FF;
-  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
-          mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
-}
-.tile:active{ transform:translateY(1px); box-shadow:0 3px 10px rgba(22,28,36,.45) }
-
-/* mobile */
-@media (max-width:420px){
-  .banner-full{height:170px; border-radius:0 0 16px 16px}
-  .tile{padding:18px; border-radius:16px}
-}
-
-/* Intro do nível */
-.card-intro {
-  background: var(--bg-elev-2);
-  border: 1px solid rgba(203,229,255,.15);
-  box-shadow: 0 6px 24px rgba(0,0,0,.25);
-  padding: 24px 22px;
+/* ========= SEÇÕES ========= */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 18px;
+  padding: 20px;
   margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.3);
 }
-.card-intro h2 {
+
+.card h2, .card h3 {
+  margin-top: 0;
   color: var(--serenity-2);
-  font-size: 1.4rem;
-  margin-bottom: 8px;
 }
-.card-intro h3 {
-  color: var(--silver);
-  font-size: 1.1rem;
-  margin: 16px 0 8px;
-}
-.card-intro p {
-  color: var(--ink-2);
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-.card-intro .criteria {
+
+/* ========= LISTAS DE CRITÉRIOS ========= */
+.criteria {
   list-style: none;
   padding-left: 0;
-  margin: 0 0 12px;
+  margin: 0 0 16px 0;
 }
-.card-intro .criteria li {
-  background: rgba(203,229,255,.05);
-  padding: 8px 12px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-  border: 1px solid rgba(203,229,255,.08);
-}
-.card-intro .criteria strong { color: var(--serenity-2); }
-.card-intro .divisor {
-  border: 0;
-  border-top: 1px solid rgba(203,229,255,.15);
-  margin: 20px 0;
-}
-.card-intro em {
+
+.criteria li {
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(203,229,255,.12);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
   color: var(--silver);
-  opacity: 0.9;
 }
 
-/* ==== FIX HARD MOBILE (sobrepõe o base.css) ==== */
-@media (max-width:1024px){
-  /* esconde sidebar de vez */
-  body.layout-with-sidebar .sidebar{ 
-    display:none !important;
-  }
+.criteria li strong {
+  color: var(--serenity-2);
+}
 
-  /* conteúdo ocupa a largura inteira */
-  body.layout-with-sidebar .content{
-    margin:0 !important;
-    padding:16px !important;
-    max-width:100vw !important;
-    width:100vw !important;
-    box-sizing:border-box !important;
-  }
+/* ========= CARDS DE ATALHO ========= */
+.tiles.tiles-modern {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
 
-  /* evita qualquer overflow horizontal */
-  html, body{
-    overflow-x:hidden !important;
-  }
-
-  /* banner colado no topo e 100% */
-  .banner-full{
-    margin-top:0 !important;
-    width:100% !important;
-    border-radius:0 0 18px 18px !important;
+@media (min-width: 720px) {
+  .tiles.tiles-modern {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Em telas bem pequenas, só um respiro extra */
-@media (max-width:390px){
-  body.layout-with-sidebar .content{ padding:14px !important; }
+@media (min-width: 1040px) {
+  .tiles.tiles-modern {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* Banner com fallback */
-.banner-full {
-  background: #0b0d10 url("../../assets/img/hub/banner-fundacao-abstract.webp") center/cover no-repeat;
-}
-.banner-full[data-img="real"] {
-  background-image: url("../../assets/img/hub/banner-fundacao-real.webp");
-}
-.banner-full[data-img="illustration"] {
-  background-image: url("../../assets/img/hub/banner-fundacao-illustration.webp");
-}
-
-/* Tiles com imagem */
-.tile.has-bg {
+.tile {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 200px;
+  border-radius: 18px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: #fff;
   overflow: hidden;
-  background: #12161b;
-  border: 1px solid var(--line);
+  isolation: isolate;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.tile.has-bg::before {
+
+/* Remover seta */
+.tile::after {
+  content: none !important;
+}
+
+/* Overlay suave para contraste */
+.tile::before {
   content: "";
-  position: absolute; inset: 0;
-  background: var(--tile-bg, none) center/cover no-repeat;
-  filter: brightness(.8) saturate(1.05);
-  transform: scale(1.02); /* leve zoom */
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,13,16,.18), rgba(10,13,16,.68) 85%);
+  z-index: 1;
 }
-.tile.has-bg::after {
-  /* overlay para legibilidade do texto */
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(10,13,16,.25) 0%, rgba(10,13,16,.75) 70%, rgba(10,13,16,.95) 100%);
+
+.tile h3, .tile p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
 }
-.tile.has-bg > * { position: relative; z-index: 1; }
 
-/* helpers por card (muda só a var com a URL) */
-.tile.bg-tarefas  { --tile-bg: url("../../assets/img/hub/tile-tarefas-real.webp"); }
-.tile.bg-plano    { --tile-bg: url("../../assets/img/hub/tile-plano-real.webp"); }
-.tile.bg-habitos  { --tile-bg: url("../../assets/img/hub/tile-habitos-real.webp"); }
-.tile.bg-praticas { --tile-bg: url("../../assets/img/hub/tile-praticas-real.webp"); }
-.tile.bg-suporte  { --tile-bg: url("../../assets/img/hub/tile-suporte-real.webp"); }
+.tile h3 {
+  font-weight: 800;
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  color: var(--serenity-2);
+}
 
-/* ajuste de espaçamento para texto sobre imagem */
-.tile.has-bg h3 { margin-bottom: 8px; }
-.tile.has-bg p  { margin-bottom: 0; }
+.tile p {
+  color: var(--silver);
+  font-size: .96rem;
+  max-width: 58ch;
+}
 
-.tile.has-bg{ height: 210px; }
-@media (min-width:768px){ .tile.has-bg{ height: 240px; } }
-@media (min-width:1024px){ .tile.has-bg{ height: 260px; } }
+.tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(203,229,255,.35);
+  box-shadow: 0 10px 28px rgba(22,28,36,.55);
+}
+
+/* ========= MOBILE ========= */
+@media (max-width: 1024px) {
+  body.layout-with-sidebar .sidebar {
+    display: none !important;
+  }
+
+  body.layout-with-sidebar .content {
+    margin: 0 !important;
+    padding: 16px !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  html, body {
+    overflow-x: hidden !important;
+  }
+
+  .banner-full {
+    height: 220px;
+  }
+}
