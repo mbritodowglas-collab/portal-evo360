@@ -233,3 +233,41 @@ h1, h2, h3 {
 .tile::before{
   background: linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.58) 86%);
 }
+
+/* Cards – polimentos finais */
+
+/* 1) Mesma altura e alinhamento vertical impecável do conteúdo */
+.tile{
+  min-height: 220px;
+  height: clamp(220px, 26vh, 280px);
+  padding: 24px 18px;
+}
+
+/* 2) Overlay um pouco mais suave pra destacar a foto sem perder leitura */
+.tile::before{
+  background: linear-gradient(180deg, rgba(10,13,16,.12) 0%, rgba(10,13,16,.55) 100%);
+}
+
+/* 3) Títulos + textos realmente centralizados */
+.tile h3, .tile p{
+  text-align: center;
+  max-width: 60ch;
+}
+
+/* 4) Bordas e sombra levemente mais modernas */
+.tile{
+  border-radius: 22px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.35);
+}
+
+/* 5) Toque maior no mobile (área clicável confortável) */
+@media (max-width: 560px){
+  .tile{ padding: 28px 16px; }
+  .tile h3{ font-size: 1.22rem; }
+  .tile p{ font-size: 1.02rem; }
+}
+
+/* 6) Quem quiser menos animação (acessibilidade) */
+@media (prefers-reduced-motion: reduce){
+  .tile{ transition: none; }
+}
