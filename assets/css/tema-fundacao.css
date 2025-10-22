@@ -170,3 +170,54 @@
   .banner-title{ font-size: 1.6rem; }
   .banner-sub{ font-size: 1rem; }
 }
+
+/* Hub de botões (Tiles) */
+.tiles{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+.tiles.tiles-large .tile{ min-height: 132px; }
+
+.tile{
+  display:block;
+  background: var(--bg-elev-1);
+  border:1px solid var(--line);
+  border-radius: 16px;
+  padding:16px;
+  text-decoration:none;
+  color: var(--ink);
+  box-shadow: var(--shadow-1);
+  transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.tile:hover,
+.tile:focus{
+  border-color: rgba(203,229,255,.35);
+  box-shadow: 0 8px 26px rgba(22,28,36,.45);
+  transform: translateY(-1px);
+  outline: none;
+}
+.tile h3{
+  margin:0 0 6px;
+  font-size: 1.06rem;
+  color: var(--serenity-2);
+  font-weight: 700;
+}
+.tile p{
+  margin:0; color: var(--ink-2); font-size: .96rem; line-height: 1.35;
+}
+
+/* Acessibilidade visual */
+.sr-only{
+  position:absolute!important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* Responsivo */
+@media (max-width: 1024px){
+  .tiles{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 560px){
+  .tiles{ grid-template-columns: 1fr; }
+}
