@@ -1,34 +1,61 @@
-# portal-evo360
-Portal do Aluno EVO360 — App web estático com níveis de evolução física e mental, PWA instalável, check-in inteligente e ferramentas de autogestão (hábitos, recompensas e visualização mental).
+# 🧠 portal-evo360
 
-Portal EVO360 é um app web estático (PWA) que guia o aluno em um processo de evolução física e mental por níveis — Fundação, Ascensão, Domínio, OverPrime e OverLord.
-O sistema funciona inteiramente no navegador, sem backend, salvando o progresso localmente.
+**Portal do Aluno EVO360** — App web estático (PWA) com níveis de evolução física e mental, check-in inteligente e ferramentas de autogestão (hábitos, recompensas e visualização mental).
 
-Cada nível possui:
+---
 
-📆 Conteúdo diário gotejado (Drip System)
+### 💡 Sobre o projeto
 
-🧩 Habit Tracker fixo + hábitos personalizados
+O **EVO360** é uma plataforma educacional e comportamental que guia o aluno em um processo de evolução física e mental dividido em fases:  
+**Fundação, Ascensão, Domínio, OverPrime e OverLord.**
 
-🎯 Trilha de Recompensas com metas e gratificações pessoais
+O sistema funciona inteiramente no navegador — sem backend — e salva o progresso localmente.
 
-🧘‍♀️ Visualização Mental Guiada
+---
 
-📊 Check-in Diário Inteligente com análise automática e recomendação de treino para o dia
+### ⚙️ Funcionalidades principais
 
+📅 **Conteúdo diário gotejado (Drip System)**  
+🧩 **Habit Tracker fixo + hábitos personalizados**  
+🎯 **Trilha de Recompensas** com metas e gratificações pessoais  
+🧘‍♀️ **Visualização Mental Guiada**  
+📊 **Check-in Diário Inteligente** com análise automática e recomendação de treino  
+📲 **Instalável (PWA)** — compatível com Android e iOS, funcionando offline após o primeiro acesso  
 
-O app é instalável (PWA), compatível com Android e iOS, e opera offline após o primeiro acesso.
+---
 
-⚙️ Recursos técnicos
+### 🧰 Recursos técnicos
 
-HTML, CSS e JavaScript puro (sem backend)
+- HTML, CSS e JavaScript puro (**sem backend**)  
+- PWA com manifests individuais por nível  
+- Geração automática de slugs aleatórios e páginas privadas (`scripts/gen_slugs.py`)  
+- Armazenamento local de progresso (`localStorage`)  
+- Layouts temáticos para cada fase de evolução  
+- Totalmente compatível com **GitHub Pages**
 
-PWA com manifests individuais por nível
+---
 
-Conteúdo e progresso salvos em localStorage
+### 🧩 Estrutura dos níveis
 
-URLs privadas com slugs aleatórios (gerados via scripts/gen_slugs.py)
+| Linha Bella Prime | Foco |
+|--------------------|------|
+| Fundação | Consistência e autocuidado |
+| Ascensão | Consolidação de hábitos e progresso físico |
+| Domínio | Autonomia e domínio corporal |
+| OverPrime | Performance e mentalidade de elite |
 
-Layouts temáticos por nível (Fundação, Ascensão, Domínio, OverPrime, OverLord)
+| Linha OverLord | Foco |
+|----------------|------|
+| Mind Stage | Clareza e foco mental |
+| Body Stage | Disciplina e consistência física |
+| OverCore | Força e reconstrução |
+| OverLord | Autodomínio total |
 
-Totalmente compatível com GitHub Pages
+---
+
+### 🚀 Como usar
+
+1. Clone ou importe o repositório `portal-evo360`.  
+2. Execute o gerador de slugs:
+   ```bash
+   python3 scripts/gen_slugs.py
