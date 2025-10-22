@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=9">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=9">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=10">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=10">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
@@ -28,13 +28,14 @@
       box-shadow:0 6px 24px rgba(0,0,0,.25);
       margin:0 0 24px 0;
     }
-    .banner-full .banner-overlay{
-      position:absolute; inset:0;
-      background:linear-gradient(180deg,rgba(10,13,16,.05),rgba(10,13,16,.6) 70%,rgba(10,13,16,.85) 100%);
-      pointer-events:none;
+    .banner-full::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(10,13,16,.1),rgba(10,13,16,.7) 75%,rgba(10,13,16,.9));
     }
 
-    /* cards hub */
+    /* hub de cards */
     .tiles.tiles-modern{
       display:grid;
       gap:18px;
@@ -49,23 +50,26 @@
       align-items:center;
       height:190px;
       border-radius:18px;
-      border:1px solid rgba(203,229,255,.18);
+      border:1px solid rgba(203,229,255,.15);
       overflow:hidden;
       text-align:center;
       transition:transform .12s ease, box-shadow .2s ease;
       color:#fff;
-      background:#0b0d10;
       background-size:cover !important;
       background-position:center !important;
       background-repeat:no-repeat !important;
       isolation:isolate;
     }
 
+    /* remove qualquer pseudo-elemento (seta) herdado */
+    .tile::after { content:none !important; }
+
+    /* overlay escuro pra contraste */
     .tile::before{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(180deg,rgba(10,13,16,.2) 0%,rgba(10,13,16,.7) 70%,rgba(10,13,16,.85) 100%);
+      background:linear-gradient(180deg,rgba(10,13,16,.25),rgba(10,13,16,.75) 80%);
       z-index:1;
     }
 
@@ -78,7 +82,7 @@
     }
     .tile p{
       max-width:58ch;
-      font-size:.96rem;
+      font-size:.95rem;
       margin:0;
       color:var(--silver);
     }
@@ -88,7 +92,7 @@
       box-shadow:0 10px 28px rgba(22,28,36,.55);
     }
 
-    /* imagens reais (AJUSTADAS AOS ARQUIVOS) */
+    /* caminhos corretos das imagens */
     .bg-tarefas  { background-image:url("../../assets/img/hub/tile-tarefas.jpg"); }
     .bg-plano    { background-image:url("../../assets/img/hub/tile-plano.jpg"); }
     .bg-habitos  { background-image:url("../../assets/img/hub/tile-habitos.jpg"); }
