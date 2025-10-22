@@ -184,3 +184,40 @@ h1, h2, h3 {
     height: 220px;
   }
 }
+
+/* ===== HUB · imagens dos cards (caminhos confirmados) ===== */
+.tile{ background:transparent !important; position:relative; }
+.tile.has-bg{
+  background-image: var(--tile-bg) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* overlay leve p/ legibilidade sem matar a foto */
+.tile.has-bg::before{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(10,13,16,.10) 0%, rgba(10,13,16,.60) 85%);
+  z-index:1;
+}
+.tile h3,.tile p{ position:relative; z-index:2; }
+
+/* mapeamento EXATO dos arquivos da pasta assets/img/hub/ */
+.bg-tarefas  { --tile-bg: url("../../assets/img/hub/tile-tarefas.jpg"); }
+.bg-plano    { --tile-bg: url("../../assets/img/hub/tile-plano.jpg"); }
+.bg-habitos  { --tile-bg: url("../../assets/img/hub/tile-habitos.jpg"); }
+.bg-praticas { --tile-bg: url("../../assets/img/hub/tile-praticas.jpg"); }
+.bg-suporte  { --tile-bg: url("../../assets/img/hub/tile-suporte.jpg"); }
+
+/* sem setas no card */
+.tile::after{ content:none !important; }
+
+/* ===== Banner usando o JPG novo (claro) ===== */
+.banner-full{
+  background-image: url("../../assets/img/hub/banner-fundacao-hero.jpg") !important;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+/* overlay do banner mais leve para não escurecer o JPG */
+.banner-overlay{
+  background: linear-gradient(180deg, rgba(10,13,16,.00) 0%, rgba(10,13,16,.28) 75%, rgba(10,13,16,.55) 100%) !important;
+}
