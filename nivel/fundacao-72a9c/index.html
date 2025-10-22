@@ -10,41 +10,74 @@
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=3">
 
   <style>
-    /* --- ajuste local dos cards (tiles) --- */
+    /* --- cards-botões principais --- */
     .tiles {
       display: grid;
-      gap: 16px;
+      gap: 18px;
       margin-top: 8px;
     }
+
     .tile {
-      display: block;
-      background: #12161B;
-      border: 1px solid #1F2937;
-      border-radius: 18px;
-      padding: 18px 16px;
-      color: #E8EEF6;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
       text-align: left;
-      text-decoration: none;
+      width: 100%;
+      border-radius: 18px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, rgba(203,229,255,.05), rgba(10,13,16,.00));
+      border: 1px solid #1F2937;
+      color: #E8EEF6;
       box-shadow: 0 6px 24px rgba(0,0,0,.25);
-      transition: all .2s ease;
+      cursor: pointer;
+      transition: all .18s ease;
+      position: relative;
+      overflow: hidden;
     }
-    .tile:hover {
-      border-color: rgba(203,229,255,.4);
-      background: #1A1E24;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 26px rgba(22,28,36,.45);
-    }
+
     .tile h3 {
       margin: 0 0 6px;
-      font-size: 1.12rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #CBE5FF;
     }
+
     .tile p {
       margin: 0;
       color: #AEB8C6;
+      font-size: 0.95rem;
       line-height: 1.45;
     }
+
+    /* --- estados visuais --- */
+    .tile:hover,
+    .tile:focus-visible {
+      border-color: rgba(203,229,255,.4);
+      background: linear-gradient(180deg, rgba(203,229,255,.08), rgba(10,13,16,.02));
+      box-shadow: 0 8px 26px rgba(22,28,36,.45), inset 0 1px 0 rgba(203,229,255,.08);
+      transform: translateY(-2px);
+    }
+
+    .tile:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 12px rgba(22,28,36,.4);
+    }
+
+    /* --- destaque visual sutil no topo --- */
+    .tile::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(150% 120% at 20% 0%, rgba(203,229,255,.25), transparent 60%);
+      opacity:.08;
+      transition:opacity .2s;
+    }
+
+    .tile:hover::before {
+      opacity:.18;
+    }
+
     @media (max-width:820px){
       .tiles{ padding:0 4px; }
     }
@@ -87,34 +120,34 @@
       </div>
     </header>
 
-    <!-- HUB DE CARDS -->
+    <!-- CARDS DESTACADOS -->
     <section aria-labelledby="atalhos-titulo" class="tiles">
       <h2 id="atalhos-titulo" class="sr-only">Atalhos principais</h2>
 
-      <a href="./exercicios-orientacoes.html" class="tile">
+      <button type="button" class="tile" onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Exercícios e Orientações</h3>
         <p>Critérios, progresso, dicas de treino e nutrição, exercício da semana.</p>
-      </a>
+      </button>
 
-      <a href="./plano.html" class="tile">
+      <button type="button" class="tile" onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
-      </a>
+      </button>
 
-      <a href="./habitos.html" class="tile">
+      <button type="button" class="tile" onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
-      </a>
+      </button>
 
-      <a href="./praticas.html" class="tile">
+      <button type="button" class="tile" onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
-      </a>
+      </button>
 
-      <a href="./suporte.html" class="tile">
+      <button type="button" class="tile" onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
-      </a>
+      </button>
     </section>
   </main>
 
