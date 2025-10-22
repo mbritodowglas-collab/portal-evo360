@@ -90,3 +90,63 @@
 @media (max-width: 420px) {
   .content .tile { padding: 18px; border-radius: 16px; }
 }
+
+/* --- Banner deve vir antes dos cards e não “escapar” --- */
+.banner-full{
+  display:block;
+  height:180px;                 /* 240px se quiser mais alto */
+  margin:0 0 20px 0;            /* tira o margin negativo que empurra */
+  border-radius:0 0 18px 18px;
+  background:url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
+  position:relative;
+  z-index:0;                    /* fica “atrás” dos cards sem se sobrepor */
+}
+.banner-overlay{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:0 24px 18px;
+  background:linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.80));
+  color:#fff;
+}
+.banner-title{color:#CBE5FF; font-weight:700; font-size:1.6rem; margin:0;}
+.banner-sub{color:#D4E4F2; opacity:.9; margin:.2rem 0 0}
+
+/* Os cards não precisam empurrar o banner pra baixo */
+.tiles{ margin-top:0; position:relative; z-index:1; }
+
+/* Cards como botões destacados (clique claro) */
+.tile{
+  display:block; width:100%;
+  padding:20px 22px; border-radius:18px;
+  background:linear-gradient(180deg,#12161B 0%,#0F1318 100%);
+  border:1px solid rgba(203,229,255,.10);
+  box-shadow:0 6px 24px rgba(0,0,0,.30), inset 0 1px 0 rgba(203,229,255,.05);
+  color:#E8EEF6; text-align:left; cursor:pointer;
+  transition:transform .12s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+.tile h3{margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#CBE5FF}
+.tile p{margin:0; color:#AEB8C6; line-height:1.45}
+
+/* feedback */
+.tile:hover,.tile:focus-visible{
+  transform:translateY(-3px);
+  border-color:rgba(203,229,255,.30);
+  background:linear-gradient(180deg,#161B22 0%,#11161C 100%);
+  box-shadow:0 10px 28px rgba(22,28,36,.50), inset 0 1px 0 rgba(203,229,255,.08);
+  outline:none;
+}
+/* chevron de navegação à direita */
+.tile::after{
+  content:"";
+  position:absolute; right:18px; top:50%; transform:translateY(-50%);
+  width:10px; height:16px; opacity:.85; background:#CBE5FF;
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
+          mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16' fill='none' stroke='%23CBE5FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l8 7-8 7'/></svg>") center/contain no-repeat;
+}
+.tile:active{ transform:translateY(1px); box-shadow:0 3px 10px rgba(22,28,36,.45) }
+
+/* mobile */
+@media (max-width:420px){
+  .banner-full{height:170px; border-radius:0 0 16px 16px}
+  .tile{padding:18px; border-radius:16px}
+}
