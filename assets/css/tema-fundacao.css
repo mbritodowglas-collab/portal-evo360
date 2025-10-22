@@ -192,3 +192,17 @@ a:hover{ text-decoration: underline; }
 .tile.icon-habitos{    --icon:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b0d10'><path d='M9 11l3 3L22 4l-2-2-8 8-3-3-9 9 2 2z'/></svg>"); }
 .tile.icon-praticas{   --icon:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b0d10'><circle cx='12' cy='12' r='3'/><path d='M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12'/></svg>"); }
 .tile.icon-suporte{    --icon:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230b0d10'><path d='M12 2a10 10 0 0 0-10 10h2a8 8 0 1 1 8 8v2a10 10 0 0 0 0-20z'/></svg>"); }
+
+/* Reset seguro para <button class="tile"> */
+button.tile{
+  all: unset;                 /* zera estilos nativos do botão */
+  display: block;             /* volta o display */
+}
+.tile{ 
+  cursor: pointer;            /* cursor de ação */
+  -webkit-appearance: none;
+          appearance: none;
+}
+
+/* Garantir que .tiles-modern tenha grid mesmo se .tiles for sobrescrita em outro lugar */
+.tiles.tiles-modern{ display:grid; gap:16px; }
