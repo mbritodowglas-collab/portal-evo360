@@ -19,6 +19,7 @@
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -71,7 +72,18 @@
           <label>Intensidade (%)<br><input type="number" id="k_int" min="30" max="85" value="60"></label>
           <div class="small muted" style="align-self:end">Sugestão Fundação: 50–65% (cardio leve/moderado)</div>
         </div>
-        <div class="calc-out" id="k_out">Informe os dados para ver sua faixa alvo.</div>
+
+        <!-- Saída principal (alvo único) -->
+        <div class="calc-out" id="k_out">Informe os dados e clique em Calcular.</div>
+
+        <!-- Ações -->
+        <div class="row-actions">
+          <button class="btn" id="k_calcBtn">Calcular</button>
+          <button class="btn ghost" id="k_clearBtn">Limpar</button>
+        </div>
+
+        <!-- Tabela de zonas (50% a 80% por 5%) -->
+        <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
       <!-- TMB -->
