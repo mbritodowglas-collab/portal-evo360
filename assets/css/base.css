@@ -585,3 +585,20 @@ body, p, li, .btn{ font-size: var(--txt); }
   .banner-title { font-size: 1.6rem; }
   .banner-sub { font-size: 1rem; }
 }
+
+/* ===== FIX MOBILE: conteúdo 100% e sidebar oculta ===== */
+@media (max-width:1024px){
+  body.layout-with-sidebar .sidebar{
+    display:none !important;          /* some com a sidebar no mobile */
+  }
+  body.layout-with-sidebar .content{
+    margin:0 !important;              /* remove o recuo de 220px */
+    width:100vw !important;
+    max-width:100vw !important;
+    padding:16px !important;
+    box-sizing:border-box;
+  }
+
+  /* evita qualquer sobra lateral */
+  html, body{ overflow-x:hidden; }
+}
