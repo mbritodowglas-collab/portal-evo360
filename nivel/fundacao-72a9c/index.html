@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=7">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=7">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=9">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=9">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
@@ -14,95 +14,100 @@
        AJUSTES ESPECÍFICOS DESTA PÁGINA
        ================================ */
 
-    /* Texto justificado em todo o app (sem afetar headings/botões) */
+    /* texto justificado global */
     .content p, .content li { text-align: justify; }
 
-    /* --- Banner (somente imagem, sem texto por cima) --- */
+    /* banner superior */
     .banner-full{
-      position:relative; width:100%;
+      position:relative;
+      width:100%;
       height:240px;
-      background:url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
+      background:url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat;
       border-radius:0 0 18px 18px;
+      overflow:hidden;
       box-shadow:0 6px 24px rgba(0,0,0,.25);
-      overflow:hidden; margin:0 0 18px 0;
+      margin:0 0 24px 0;
     }
     .banner-full .banner-overlay{
-      position:absolute; inset:0; pointer-events:none;
-      background:linear-gradient(180deg,rgba(10,13,16,.10),rgba(10,13,16,.32) 40%,rgba(10,13,16,.82) 100%);
+      position:absolute; inset:0;
+      background:linear-gradient(180deg,rgba(10,13,16,.05),rgba(10,13,16,.6) 70%,rgba(10,13,16,.85) 100%);
+      pointer-events:none;
     }
 
-    /* --- Hub de cards (botões) --- */
+    /* cards hub */
     .tiles.tiles-modern{
-      display:grid; gap:16px;
-      grid-template-columns: 1fr;  /* 1 coluna no mobile */
+      display:grid;
+      gap:18px;
+      grid-template-columns:1fr;
     }
 
     .tile{
-      /* layout base */
-      position:relative; z-index:0;
-      display:flex; flex-direction:column;
-      justify-content:center; align-items:center;
-      width:100%;
-      height:168px;              /* mesma altura para todos */
-      padding:18px 16px;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      height:190px;
       border-radius:18px;
-      border:1px solid var(--line);
-      text-align:center;
-      box-shadow:0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
-      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+      border:1px solid rgba(203,229,255,.18);
       overflow:hidden;
-      background: var(--bg-elev-1);
+      text-align:center;
+      transition:transform .12s ease, box-shadow .2s ease;
+      color:#fff;
+      background:#0b0d10;
+      background-size:cover !important;
+      background-position:center !important;
+      background-repeat:no-repeat !important;
+      isolation:isolate;
     }
 
-    /* conteúdo sempre acima dos overlays */
-    .tile > *{ position:relative; z-index:2; }
+    .tile::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(10,13,16,.2) 0%,rgba(10,13,16,.7) 70%,rgba(10,13,16,.85) 100%);
+      z-index:1;
+    }
 
+    .tile h3,.tile p{ position:relative; z-index:2; }
     .tile h3{
-      margin:0 0 8px; font-weight:800;
+      font-weight:800;
+      font-size:1.2rem;
+      margin:0 0 8px;
       color:var(--serenity-2);
     }
     .tile p{
-      margin:0; color:var(--ink-2);
-      max-width: 58ch;
+      max-width:58ch;
+      font-size:.96rem;
+      margin:0;
+      color:var(--silver);
     }
 
     .tile:hover{
-      transform:translateY(-1px);
-      box-shadow:0 10px 28px rgba(22,28,36,.45);
-      border-color:rgba(203,229,255,.35);
+      transform:translateY(-2px);
+      box-shadow:0 10px 28px rgba(22,28,36,.55);
     }
 
-    /* --- Cards com IMAGEM de fundo --- */
-    .tile.has-bg{
-      background: none; /* remove o fundo sólido para a imagem aparecer */
+    /* imagens reais (AJUSTADAS AOS ARQUIVOS) */
+    .bg-tarefas  { background-image:url("../../assets/img/hub/tile-tarefas.jpg"); }
+    .bg-plano    { background-image:url("../../assets/img/hub/tile-plano.jpg"); }
+    .bg-habitos  { background-image:url("../../assets/img/hub/tile-habitos.jpg"); }
+    .bg-praticas { background-image:url("../../assets/img/hub/tile-praticas.jpg"); }
+    .bg-suporte  { background-image:url("../../assets/img/hub/tile-suporte.jpg"); }
+
+    @media (min-width:720px){
+      .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr); }
     }
-    /* a imagem vem no próprio background do card */
-    .tile.has-bg{
-      background-size:cover;
-      background-position:center;
-      background-repeat:no-repeat;
-    }
-    /* véu para legibilidade (acima da imagem, abaixo do texto) */
-    .tile.has-bg::before{
-      content:""; position:absolute; inset:0; z-index:1; border-radius:18px;
-      background: radial-gradient(120% 120% at 20% 0%,
-                   rgba(8,12,16,.24), rgba(8,12,16,.55) 60%, rgba(8,12,16,.72));
-      border:1px solid rgba(203,229,255,.16);
+    @media (min-width:1040px){
+      .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr); }
     }
 
-    /* Aponta para os ARQUIVOS de imagem dos cards */
-    .bg-tarefas  { background-image:url("../../assets/img/hub/tarefas-orientacoes.jpg"); }
-    .bg-plano    { background-image:url("../../assets/img/hub/plano-neuro.jpg"); }
-    .bg-habitos  { background-image:url("../../assets/img/hub/habitos-recompensas.jpg"); }
-    .bg-praticas { background-image:url("../../assets/img/hub/praticas-mentais.jpg"); }
-    .bg-suporte  { background-image:url("../../assets/img/hub/suporte.jpg"); }
-
-    /* Mobile: sidebar some e conteúdo pega 100% */
+    /* mobile: sidebar fora */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{display:none!important}
       body.layout-with-sidebar .content{
-        margin:0!important; padding:16px!important;
-        max-width:100vw!important; width:100vw!important;
+        margin:0!important;padding:16px!important;
+        width:100vw!important;max-width:100vw!important;
         box-sizing:border-box!important;
       }
       html,body{overflow-x:hidden!important}
@@ -145,7 +150,7 @@
       <div class="banner-overlay" aria-hidden="true"></div>
     </header>
 
-    <!-- INTRO DO NÍVEL -->
+    <!-- INTRO -->
     <section class="card card-intro">
       <h2>Sobre o Nível Fundação</h2>
       <p>
@@ -155,8 +160,8 @@
       </p>
       <p>
         No <strong>Nível Fundação</strong>, você inicia o processo de transformação: ajusta a rotina,
-        aprende a se alimentar melhor, melhora a postura e desenvolve uma nova relação com o próprio
-        corpo. É o ponto onde você cria as raízes para sustentar tudo o que vem a seguir.
+        aprende a se alimentar melhor, melhora a postura e desenvolve uma nova relação com o próprio corpo.
+        É o ponto onde você cria as raízes para sustentar tudo o que vem a seguir.
       </p>
       <p>
         O <strong>Sistema EVO360</strong> organiza o tratamento — ele distribui seus treinos, hábitos
@@ -184,29 +189,29 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (com imagens e conteúdo centralizado) -->
+    <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
-      <button type="button" class="tile has-bg bg-tarefas" onclick="location.href='./exercicios-orientacoes.html'">
+      <button type="button" class="tile bg-tarefas" onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos com orientações práticas e dicas diárias.</p>
       </button>
 
-      <button type="button" class="tile has-bg bg-plano" onclick="location.href='./plano.html'">
+      <button type="button" class="tile bg-plano" onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
-      <button type="button" class="tile has-bg bg-habitos" onclick="location.href='./habitos.html'">
+      <button type="button" class="tile bg-habitos" onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
-      <button type="button" class="tile has-bg bg-praticas" onclick="location.href='./praticas.html'">
+      <button type="button" class="tile bg-praticas" onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
-      <button type="button" class="tile has-bg bg-suporte" onclick="location.href='./suporte.html'">
+      <button type="button" class="tile bg-suporte" onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
