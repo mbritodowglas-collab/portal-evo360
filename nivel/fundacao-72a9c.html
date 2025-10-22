@@ -1,34 +1,126 @@
-<!doctype html><html lang="pt-br"><head>
+<!doctype html><html lang="pt-br">
+<head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fundação — EVO360</title>
+<title>EVO360 · Fundação</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="stylesheet" href="../assets/css/base.css">
-<link rel="stylesheet" href="../assets/css/tema-fundacao.css">
-<link rel="manifest" href="../manifest-fundacao.webmanifest">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/tema-fundacao.css">
 <meta name="theme-color" content="#0b0d10">
-</head><body>
-<div class="container">
-  <h1>Fundação</h1>
-  <div class="item"><button id="btnInstall" class="btn">📲 Baixar o App</button></div>
-  <div id="iosHint" class="small muted" style="display:none;margin-top:8px">iPhone: Compartilhar → Adicionar à Tela de Início.</div>
+</head>
+<body class="layout-with-sidebar">
+<aside class="sidebar">
+  <div class="sb-header">
+    <img src="../../assets/img/logo.svg" alt="EVO360" class="logo">
+    <div class="nivel">Fundação</div>
+  </div>
 
-  <div id="app" class="card">Carregando…</div>
+  <nav class="sb-nav">
+    <a class="sb-item active" href="./">Início</a>
+    <a class="sb-item" href="../plano.html">Plano diário</a>
+    <a class="sb-item" href="../neuro.html">Neuro-hábitos</a>
+    <a class="sb-item" href="../habitos.html">Hábitos</a>
+    <a class="sb-item" href="../nutricao.html">Dicas nutricionais</a>
+    <a class="sb-item" href="../recompensas.html">Recompensas</a>
+    <a class="sb-item" href="../visualizacao.html">Visualização mental</a>
+    <a class="sb-item" href="../checkin.html">Check-in diário</a>
+    <a class="sb-item" href="../diario.html">Diário mental</a>
+    <a class="sb-item" href="../sobre.html">Sobre o nível</a>
+  </nav>
 
-  <section id="tools" class="card" style="display:none">
-    <h2>Ferramentas</h2>
-    <div id="ft-visualizacao" style="display:none"><button class="btn" onclick="startViz()">Iniciar Visualização Mental</button><div id="vizOut" class="small muted" style="margin-top:8px"></div></div><hr>
-    <div id="ft-habitos" style="display:none"><div id="habits"></div></div><hr>
-    <div id="ft-recompensas" style="display:none"><div id="rewards"></div></div><hr>
-    <div id="ft-checkin" style="display:none"><h3>📊 Check-in Diário</h3><div id="checkinWrap"></div><div id="coachOut" style="margin-top:8px"></div></div>
+  <div class="sb-footer">
+    <div class="quote">Você está florescendo.</div>
+    <div class="ver">v1.0 · © Bella Prime</div>
+  </div>
+</aside>
+
+<main class="content">
+  <!-- CARD 0 · ELEGIBILIDADE -->
+  <section id="elig-card" class="card card-elig">
+    <div class="card-head">
+      <h1>Pronta para Ascensão?</h1>
+      <p class="sub">Veja seu progresso e descubra se já está pronta para o próximo nível.</p>
+    </div>
+    <div class="elig-rows">
+      <div class="elig-item" id="elig-cons">
+        <span class="label">Consistência de treino</span>
+        <span class="value" data-target="cons-text">—</span>
+      </div>
+      <div class="elig-item" id="elig-weight">
+        <span class="label">Peso corporal</span>
+        <span class="value" data-target="weight-text">—</span>
+      </div>
+      <div class="elig-item" id="elig-habits">
+        <span class="label">Exercícios semanais de hábitos</span>
+        <span class="value" data-target="habits-text">—</span>
+      </div>
+    </div>
+    <div class="progress big"><span id="elig-bar" style="width:0%"></span></div>
+    <div class="elig-cta">
+      <button class="btn primary" id="btnAsc" disabled>Solicitar Ascensão</button>
+      <button class="btn ghost" id="btnPlan">Ver meu progresso detalhado</button>
+    </div>
+    <p class="hint">Critérios: presença ≥ 80% · redução de 2–3 kg · todos os exercícios semanais concluídos.</p>
   </section>
-</div>
+
+  <!-- CARD 1 · BOAS-VINDAS -->
+  <section class="card" id="welcome">
+    <h2>Bom dia</h2>
+    <p>Hoje é um bom dia para cuidar de si. O treino é seu ritual de autocuidado.</p>
+    <div class="grid mini">
+      <div class="mini-kpi"><div class="k">Dia de jornada</div><div class="v" id="kpi-dia">—</div></div>
+      <div class="mini-kpi"><div class="k">Treinos concluídos</div><div class="v" id="kpi-tr">—</div></div>
+      <div class="mini-kpi"><div class="k">Exercício ativo</div><div class="v" id="kpi-ex">—</div></div>
+    </div>
+  </section>
+
+  <!-- CARD 2 · NEURO-HÁBITO ATIVO -->
+  <section class="card card-focus" id="neuro">
+    <h2 id="neuro-title">Exercício de Neuro-hábito</h2>
+    <p id="neuro-text">Prática ativa por 3 dias antes de avançar.</p>
+    <div class="row gap">
+      <button class="btn primary" id="btnNeuroDone">Marcar como praticado</button>
+      <a class="btn ghost" href="../neuro.html">Ver instruções</a>
+    </div>
+    <div class="progress"><span id="neuro-bar" style="width:0%"></span></div>
+    <div class="meta small" id="neuro-meta">0 de 3 dias concluídos</div>
+  </section>
+
+  <!-- CARD 3 · DICAS -->
+  <section class="grid two">
+    <div class="card" id="tip-train"><h3>Dica de treino do dia</h3><p id="tip-train-text">—</p></div>
+    <div class="card" id="tip-nutri"><h3>Dica nutricional do dia</h3><p id="tip-nutri-text">—</p></div>
+  </section>
+
+  <!-- CARD 4 · EXERCÍCIO SEMANAL -->
+  <section class="card" id="weekly">
+    <h2>Exercício principal da semana</h2>
+    <p id="weekly-text">—</p>
+    <a class="btn" href="../plano.html">Ver plano semanal</a>
+  </section>
+
+  <!-- CARD 5 · PROGRESSO -->
+  <section class="card" id="progress">
+    <h2>Seu progresso</h2>
+    <div class="progress big"><span id="level-bar" style="width:0%"></span></div>
+    <div class="grid mini">
+      <div class="mini-kpi"><div class="k">Dias concluídos</div><div class="v" id="kpi-dias">—</div></div>
+      <div class="mini-kpi"><div class="k">Neuro-hábitos</div><div class="v" id="kpi-neuro">—</div></div>
+      <div class="mini-kpi"><div class="k">Consistência</div><div class="v" id="kpi-cons">—</div></div>
+    </div>
+  </section>
+
+  <!-- CARD 6 · FRASE -->
+  <section class="card" id="quote">
+    <p class="center">Você não precisa mudar tudo hoje. Continue aparecendo por você.</p>
+  </section>
+</main>
 
 <script>
   window.NIVEL = "fundacao";
-  window.DATA_URL = "../_data/fundacao.json";
-  window.FEATURES = {"visualizacao":true,"habitos":true,"recompensas":true,"install":true,"checkin":true};
+  window.DATA_TIPS_TREINO = "../../_data/dicas-fundacao.json";
+  window.DATA_TIPS_NUTRI  = "../../_data/nutricao-fundacao.json";
+  window.DATA_NEURO      = "../../_data/neuro-fundacao.json";
 </script>
-<script src="../assets/js/core.js"></script>
-<script src="../assets/js/drip.js"></script>
-<script src="../assets/js/tools.js"></script>
+<script src="../../assets/js/core.js"></script>
+<script src="./home.js"></script>
 </body></html>
