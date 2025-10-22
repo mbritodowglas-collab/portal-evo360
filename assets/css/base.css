@@ -323,3 +323,212 @@ a:hover{ text-decoration: underline; }
   border-radius:12px; padding:10px;
 }
 .elig-item.ok{ border-color
+
+/* ==============================================
+   TEMA · NÍVEL FUNDAÇÃO  (Bella Prime · EVO360)
+   Paleta etérea: serenity, prata, aço, grafite
+   ============================================== */
+
+/* ---------- Tokens ---------- */
+:root{
+  /* Cores base */
+  --bg:          #0B0D10;  /* grafite escuro */
+  --bg-elev-1:   #12161B;  /* card */
+  --bg-elev-2:   #1A1E24;  /* card foco */
+  --ink:         #E8EEF6;  /* texto principal */
+  --ink-2:       #AEB8C6;  /* texto secundário */
+
+  /* Paleta Fundação */
+  --serenity:    #A9CBE3;  /* azul serenity */
+  --serenity-2:  #CBE5FF;  /* luz azul */
+  --silver:      #D4E4F2;  /* prata gelada */
+  --steel:       #7E8A94;  /* aço frio */
+  --line:        #1F2937;  /* linha / borda */
+  --gold-soft:   #E6E3CF;  /* dourado frio p/ progresso */
+
+  /* Raios & sombras */
+  --radius:      18px;
+  --shadow-1:    0 6px 24px rgba(0,0,0,.25);
+  --shadow-focus:0 0 0 2px rgba(203,229,255,.35);
+
+  /* Tipografia sugerida (se carregada via @import) */
+  --h1: 32px;
+  --h2: 22px;
+  --h3: 18px;
+  --txt:16px;
+}
+
+/* ---------- Base ---------- */
+body.layout-with-sidebar{
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links e microinterações */
+a{ color: var(--serenity-2); }
+a:hover{ text-decoration: underline; }
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  box-shadow: none;
+}
+.sb-header{
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.sidebar .logo{ height:28px; opacity:.95; }
+.sidebar .nivel{ margin-top:8px; font-weight:600; color: var(--serenity-2); }
+
+.sb-nav{ padding: 12px; }
+.sb-item{
+  display:block;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  color: var(--ink-2);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.sb-item:hover{
+  border-color: rgba(203,229,255,.35);
+  color: var(--ink);
+  background: rgba(169,203,227,.06);
+}
+.sb-item.active{
+  border-left: 4px solid var(--gold-soft);
+  background: var(--bg-elev-1);
+  color: var(--ink);
+}
+
+.sb-footer{
+  border-top: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+/* ---------- Content area ---------- */
+.content{
+  padding: 24px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+@media (max-width:1024px){
+  .sidebar{ position:fixed; left:0; top:0; bottom:0; width:220px; min-width:220px; }
+  .content{ margin-left:220px; padding:16px; max-width:none; }
+}
+
+/* ---------- Banner / Capa ---------- */
+.banner{
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background: linear-gradient(180deg, rgba(203,229,255,.18), rgba(10,13,16,.0));
+  border: 1px solid var(--line);
+}
+.banner-img{
+  width: 100%; height: 180px; object-fit: cover;
+  filter: brightness(.78) saturate(1.05);
+}
+.banner-overlay{
+  position: absolute; left: 24px; bottom: 16px; right: 24px;
+  color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.banner-title{ font-size: 1.8rem; margin: 0 0 2px; }
+.banner-sub{ font-size: 1rem; opacity: .9; margin: 0; }
+
+/* ---------- Cards ---------- */
+.card{
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.card h1,.card h2,.card h3{ margin: 0 0 8px; }
+.card .sub{ color: var(--ink-2); margin: 0 0 12px; }
+
+.card-focus{
+  background: var(--bg-elev-2);
+  border-color: #23303C;
+  box-shadow: 0 8px 26px rgba(22,28,36,.45);
+}
+
+/* ---------- Grid helpers ---------- */
+.grid.two{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid.mini{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.row.gap{ display:flex; gap:10px; align-items:center; }
+.center{ text-align:center; }
+@media (max-width:1024px){ .grid.two{ grid-template-columns:1fr; } }
+
+/* ---------- Botões ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:40px; padding:0 16px; border-radius:12px;
+  border:1px solid transparent; cursor:pointer; font-weight:600;
+  transition: filter .15s ease, box-shadow .15s ease, transform .02s ease;
+}
+.btn:focus{ outline: none; box-shadow: var(--shadow-focus); }
+.btn.primary{
+  color:#0B0D10;
+  background: linear-gradient(180deg, var(--serenity-2) 0%, var(--serenity) 100%);
+}
+.btn.primary:hover{ filter: brightness(1.05); }
+.btn.primary:active{ transform: translateY(0.5px); }
+
+.btn.ghost{
+  background: transparent;
+  border-color: var(--serenity-2);
+  color: var(--serenity-2);
+}
+.btn.ghost:hover{ box-shadow: inset 0 0 0 1px rgba(203,229,255,.6); }
+
+/* ---------- Progresso ---------- */
+.progress{
+  height:10px; background:#141A20; border-radius:999px; overflow:hidden;
+}
+.progress.big{ height:14px; }
+.progress>span{
+  display:block; height:100%;
+  background: var(--gold-soft);
+  transition: width .25s ease;
+}
+
+/* ---------- Elegibilidade ---------- */
+.card-elig .elig-rows{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:8px 0 12px;
+}
+.elig-item{
+  background:#0E1115; border:1px solid var(--line);
+  border-radius:12px; padding:10px;
+}
+.elig-item.ok{ border-color: var(--serenity-2); box-shadow: inset 0 0 0 1px rgba(203,229,255,.25); }
+.elig-item .label{ color: var(--ink-2); font-size:.92rem; }
+.elig-item .value{ float:right; color: var(--ink); font-weight:700; }
+.card-elig .hint{ color: var(--ink-2); margin-top:10px; font-size:.92rem; }
+
+@media (max-width:780px){
+  .card-elig .elig-rows{ grid-template-columns:1fr; }
+}
+
+/* ---------- Mini KPIs ---------- */
+.mini-kpi{
+  background:#0E1115; border:1px solid var(--line);
+  border-radius:12px; padding:10px;
+}
+.mini-kpi .k{ color: var(--ink-2); font-size:.92rem; }
+.mini-kpi .v{ color: var(--ink); font-weight:700; }
+
+/* ---------- Tipografia refinada ---------- */
+h1{ font-size: var(--h1); }
+h2{ font-size: var(--h2); }
+h3{ font-size: var(--h3); }
+body, p, li, .btn{ font-size: var(--txt); }
+
+/* ---------- Acessibilidade/contraste ---------- */
+::selection{ background: rgba(203,229,255,.35); color:#0B0D10; }
