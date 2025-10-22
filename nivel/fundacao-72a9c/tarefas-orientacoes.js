@@ -1,7 +1,7 @@
 // ===== Dica/Tarefa do Dia (drip) =====
 (async function initDica(){
   const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
-  const DRIP_ID  = 'card1_tarefas'; // <— atualizado
+  const DRIP_ID  = 'card1_tarefas';
   const MAX_DAYS = 60;
   const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
   const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
