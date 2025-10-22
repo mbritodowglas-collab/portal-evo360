@@ -147,3 +147,28 @@ async function safeLoad(url){
   $('#neuro-bar').style.width = (streak/3*100)+'%';
   $('#neuro-meta').textContent = `${streak} de 3 dias concluídos`;
 })();
+
+// --- Mobile sidebar toggle ---
+const sb = document.getElementById('sidebar');
+const sbToggle = document.getElementById('sbToggle');
+const sbBackdrop = document.getElementById('sbBackdrop');
+
+function openSB(){
+  sb.classList.add('open');
+  sbBackdrop.classList.add('show');
+  sbToggle?.setAttribute('aria-expanded','true');
+  document.body.style.overflow = 'hidden';
+}
+function closeSB(){
+  sb.classList.remove('open');
+  sbBackdrop.classList.remove('show');
+  sbToggle?.setAttribute('aria-expanded','false');
+  document.body.style.overflow = '';
+}
+
+sbToggle?.addEventListener('click', ()=> {
+  if(sb.classList.contains('open')) closeSB(); else openSB();
+});
+sbBackdrop?.addEventListener('click', closeSB);
+window.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeSB(); });
+document.querySelectorAll('.sb-nav a').forEach(a=> a.addEventListener('click', closeSB));
