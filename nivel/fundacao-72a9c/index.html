@@ -1,33 +1,50 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css">
   <meta name="theme-color" content="#0b0d10">
 </head>
+
 <body class="layout-with-sidebar">
 
-  <!-- SIDEBAR FIXA -->
-  <aside class="sidebar">
+  <!-- SIDEBAR FIXA · MODO CLARO -->
+  <aside class="sidebar light" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" alt="EVO360" class="logo">
       <div class="nivel">Nível Fundação</div>
     </div>
 
-    <nav class="sb-nav">
-      <a class="sb-item active" href="./">Início</a>
-      <a class="sb-item" href="./plano.html">Plano diário</a>
-      <a class="sb-item" href="./neuro.html">Neuro-hábitos</a>
-      <a class="sb-item" href="./habitos.html">Hábitos</a>
-      <a class="sb-item" href="./nutricao.html">Dicas nutricionais</a>
-      <a class="sb-item" href="./recompensas.html">Recompensas</a>
-      <a class="sb-item" href="./visualizacao.html">Visualização mental</a>
-      <a class="sb-item" href="./checkin.html">Check-in diário</a>
-      <a class="sb-item" href="./diario.html">Diário mental</a>
-      <a class="sb-item" href="./sobre.html">Sobre o nível</a>
+    <nav class="sb-nav" role="navigation">
+      <div class="sb-group">
+        <div class="sb-label">Jornada</div>
+        <a class="sb-item active" href="./">Início</a>
+        <a class="sb-item" href="./plano.html">Plano diário</a>
+        <a class="sb-item" href="./neuro.html">Neuro-hábitos</a>
+        <a class="sb-item" href="./habitos.html">Hábitos</a>
+        <a class="sb-item" href="./recompensas.html">Recompensas</a>
+        <a class="sb-item" href="./visualizacao.html">Visualização mental</a>
+        <a class="sb-item" href="./checkin.html">Check-in diário</a>
+        <a class="sb-item" href="./diario.html">Diário mental</a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Conteúdo & suporte</div>
+        <a class="sb-item" href="./nutricao.html">Dicas nutricionais</a>
+        <a class="sb-item" href="./sobre.html">Sobre o nível</a>
+        <a class="sb-item" href="./downloads.html">Downloads</a>
+        <a class="sb-item" href="./ajuda.html">Ajuda</a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Aplicativo</div>
+        <a class="sb-item" href="./instalar.html">Instalar app</a>
+        <a class="sb-item" href="./config.html">Configurações</a>
+      </div>
     </nav>
 
     <div class="sb-footer">
@@ -39,9 +56,8 @@
   <!-- CONTEÚDO PRINCIPAL -->
   <main class="content">
 
-    <!-- BANNER / CAPA DO NÍVEL -->
-    <header class="banner">
-      <img src="../../assets/img/fundacao-banner.jpg" alt="Banner Nível Fundação" class="banner-img">
+    <!-- BANNER HEROICO DO NÍVEL -->
+    <header class="banner-full">
       <div class="banner-overlay">
         <h1 class="banner-title">Nível Fundação</h1>
         <p class="banner-sub">O início da sua transformação física e mental.</p>
@@ -101,8 +117,14 @@
 
     <!-- CARD 3 · DICAS -->
     <section class="grid two">
-      <div class="card" id="tip-train"><h3>Dica de treino do dia</h3><p id="tip-train-text">—</p></div>
-      <div class="card" id="tip-nutri"><h3>Dica nutricional do dia</h3><p id="tip-nutri-text">—</p></div>
+      <div class="card" id="tip-train">
+        <h3>Dica de treino do dia</h3>
+        <p id="tip-train-text">—</p>
+      </div>
+      <div class="card" id="tip-nutri">
+        <h3>Dica nutricional do dia</h3>
+        <p id="tip-nutri-text">—</p>
+      </div>
     </section>
 
     <!-- CARD 4 · EXERCÍCIO SEMANAL -->
@@ -129,6 +151,7 @@
     </section>
   </main>
 
+  <!-- SCRIPTS -->
   <script>
     window.NIVEL = "fundacao-72a9c";
     window.DATA_TIPS_TREINO = "../../_data/dicas-fundacao.json";
