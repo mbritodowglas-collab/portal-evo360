@@ -41,6 +41,7 @@
       box-shadow:0 6px 24px rgba(0,0,0,.25);
       background-size:cover; background-repeat:no-repeat;
       transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+      cursor: pointer; /* <- adicionado */
     }
     .tile::after{ content:none !important; }
 
@@ -85,7 +86,6 @@
       <div class="sb-group">
         <div class="sb-label">Jornada</div>
         <a class="sb-item active" href="./">Início</a>
-        <!-- AJUSTE 1: mudou o alvo para dicas-orientacoes.html -->
         <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
         <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
         <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
@@ -142,10 +142,9 @@
 
     <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
-      <!-- CARD 1 -->
+      <!-- CARD 1 (comentário REMOVIDO dos atributos) -->
       <button type="button" class="tile"
         style="background: url('../../assets/img/hub/tile-tarefas.jpg') center 40% / cover no-repeat !important;"
-        <!-- AJUSTE 2: mudou o alvo para dicas-orientacoes.html -->
         onclick="location.href='./dicas-orientacoes.html'">
         <h3>Dicas e Orientações</h3>
         <p>Dicas simples e práticas de treino para mulheres e nutrição — reeducação alimentar sem mitos.</p>
