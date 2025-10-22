@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=16">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=16">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=17">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=17">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
-    /* ===== Ajustes locais ===== */
+    /* ===== Ajustes locais (sem mudar estrutura) ===== */
 
     /* Texto justificado */
     .content p, .content li { text-align: justify; }
 
-    /* Banner restaurado */
+    /* Banner (mantido) */
     .banner-full{
       width:100%;
       height:240px;
@@ -31,7 +31,7 @@
     @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1040px){ .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr);} }
 
-    /* Card-botão com imagem */
+    /* Card-botão (mantido) */
     .tile{
       position:relative; display:flex; flex-direction:column;
       align-items:center; justify-content:center; text-align:center;
@@ -39,7 +39,6 @@
       border-radius:18px; overflow:hidden; color:#fff;
       border:1px solid rgba(203,229,255,.16);
       box-shadow:0 6px 24px rgba(0,0,0,.25);
-      background-position:var(--pos, center center);
       background-size:cover; background-repeat:no-repeat;
       transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
     }
@@ -49,6 +48,7 @@
     .tile::before{
       content:""; position:absolute; inset:0; z-index:1;
       background:linear-gradient(180deg, rgba(10,13,16,.12), rgba(10,13,16,.66) 85%);
+      pointer-events:none;
     }
     .tile h3, .tile p{ position:relative; z-index:2; margin:0; }
     .tile h3{ font-weight:800; font-size:1.18rem; margin-bottom:10px; color:var(--serenity-2); }
@@ -142,36 +142,36 @@
     <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
       <button type="button" class="tile"
-              style="background-image:url('../../assets/img/hub/tile-tarefas.jpg'); --pos:center 40%;"
-              onclick="location.href='./exercicios-orientacoes.html'">
+        style="background: url('../../assets/img/hub/tile-tarefas.jpg') center 40% / cover no-repeat !important;"
+        onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos com orientações práticas e dicas diárias.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('../../assets/img/hub/tile-plano.jpg'); --pos:center 55%;"
-              onclick="location.href='./plano.html'">
+        style="background: url('../../assets/img/hub/tile-plano.jpg') center 55% / cover no-repeat !important;"
+        onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('../../assets/img/hub/tile-habitos.jpg'); --pos:center 30%;"
-              onclick="location.href='./habitos.html'">
+        style="background: url('../../assets/img/hub/tile-habitos.jpg') center 30% / cover no-repeat !important;"
+        onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('../../assets/img/hub/tile-praticas.jpg'); --pos:center 60%;"
-              onclick="location.href='./praticas.html'">
+        style="background: url('../../assets/img/hub/tile-praticas.jpg') center 60% / cover no-repeat !important;"
+        onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
       <button type="button" class="tile"
-              style="background-image:url('../../assets/img/hub/tile-suporte.jpg'); --pos:center;"
-              onclick="location.href='./suporte.html'">
+        style="background: url('../../assets/img/hub/tile-suporte.jpg') center / cover no-repeat !important;"
+        onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
