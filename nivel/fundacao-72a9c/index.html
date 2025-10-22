@@ -5,9 +5,50 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0b0d10">
   <link rel="stylesheet" href="../../assets/css/base.css?v=3">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=3">
-  <meta name="theme-color" content="#0b0d10">
+
+  <style>
+    /* --- ajuste local dos cards (tiles) --- */
+    .tiles {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .tile {
+      display: block;
+      background: #12161B;
+      border: 1px solid #1F2937;
+      border-radius: 18px;
+      padding: 18px 16px;
+      color: #E8EEF6;
+      text-align: left;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(0,0,0,.25);
+      transition: all .2s ease;
+    }
+    .tile:hover {
+      border-color: rgba(203,229,255,.4);
+      background: #1A1E24;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(22,28,36,.45);
+    }
+    .tile h3 {
+      margin: 0 0 6px;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #CBE5FF;
+    }
+    .tile p {
+      margin: 0;
+      color: #AEB8C6;
+      line-height: 1.45;
+    }
+    @media (max-width:820px){
+      .tiles{ padding:0 4px; }
+    }
+  </style>
 </head>
 
 <body class="layout-with-sidebar">
@@ -46,39 +87,38 @@
       </div>
     </header>
 
-    <!-- HUB DE BOTÕES -->
-    <section aria-labelledby="atalhos-titulo" class="tiles tiles-modern">
+    <!-- HUB DE CARDS -->
+    <section aria-labelledby="atalhos-titulo" class="tiles">
       <h2 id="atalhos-titulo" class="sr-only">Atalhos principais</h2>
 
-      <button type="button" class="tile tile-action with-icon icon-ex-orient" aria-label="Exercícios e Orientações">
+      <a href="./exercicios-orientacoes.html" class="tile">
         <h3>Exercícios e Orientações</h3>
         <p>Critérios, progresso, dicas de treino e nutrição, exercício da semana.</p>
-      </button>
+      </a>
 
-      <button type="button" class="tile tile-action with-icon icon-plano" aria-label="Plano e Neuro-hábitos">
+      <a href="./plano.html" class="tile">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
-      </button>
+      </a>
 
-      <button type="button" class="tile tile-action with-icon icon-habitos" aria-label="Hábitos e Recompensas">
+      <a href="./habitos.html" class="tile">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
-      </button>
+      </a>
 
-      <button type="button" class="tile tile-action with-icon icon-praticas" aria-label="Práticas Mentais">
+      <a href="./praticas.html" class="tile">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
-      </button>
+      </a>
 
-      <button type="button" class="tile tile-action with-icon icon-suporte" aria-label="Suporte">
+      <a href="./suporte.html" class="tile">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
-      </button>
+      </a>
     </section>
   </main>
 
   <script>
-    // Configuração básica do nível
     window.NIVEL = "fundacao-72a9c";
   </script>
 </body>
