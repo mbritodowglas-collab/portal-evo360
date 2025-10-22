@@ -5,16 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=6">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=6">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=7">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=7">
   <meta name="theme-color" content="#0b0d10">
+
   <style>
+    /* ===== Justificado (app inteiro) ===== */
+    html, body { text-align: justify; text-justify: inter-word; }
+    /* excetos: cabeçalhos, rótulos e botões continuam alinhados à esquerda */
+    h1, h2, h3, .sb-item, .btn, .tile h3, .sb-label { text-align: left; }
+
+    /* melhora de legibilidade em listas */
+    ul, ol { padding-left: 1.2rem; }
+
     /* ===== Ajuste mobile fixo ===== */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{display:none!important}
       body.layout-with-sidebar .content{
-        margin:0!important;padding:16px!important;
-        max-width:100vw!important;width:100vw!important;
+        margin:0!important; padding:16px!important;
+        max-width:100vw!important; width:100vw!important;
         box-sizing:border-box!important;
       }
       html,body{overflow-x:hidden!important}
@@ -23,19 +32,46 @@
     @media (max-width:390px){
       body.layout-with-sidebar .content{padding:14px!important}
     }
-    /* Caso o tema ainda não tenha o suporte às imagens nos tiles */
-    .tile.has-bg{position:relative;overflow:hidden;background:#12161b;border:1px solid var(--line)}
-    .tile.has-bg::before{
-      content:""; position:absolute; inset:0;
-      background: var(--tile-bg, none) center/cover no-repeat;
-      filter: brightness(.85) saturate(1.05);
-      transform: scale(1.02);
+
+    /* ===== Mini reforços visuais dos cards do hub ===== */
+    .tiles { display:grid; gap:16px; }
+    .tile {
+      display:block; width:100%;
+      padding:18px 16px 16px;
+      border-radius:18px;
+      background: linear-gradient(180deg, rgba(203,229,255,.06), rgba(10,13,16,0));
+      border:1px solid var(--line);
+      box-shadow: 0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
+      color:var(--ink); text-decoration:none;
+      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+      text-align: justify; /* mantém justificado dentro do card */
     }
+    .tile:hover{
+      border-color:rgba(203,229,255,.35);
+      background: linear-gradient(180deg, rgba(203,229,255,.10), rgba(10,13,16,.02));
+      box-shadow: 0 10px 28px rgba(22,28,36,.45), inset 0 1px 0 rgba(203,229,255,.10);
+      transform: translateY(-1px);
+    }
+    .tile h3{
+      margin:0 0 6px; font-size:1.12rem; font-weight:700; letter-spacing:.2px; color:var(--serenity-2);
+    }
+
+    /* ===== Banners de fundo por card (opcional; use suas imagens quando quiser) ===== */
+    .tile.has-bg{ position:relative; overflow:hidden; }
     .tile.has-bg::after{
-      content:""; position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(10,13,16,.25) 0%, rgba(10,13,16,.78) 65%, rgba(10,13,16,.95) 100%);
+      content:""; position:absolute; inset:0; z-index:-1;
+      background-size:cover; background-position:center;
+      filter: saturate(1.1) brightness(.55);
+      opacity:.55;
     }
-    .tile.has-bg > *{position:relative; z-index:1}
+    .bg-tarefas::after   { background-image:url("../../assets/img/hub-tarefas.jpg"); }
+    .bg-plano::after     { background-image:url("../../assets/img/hub-plano.jpg"); }
+    .bg-habitos::after   { background-image:url("../../assets/img/hub-habitos.jpg"); }
+    .bg-praticas::after  { background-image:url("../../assets/img/hub-praticas.jpg"); }
+    .bg-suporte::after   { background-image:url("../../assets/img/hub-suporte.jpg"); }
+
+    /* no banner, usamos só o subtítulo */
+    .banner-overlay p.banner-sub { text-align:left; }
   </style>
 </head>
 
@@ -67,10 +103,9 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-    <!-- BANNER (usando JPG) -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')">
+    <!-- BANNER (apenas subtítulo; a arte já traz “Fundação”) -->
+    <header class="banner-full" data-img="real">
       <div class="banner-overlay">
-        <h1 class="banner-title">Nível Fundação</h1>
         <p class="banner-sub">O início da sua transformação física e mental.</p>
       </div>
     </header>
@@ -79,12 +114,12 @@
     <section class="card card-intro">
       <h2>Sobre o Nível Fundação</h2>
       <p>
-        Este é o ponto de partida da sua jornada no <strong>EVO360</strong>. 
+        Este é o ponto de partida da sua jornada no <strong>EVO360</strong>.
         No <strong>Fundação</strong>, você cria a base de <strong>autocuidado, consistência e consciência corporal</strong>.
         É o momento de ajustar rotina, nutrir bem o corpo e praticar microtarefas que fortalecem sua identidade.
       </p>
       <p>
-        Ao longo das próximas semanas, você será guiada por <strong>tarefas práticas</strong> e 
+        Ao longo das próximas semanas, você será guiada por <strong>tarefas práticas</strong> e
         <strong>exercícios de neuro-hábito</strong> que transformam pequenas ações em grandes resultados —
         com linguagem simples, ritmo sustentável e foco na sua realidade.
       </p>
@@ -94,8 +129,7 @@
       <h3>Critérios para avançar ao nível Ascensão</h3>
       <ul class="criteria">
         <li><strong>Consistência:</strong> presença de pelo menos <strong>80%</strong> nos treinos.</li>
-        <li><strong>Evolução física:</strong> redução média de <strong>2–3 kg</strong> na balança 
-            (ou melhora visível de postura e medidas).</li>
+        <li><strong>Evolução física:</strong> redução média de <strong>2–3 kg</strong> na balança (ou melhora visível de postura e medidas).</li>
         <li><strong>Comportamento:</strong> concluir todos os <strong>exercícios semanais de mudança de hábitos</strong>.</li>
       </ul>
 
@@ -104,61 +138,39 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (cada um com imagem JPG configurada via CSS variable) -->
-    <section aria-labelledby="atalhos-titulo" class="tiles tiles-modern">
-      <h2 id="atalhos-titulo" class="sr-only">Atalhos principais</h2>
-
-      <!-- CARD 1 -->
-      <button
-        type="button"
-        class="tile has-bg"
-        style="--tile-bg:url('../../assets/img/hub/tile-tarefas.jpg')"
-        aria-label="Tarefas e Orientações"
-        onclick="location.href='./exercicios-orientacoes.html'">
+    <!-- HUB DE CARDS (sem heading visível) -->
+    <section class="tiles tiles-modern" aria-label="Atalhos">
+      <button type="button" class="tile has-bg bg-tarefas"
+              aria-label="Tarefas e Orientações"
+              onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos, com orientações práticas e dicas diárias.</p>
       </button>
 
-      <!-- CARD 2 -->
-      <button
-        type="button"
-        class="tile has-bg"
-        style="--tile-bg:url('../../assets/img/hub/tile-plano.jpg')"
-        aria-label="Plano e Neuro-hábitos"
-        onclick="location.href='./plano.html'">
+      <button type="button" class="tile has-bg bg-plano"
+              aria-label="Plano e Neuro-hábitos"
+              onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
-      <!-- CARD 3 -->
-      <button
-        type="button"
-        class="tile has-bg"
-        style="--tile-bg:url('../../assets/img/hub/tile-habitos.jpg')"
-        aria-label="Hábitos e Recompensas"
-        onclick="location.href='./habitos.html'">
+      <button type="button" class="tile has-bg bg-habitos"
+              aria-label="Hábitos e Recompensas"
+              onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
-      <!-- CARD 4 -->
-      <button
-        type="button"
-        class="tile has-bg"
-        style="--tile-bg:url('../../assets/img/hub/tile-praticas.jpg')"
-        aria-label="Práticas Mentais"
-        onclick="location.href='./praticas.html'">
+      <button type="button" class="tile has-bg bg-praticas"
+              aria-label="Práticas Mentais"
+              onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
-      <!-- CARD 5 -->
-      <button
-        type="button"
-        class="tile has-bg"
-        style="--tile-bg:url('../../assets/img/hub/tile-suporte.jpg')"
-        aria-label="Suporte"
-        onclick="location.href='./suporte.html'">
+      <button type="button" class="tile has-bg bg-suporte"
+              aria-label="Suporte"
+              onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
