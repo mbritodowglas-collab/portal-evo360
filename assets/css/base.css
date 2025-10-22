@@ -602,3 +602,9 @@ body, p, li, .btn{ font-size: var(--txt); }
   /* evita qualquer sobra lateral */
   html, body{ overflow-x:hidden; }
 }
+
+/* === Justificar todo o texto do app === */
+body, p, li, .card p, .tile p, .content p, section p {
+  text-align: justify;
+  text-justify: inter-word;
+}
