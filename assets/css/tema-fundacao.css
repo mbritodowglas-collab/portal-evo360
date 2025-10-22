@@ -112,3 +112,61 @@
   .sidebar.light{ width: 200px; min-width: 200px; }
   .content{ margin-left: 200px; }
 }
+
+/* ========== Sidebar clara ========== */
+.sidebar.light{
+  background: rgba(169,203,227,.06);
+  border-right: 1px solid rgba(203,229,255,.20);
+  backdrop-filter: blur(4px);
+}
+.sidebar.light .sb-header{ border-bottom: 1px solid rgba(203,229,255,.20); }
+.sidebar.light .nivel{ color: #CBE5FF; }
+.sb-group{ margin-bottom: 14px; }
+.sb-label{
+  font-size: .78rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #CFE3F6; opacity: .8; margin: 6px 6px 8px;
+}
+.sidebar.light .sb-item{
+  color: #E9F1FA; border: 1px solid transparent; background: transparent;
+}
+.sidebar.light .sb-item:hover{
+  color: #fff; background: rgba(203,229,255,.10); border-color: rgba(203,229,255,.28);
+}
+.sidebar.light .sb-item.active{
+  color: #0B0D10;
+  background: linear-gradient(180deg,#CBE5FF 0%,#A9CBE3 100%);
+  border-color: transparent;
+}
+.sidebar.light .sb-footer{ border-top: 1px solid rgba(203,229,255,.20); color: #D9E7F6; }
+
+/* Layout com sidebar sempre visível no mobile */
+@media (max-width:1024px){
+  .sidebar.light{ position:fixed; left:0; top:0; bottom:0; width:220px; min-width:220px; z-index:5; }
+  .content{ margin-left:220px; padding:16px; max-width:none; }
+}
+@media (max-width:390px){
+  .sidebar.light{ width:200px; min-width:200px; }
+  .content{ margin-left:200px; }
+}
+
+/* ========== Banner full no topo ========== */
+.banner-full{
+  position: relative; width: 100%; height: 240px;
+  background: url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  overflow: hidden; margin: 0 0 28px 0; z-index: 1;
+}
+.banner-overlay{
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,13,16,.08) 0%, rgba(10,13,16,.3) 40%, rgba(10,13,16,.82) 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 24px 24px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.4); z-index: 2; pointer-events: none;
+}
+.banner-title{ font-size: 2rem; font-weight: 700; color: #CBE5FF; margin: 0; }
+.banner-sub{   font-size: 1.1rem; color: #D4E4F2; opacity: .9; margin-top: 4px; }
+@media (max-width:768px){
+  .banner-full{ height: 180px; border-radius: 0 0 18px 18px; }
+  .banner-title{ font-size: 1.6rem; }
+  .banner-sub{ font-size: 1rem; }
+}
