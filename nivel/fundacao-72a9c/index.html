@@ -5,20 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=9">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=9">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=6">
   <meta name="theme-color" content="#0b0d10">
-  <style>
-    /* ===== Texto justificado global (mantém títulos à esquerda) ===== */
-    html, body { text-align: justify; text-justify: inter-word; }
-    h1, h2, h3, .sb-item, .btn, .tile h3, .sb-label, .banner-sub { text-align: left; }
 
-    /* ===== Layout mobile: sidebar oculta, conteúdo 100% ===== */
+  <style>
+    /* ===== Texto justificado global ===== */
+    html, body {
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    /* ===== Ajuste mobile fixo ===== */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{display:none!important}
       body.layout-with-sidebar .content{
-        margin:0!important; padding:16px!important;
-        max-width:100vw!important; width:100vw!important;
+        margin:0!important;
+        padding:16px!important;
+        max-width:100vw!important;
+        width:100vw!important;
         box-sizing:border-box!important;
       }
       html,body{overflow-x:hidden!important}
@@ -28,55 +33,66 @@
         border-radius:0 0 18px 18px!important;
       }
     }
+
     @media (max-width:390px){
       body.layout-with-sidebar .content{padding:14px!important}
     }
 
-    /* ===== Banner usa variável --hero-bg passada no HTML ===== */
-    .banner-full{
-      --hero-bg: none; /* será definido inline em cada página */
-      position:relative; width:100%; height:220px;
-      background: var(--hero-bg) center/cover no-repeat;
-      border-radius:0 0 24px 24px;
-      overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.4);
-      margin-bottom:28px;
-    }
+    /* ===== Ajuste fino do subtítulo no banner ===== */
     .banner-overlay{
-      position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(10,13,16,.10) 0%, rgba(10,13,16,.80) 100%);
-      display:flex; flex-direction:column; justify-content:flex-end;
-      padding:0 24px 24px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.4);
+      justify-content:flex-end;
+      padding:0 24px 32px; /* equilíbrio entre o título e a logo */
     }
-    .banner-sub{ font-size:1.15rem; color:var(--silver); opacity:.9; }
 
-    /* ===== Cards do Hub ===== */
-    .tiles{ display:grid; gap:16px; }
-    .tile{
-      position:relative; display:block; padding:18px 16px 16px;
-      border-radius:18px; border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(203,229,255,.06), rgba(10,13,16,0));
-      box-shadow:0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
-      color:var(--ink); text-decoration:none; text-align:justify;
-      transition:transform .08s, box-shadow .18s, border-color .18s, background .18s;
+    /* ===== Ajuste dos critérios (melhor visualização) ===== */
+    .criteria{
+      list-style:none;
+      margin:16px 0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .criteria li{
+      background:var(--bg-elev-2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px 14px;
+    }
+
+    /* ===== Tiles com imagens de fundo ===== */
+    .tile.has-bg{
+      background-size:cover;
+      background-position:center;
+      color:#fff;
+      text-shadow:0 2px 6px rgba(0,0,0,.6);
+      border:none;
+      position:relative;
       overflow:hidden;
+      transition:transform .2s ease, box-shadow .2s ease;
     }
-    .tile h3{ color:var(--serenity-2); margin:0 0 6px; font-weight:700; }
-    .tile:hover{
-      border-color:rgba(203,229,255,.35);
-      background:linear-gradient(180deg, rgba(203,229,255,.10), rgba(10,13,16,.02));
-      box-shadow:0 10px 28px rgba(22,28,36,.45), inset 0 1px 0 rgba(203,229,255,.10);
-      transform:translateY(-1px);
+    .tile.has-bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.65));
+      z-index:0;
+    }
+    .tile.has-bg h3,.tile.has-bg p{
+      position:relative;
+      z-index:1;
+    }
+    .tile.has-bg:hover{
+      transform:translateY(-3px);
+      box-shadow:0 6px 20px rgba(0,0,0,.4);
     }
 
-    /* A imagem de cada tile vem da variável --tile-bg passada inline */
-    .tile.has-bg{ --tile-bg: none; }
-    .tile.has-bg::after{
-      content:""; position:absolute; inset:0; z-index:-1;
-      background-image: var(--tile-bg);
-      background-size:cover; background-position:center;
-      filter:saturate(1.1) brightness(.55);
-      opacity:.55;
-    }
+    /* ===== Imagens específicas de cada card ===== */
+    .bg-tarefas{background-image:url("../../assets/img/cards/tarefas.jpg");}
+    .bg-plano{background-image:url("../../assets/img/cards/plano.jpg");}
+    .bg-habitos{background-image:url("../../assets/img/cards/habitos.jpg");}
+    .bg-praticas{background-image:url("../../assets/img/cards/praticas.jpg");}
+    .bg-suporte{background-image:url("../../assets/img/cards/suporte.jpg");}
   </style>
 </head>
 
@@ -108,11 +124,10 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-    <!-- BANNER (puxa a sua imagem do hub) -->
-    <header
-      class="banner-full"
-      style="--hero-bg:url('../../assets/img/hub/banner-fundacao-hero.jpg')"
-    >
+
+    <!-- BANNER -->
+    <header class="banner-full" data-img="real">
+      <img src="../../assets/img/fundacao-banner.jpg" alt="Banner do Nível Fundação" class="banner-img">
       <div class="banner-overlay">
         <p class="banner-sub">O início da sua transformação física e mental.</p>
       </div>
@@ -146,50 +161,42 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS (cada um aponta sua imagem do /hub) -->
-    <section class="tiles" aria-label="Atalhos">
-      <button type="button"
-              class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-tarefas.jpg')"
-              onclick="location.href='./exercicios-orientacoes.html'">
+    <!-- HUB DE CARDS -->
+    <section class="tiles tiles-modern">
+      <!-- CARD 1 -->
+      <button type="button" class="tile has-bg bg-tarefas" aria-label="Tarefas e Orientações" onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos, com orientações práticas e dicas diárias.</p>
       </button>
 
-      <button type="button"
-              class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-plano.jpg')"
-              onclick="location.href='./plano.html'">
+      <!-- CARD 2 -->
+      <button type="button" class="tile has-bg bg-plano" aria-label="Plano e Neuro-hábitos" onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
-      <button type="button"
-              class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-habitos.jpg')"
-              onclick="location.href='./habitos.html'">
+      <!-- CARD 3 -->
+      <button type="button" class="tile has-bg bg-habitos" aria-label="Hábitos e Recompensas" onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
-      <button type="button"
-              class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-praticas.jpg')"
-              onclick="location.href='./praticas.html'">
+      <!-- CARD 4 -->
+      <button type="button" class="tile has-bg bg-praticas" aria-label="Práticas Mentais" onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
-      <button type="button"
-              class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-suporte.jpg')"
-              onclick="location.href='./suporte.html'">
+      <!-- CARD 5 -->
+      <button type="button" class="tile has-bg bg-suporte" aria-label="Suporte" onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
     </section>
   </main>
 
-  <script> window.NIVEL = "fundacao-72a9c"; </script>
+  <script>
+    window.NIVEL = "fundacao-72a9c";
+  </script>
 </body>
 </html>
