@@ -232,8 +232,3 @@
   body.layout-with-sidebar .content{ padding:14px !important; }
 }
 
-/* === Justificar todo o texto do app === */
-body, p, li, .card p, .tile p, .content p, section p {
-  text-align: justify;
-  text-justify: inter-word;
-}
