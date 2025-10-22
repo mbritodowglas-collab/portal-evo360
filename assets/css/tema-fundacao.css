@@ -221,3 +221,15 @@ h1, h2, h3 {
 .banner-overlay{
   background: linear-gradient(180deg, rgba(10,13,16,.00) 0%, rgba(10,13,16,.28) 75%, rgba(10,13,16,.55) 100%) !important;
 }
+
+/* foco customizável por card */
+.tile{
+  /* ...suas regras existentes... */
+  background-size: cover;
+  background-position: var(--pos, center center); /* <— NOVO: usa --pos se existir */
+}
+
+/* se quiser um overlay um pouco mais suave pra aparecer melhor os rostos: */
+.tile::before{
+  background: linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.58) 86%);
+}
