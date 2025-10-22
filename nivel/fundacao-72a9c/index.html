@@ -5,118 +5,85 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=10">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=10">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=6">
   <meta name="theme-color" content="#0b0d10">
 
   <style>
-    /* ===== Texto justificado global ===== */
-    html, body { text-align: justify; text-justify: inter-word; }
+    /* ===== ajustes rápidos desta página ===== */
 
-    /* ===== Mobile: sidebar oculta, conteúdo full ===== */
+    /* Texto justificado em todo o app (sem afetar headings / botões) */
+    .content p, .content li { text-align: justify; }
+
+    /* Banner: só a imagem + overlay, sem título/sub */
+    .banner-full { 
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: url("../../assets/img/fundacao-banner.jpg") center/cover no-repeat;
+      border-radius: 0 0 18px 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,.25);
+      margin: 0 0 18px 0;
+    }
+    .banner-full .banner-overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(10,13,16,.10), rgba(10,13,16,.32) 40%, rgba(10,13,16,.82) 100%);
+      pointer-events:none;
+    }
+
+    /* Cards do hub — todos com a mesma altura e conteúdo centralizado */
+    .tiles.tiles-modern { display:grid; gap:16px; }
+    .tile {
+      position: relative;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      min-height: 132px; height: 148px; /* mesma altura para todos */
+      padding: 18px 16px;
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: var(--bg-elev-1);
+      box-shadow: 0 6px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(203,229,255,.06);
+      text-align:center;
+      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .tile h3{ margin:0 0 6px; font-weight:800; color:var(--serenity-2); }
+    .tile p{ margin:0; color:var(--ink-2); max-width:52ch; }
+
+    .tile.has-bg{
+      color: var(--ink);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      /* véu para legibilidade sobre imagens variadas */
+      isolation:isolate;
+    }
+    .tile.has-bg::after{
+      content:""; position:absolute; inset:0; border-radius:18px; z-index:-1;
+      background: radial-gradient(120% 120% at 20% 0%, rgba(8,12,16,.35), rgba(8,12,16,.6) 60%, rgba(8,12,16,.75) 100%);
+      border:1px solid rgba(203,229,255,.16);
+    }
+    .tile:hover{ transform: translateY(-1px); box-shadow:0 10px 28px rgba(22,28,36,.45); border-color:rgba(203,229,255,.35); }
+
+    /* Imagens dos cards (troque os caminhos se os seus arquivos estiverem em outra pasta) */
+    .bg-tarefas  { background-image: url("../../assets/img/hub/tarefas-orientacoes.jpg"); }
+    .bg-plano    { background-image: url("../../assets/img/hub/plano-neuro.jpg"); }
+    .bg-habitos  { background-image: url("../../assets/img/hub/habitos-recompensas.jpg"); }
+    .bg-praticas { background-image: url("../../assets/img/hub/praticas-mentais.jpg"); }
+    .bg-suporte  { background-image: url("../../assets/img/hub/suporte.jpg"); }
+
+    /* Mobile: sidebar fora, conteúdo 100% */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{display:none!important}
       body.layout-with-sidebar .content{
         margin:0!important; padding:16px!important;
-        max-width:100vw!important; width:100vw!important; box-sizing:border-box!important;
+        max-width:100vw!important; width:100vw!important;
+        box-sizing:border-box!important;
       }
       html,body{overflow-x:hidden!important}
-      .banner-full{ margin-top:0!important; width:100%!important; border-radius:0 0 18px 18px!important; }
+      .banner-full{height: 220px; border-radius:0 0 18px 18px;}
     }
-    @media (max-width:390px){ body.layout-with-sidebar .content{padding:14px!important} }
-
-    /* ===== Banner ===== */
-    .banner-full{
-      --hero-bg:none;
-      position:relative;
-      width:100%;
-      height:240px;
-      background: var(--hero-bg) center/cover no-repeat;
-      border-radius:0 0 24px 24px;
-      overflow:hidden;
-      box-shadow:0 4px 20px rgba(0,0,0,.4);
-      margin-bottom:28px;
-    }
-    .banner-overlay{
-      position:absolute;
-      inset:0;
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      text-align:center;
-      background:linear-gradient(180deg, rgba(10,13,16,.10) 0%, rgba(10,13,16,.80) 100%);
-      color:#fff;
-      text-shadow:0 2px 10px rgba(0,0,0,.4);
-      padding-bottom:56px; /* espaçamento inferior suave */
-    }
-
-    /* ===== Bloco Critérios ===== */
-    .criteria{
-      list-style:none; margin:16px 0; padding:0;
-      display:flex; flex-direction:column; gap:12px;
-    }
-    .criteria li{
-      background:var(--bg-elev-2);
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px 14px;
-    }
-
-    /* ===== Tiles/cards com imagem de fundo via --tile-bg ===== */
-    .tiles{ display:grid; gap:16px; }
-    .tile.has-bg{
-      --tile-bg:none;
-      position:relative;
-      border:none;
-      overflow:hidden;
-      color:#fff;
-      text-shadow:0 2px 6px rgba(0,0,0,.6);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:18px;
-      border-radius:18px;
-      transition:transform .18s, box-shadow .18s;
-      height:210px; /* altura igual p/ todos */
-      background:#0b0d10;
-    }
-    @media (min-width:768px){ .tile.has-bg{ height:240px; } }
-    @media (min-width:1024px){ .tile.has-bg{ height:260px; } }
-
-    .tile.has-bg::before{
-      content:""; position:absolute; inset:0; z-index:0;
-      background-image: var(--tile-bg);
-      background-size:cover;
-      background-position:center;
-      filter:saturate(1.1) brightness(.65);
-    }
-    .tile.has-bg::after{
-      content:""; position:absolute; inset:0; z-index:1;
-      background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.65));
-    }
-    .tile.has-bg > div{
-      position:relative;
-      z-index:2;
-      max-width:32ch;
-    }
-    .tile.has-bg h3{
-      margin:0 0 8px;
-      font-size:1.2rem;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-    .tile.has-bg p{
-      margin:0;
-      line-height:1.45;
-      display:-webkit-box;
-      -webkit-line-clamp:3;
-      -webkit-box-orient:vertical;
-      overflow:hidden;
-    }
-    .tile.has-bg:hover{
-      transform:translateY(-3px);
-      box-shadow:0 10px 22px rgba(0,0,0,.35);
+    @media (max-width:560px){
+      .tile{ height:156px; }
     }
   </style>
 </head>
@@ -149,23 +116,33 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-    <!-- BANNER (sem subtítulo, mantém imagem e overlay) -->
-    <header class="banner-full" style="--hero-bg:url('../../assets/img/hub/banner-fundacao-hero.jpg')">
-      <div class="banner-overlay"></div>
+
+    <!-- BANNER (sem texto por cima) -->
+    <header class="banner-full">
+      <div class="banner-overlay" aria-hidden="true"></div>
     </header>
 
-    <!-- INTRO -->
+    <!-- INTRO DO NÍVEL (Tratamento Bella Prime) -->
     <section class="card card-intro">
       <h2>Sobre o Nível Fundação</h2>
       <p>
-        Este é o ponto de partida da sua jornada no <strong>EVO360</strong>.
-        No <strong>Fundação</strong>, você cria a base de <strong>autocuidado, consistência e consciência corporal</strong>.
-        É o momento de ajustar rotina, nutrir bem o corpo e praticar microtarefas que fortalecem sua identidade.
+        O <strong>Tratamento Bella Prime</strong> é uma jornada de reconstrução do corpo e da mente.
+        Aqui, o foco é restaurar o equilíbrio físico, mental e emocional — passo a passo, por meio
+        de uma metodologia que conecta ciência, autocuidado e propósito.
       </p>
       <p>
-        Ao longo das próximas semanas, você será guiada por <strong>tarefas práticas</strong> e
-        <strong>exercícios de neuro-hábito</strong> que transformam pequenas ações em grandes resultados —
-        com linguagem simples, ritmo sustentável e foco na sua realidade.
+        No <strong>Nível Fundação</strong>, você inicia o processo de transformação: ajusta a rotina,
+        aprende a se alimentar melhor, melhora a postura e desenvolve uma nova relação com o próprio
+        corpo. É o ponto onde você cria as raízes para sustentar tudo o que vem a seguir.
+      </p>
+      <p>
+        O <strong>Sistema EVO360</strong> é a estrutura que organiza o tratamento — ele distribui seus
+        treinos, hábitos e práticas mentais em etapas progressivas, garantindo uma evolução leve,
+        constante e consciente. A cada tarefa, você se aproxima da sua melhor versão.
+      </p>
+      <p>
+        Este nível é sobre reconexão: com o corpo, com a disciplina e com aquilo que te faz sentir viva.
+        É o despertar de uma nova fase — o início da sua verdadeira transformação Bella Prime.
       </p>
 
       <hr class="divisor">
@@ -173,64 +150,48 @@
       <h3>Critérios para avançar ao nível Ascensão</h3>
       <ul class="criteria">
         <li><strong>Consistência:</strong> presença de pelo menos <strong>80%</strong> nos treinos.</li>
-        <li><strong>Evolução física:</strong> redução média de <strong>2–3 kg</strong> na balança (ou melhora visível de postura e medidas).</li>
+        <li><strong>Evolução física:</strong> redução média de <strong>2–3 kg</strong> na balança
+            (ou melhora visível de postura e medidas).</li>
         <li><strong>Comportamento:</strong> concluir todos os <strong>exercícios semanais de mudança de hábitos</strong>.</li>
       </ul>
 
       <p class="muted">
-        <em>Os critérios celebram sua evolução — quando você chegar aqui, mente e corpo estarão prontos para o próximo nível.</em>
+        <em>Esses critérios representam o florescimento do seu progresso — quando você chegar aqui,
+        mente e corpo estarão alinhados para o próximo passo.</em>
       </p>
     </section>
 
-    <!-- HUB · CARDS (imagens do hub via --tile-bg) -->
-    <section class="tiles">
-      <button type="button" class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-tarefas.jpg')"
-              onclick="location.href='./exercicios-orientacoes.html'">
-        <div>
-          <h3>Tarefas e Orientações</h3>
-          <p>Tarefas de mudança de hábitos com orientações práticas e dicas diárias.</p>
-        </div>
+    <!-- HUB DE CARDS (com imagens de fundo) -->
+    <section class="tiles tiles-modern" aria-label="Atalhos">
+      <button type="button" class="tile has-bg bg-tarefas" onclick="location.href='./exercicios-orientacoes.html'">
+        <h3>Tarefas e Orientações</h3>
+        <p>Tarefas simples de mudança de hábitos com orientações práticas e dicas diárias.</p>
       </button>
 
-      <button type="button" class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-plano.jpg')"
-              onclick="location.href='./plano.html'">
-        <div>
-          <h3>Plano e Neuro-hábitos</h3>
-          <p>Seu plano diário de prática física e mental no mesmo painel.</p>
-        </div>
+      <button type="button" class="tile has-bg bg-plano" onclick="location.href='./plano.html'">
+        <h3>Plano e Neuro-hábitos</h3>
+        <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
-      <button type="button" class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-habitos.jpg')"
-              onclick="location.href='./habitos.html'">
-        <div>
-          <h3>Hábitos e Recompensas</h3>
-          <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
-        </div>
+      <button type="button" class="tile has-bg bg-habitos" onclick="location.href='./habitos.html'">
+        <h3>Hábitos e Recompensas</h3>
+        <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
-      <button type="button" class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-praticas.jpg')"
-              onclick="location.href='./praticas.html'">
-        <div>
-          <h3>Práticas Mentais</h3>
-          <p>Visualização guiada, check-in do dia e diário emocional.</p>
-        </div>
+      <button type="button" class="tile has-bg bg-praticas" onclick="location.href='./praticas.html'">
+        <h3>Práticas Mentais</h3>
+        <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
-      <button type="button" class="tile has-bg"
-              style="--tile-bg:url('../../assets/img/hub/tile-suporte.jpg')"
-              onclick="location.href='./suporte.html'">
-        <div>
-          <h3>Suporte</h3>
-          <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
-        </div>
+      <button type="button" class="tile has-bg bg-suporte" onclick="location.href='./suporte.html'">
+        <h3>Suporte</h3>
+        <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
     </section>
   </main>
 
-  <script>window.NIVEL = "fundacao-72a9c";</script>
+  <script>
+    window.NIVEL = "fundacao-72a9c";
+  </script>
 </body>
 </html>
