@@ -1,1 +1,61 @@
 :root{--primary:#a5b4fc;--accent:#f5a524} body{background-image:radial-gradient(40rem 40rem at 10% -10%, rgba(165,180,252,.08), transparent)}
+
+/* ========== Sidebar clara (Fundação) ========== */
+.sidebar.light{
+  background: rgba(169,203,227,.06);                 /* serenity bem sutil */
+  border-right: 1px solid rgba(203,229,255,.20);     /* prata gelada suave */
+  backdrop-filter: blur(4px);
+}
+.sidebar.light .sb-header{
+  border-bottom: 1px solid rgba(203,229,255,.20);
+}
+.sidebar.light .nivel{
+  color: var(--serenity-2);
+}
+
+/* Grupos e rótulos do menu */
+.sb-group{ margin-bottom: 14px; }
+.sb-label{
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #CFE3F6;
+  opacity: .8;
+  margin: 6px 6px 8px;
+}
+
+/* Itens */
+.sidebar.light .sb-item{
+  color: #E9F1FA;
+  border: 1px solid transparent;
+  background: transparent;
+}
+.sidebar.light .sb-item:hover{
+  color: #FFFFFF;
+  background: rgba(203,229,255,.10);
+  border-color: rgba(203,229,255,.28);
+}
+.sidebar.light .sb-item.active{
+  color: #0B0D10;
+  background: linear-gradient(180deg, var(--serenity-2) 0%, var(--serenity) 100%);
+  border-color: transparent;
+}
+
+/* Footer */
+.sidebar.light .sb-footer{
+  border-top: 1px solid rgba(203,229,255,.20);
+  color: #D9E7F6;
+}
+
+/* Layout móvel com sidebar clara sempre visível */
+@media (max-width:1024px){
+  .sidebar.light{
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 220px; min-width: 220px; z-index: 5;
+  }
+  .content{ margin-left: 220px; padding: 16px; max-width: none; }
+}
+@media (max-width:390px){
+  .sidebar.light{ width: 200px; min-width: 200px; }
+  .content{ margin-left: 200px; }
+}
