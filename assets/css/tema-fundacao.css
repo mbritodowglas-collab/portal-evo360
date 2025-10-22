@@ -275,3 +275,7 @@
 /* ajuste de espaçamento para texto sobre imagem */
 .tile.has-bg h3 { margin-bottom: 8px; }
 .tile.has-bg p  { margin-bottom: 0; }
+
+.tile.has-bg{ height: 210px; }
+@media (min-width:768px){ .tile.has-bg{ height: 240px; } }
+@media (min-width:1024px){ .tile.has-bg{ height: 260px; } }
