@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=6">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* ===== Ajuste mobile fixo ===== */
@@ -23,6 +23,19 @@
     @media (max-width:390px){
       body.layout-with-sidebar .content{padding:14px!important}
     }
+    /* Caso o tema ainda não tenha o suporte às imagens nos tiles */
+    .tile.has-bg{position:relative;overflow:hidden;background:#12161b;border:1px solid var(--line)}
+    .tile.has-bg::before{
+      content:""; position:absolute; inset:0;
+      background: var(--tile-bg, none) center/cover no-repeat;
+      filter: brightness(.85) saturate(1.05);
+      transform: scale(1.02);
+    }
+    .tile.has-bg::after{
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(10,13,16,.25) 0%, rgba(10,13,16,.78) 65%, rgba(10,13,16,.95) 100%);
+    }
+    .tile.has-bg > *{position:relative; z-index:1}
   </style>
 </head>
 
@@ -54,8 +67,8 @@
 
   <!-- CONTEÚDO -->
   <main class="content">
-    <!-- BANNER -->
-    <header class="banner-full" data-img="real">
+    <!-- BANNER (usando JPG) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')">
       <div class="banner-overlay">
         <h1 class="banner-title">Nível Fundação</h1>
         <p class="banner-sub">O início da sua transformação física e mental.</p>
@@ -91,36 +104,61 @@
       </p>
     </section>
 
-    <!-- HUB DE CARDS -->
+    <!-- HUB DE CARDS (cada um com imagem JPG configurada via CSS variable) -->
     <section aria-labelledby="atalhos-titulo" class="tiles tiles-modern">
       <h2 id="atalhos-titulo" class="sr-only">Atalhos principais</h2>
 
       <!-- CARD 1 -->
-      <button type="button" class="tile has-bg bg-tarefas" aria-label="Tarefas e Orientações" onclick="location.href='./exercicios-orientacoes.html'">
+      <button
+        type="button"
+        class="tile has-bg"
+        style="--tile-bg:url('../../assets/img/hub/tile-tarefas.jpg')"
+        aria-label="Tarefas e Orientações"
+        onclick="location.href='./exercicios-orientacoes.html'">
         <h3>Tarefas e Orientações</h3>
         <p>Tarefas simples de mudança de hábitos, com orientações práticas e dicas diárias.</p>
       </button>
 
       <!-- CARD 2 -->
-      <button type="button" class="tile has-bg bg-plano" aria-label="Plano e Neuro-hábitos" onclick="location.href='./plano.html'">
+      <button
+        type="button"
+        class="tile has-bg"
+        style="--tile-bg:url('../../assets/img/hub/tile-plano.jpg')"
+        aria-label="Plano e Neuro-hábitos"
+        onclick="location.href='./plano.html'">
         <h3>Plano e Neuro-hábitos</h3>
         <p>Seu plano diário de prática física e mental no mesmo painel.</p>
       </button>
 
       <!-- CARD 3 -->
-      <button type="button" class="tile has-bg bg-habitos" aria-label="Hábitos e Recompensas" onclick="location.href='./habitos.html'">
+      <button
+        type="button"
+        class="tile has-bg"
+        style="--tile-bg:url('../../assets/img/hub/tile-habitos.jpg')"
+        aria-label="Hábitos e Recompensas"
+        onclick="location.href='./habitos.html'">
         <h3>Hábitos e Recompensas</h3>
         <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
       </button>
 
       <!-- CARD 4 -->
-      <button type="button" class="tile has-bg bg-praticas" aria-label="Práticas Mentais" onclick="location.href='./praticas.html'">
+      <button
+        type="button"
+        class="tile has-bg"
+        style="--tile-bg:url('../../assets/img/hub/tile-praticas.jpg')"
+        aria-label="Práticas Mentais"
+        onclick="location.href='./praticas.html'">
         <h3>Práticas Mentais</h3>
         <p>Visualização guiada, check-in do dia e diário emocional.</p>
       </button>
 
       <!-- CARD 5 -->
-      <button type="button" class="tile has-bg bg-suporte" aria-label="Suporte" onclick="location.href='./suporte.html'">
+      <button
+        type="button"
+        class="tile has-bg"
+        style="--tile-bg:url('../../assets/img/hub/tile-suporte.jpg')"
+        aria-label="Suporte"
+        onclick="location.href='./suporte.html'">
         <h3>Suporte</h3>
         <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
       </button>
