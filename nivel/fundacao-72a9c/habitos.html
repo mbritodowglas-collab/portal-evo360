@@ -43,10 +43,10 @@
     .goal-card .name{font-weight:700}
     .goal-card small{color:var(--silver)}
 
-    /* === Progresso (últimos 21 dias) === */
+    /* === Progresso (últimos 20 dias) === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
-    .streak-grid{ display:grid; grid-template-columns:repeat(21,14px); gap:6px; margin-top:10px; align-items:center }
+    .streak-grid{ display:grid; grid-template-columns:repeat(20,14px); gap:6px; margin-top:10px; align-items:center }
     .dot{ width:14px; height:14px; border-radius:50%; background:#40464f; border:1px solid #30343b }
     .dot.ok{ background:#31b57a; border-color:#2a9465 }
     .dot.no{ background:#d04c4c; border-color:#a53b3b }
@@ -122,9 +122,9 @@
           <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
         </div>
 
-        <!-- Progresso 21 dias (adição) -->
-        <div class="streak-box" id="progress21">
-          <h3 class="habits-title">Progresso (últimos 21 dias)</h3>
+        <!-- Progresso 20 dias -->
+        <div class="streak-box" id="progress20">
+          <h3 class="habits-title">Progresso (últimos 20 dias)</h3>
           <div class="streak-legend">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</div>
           <div id="streakGrid" class="streak-grid" aria-live="polite"></div>
         </div>
@@ -177,11 +177,11 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Script adicional: Progresso 21 dias (não altera o restante) -->
+  <!-- Script adicional: Progresso 20 dias -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const KEY   = `bp_progress_${NIVEL}`;   // { "AAAA-MM-DD": 0|1 }
+    const KEY   = `bp_progress_${NIVEL}`;
     const $     = s => document.querySelector(s);
 
     const iso = d => new Date(d).toISOString().slice(0,10);
@@ -196,7 +196,7 @@
       const wrap = $('#streakGrid');
       if(!wrap) return;
       wrap.innerHTML = '';
-      for(let i=20;i>=0;i--){
+      for(let i=19;i>=0;i--){
         const d = new Date(); d.setDate(d.getDate()-i);
         const k = iso(d);
         const val = hist[k];
