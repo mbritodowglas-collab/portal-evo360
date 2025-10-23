@@ -150,4 +150,46 @@
     idade.focus();
   }
 
-  btn.addEventListener('
+  btn.addEventListener('click', calcular);
+  clr?.addEventListener('click', limpar);
+
+  // Enter para calcular
+  [idade, fcr].forEach(inp=>{
+    inp.addEventListener('keydown', e=>{
+      if(e.key === 'Enter') calcular();
+    });
+  });
+})();
+
+
+// ===== TMB (Mifflin-St Jeor) =====
+(function tmb(){
+  const peso = document.getElementById('t_peso');
+  const alt  = document.getElementById('t_altura');
+  const ida  = document.getElementById('t_idade');
+  const sex  = document.getElementById('t_sexo');
+  const out  = document.getElementById('t_out');
+
+  if(!peso || !alt || !ida || !sex || !out) return;
+
+  function calc(){
+    const p = +peso.value || 0;
+    const h = +alt.value  || 0;
+    const i = +ida.value  || 0;
+    const s = sex.value || 'f';
+    if(p>0 && h>0 && i>0){
+      const base = (10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5);
+      out.innerHTML = `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+    } else {
+      out.textContent = 'Preencha peso, altura e idade.';
+    }
+  }
+
+  ['input','change'].forEach(ev=>{
+    peso.addEventListener(ev, calc);
+    alt.addEventListener(ev, calc);
+    ida.addEventListener(ev, calc);
+    sex.addEventListener(ev, calc);
+  });
+  calc();
+})();
