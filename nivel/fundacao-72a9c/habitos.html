@@ -203,7 +203,7 @@
     ];
     const $ = s => document.querySelector(s);
 
-    /* ==== AJUSTE: datas em fuso LOCAL (sem UTC) ==== */
+    /* ==== DATAS LOCAIS (sem UTC) ==== */
     const toDate = (val) => (val instanceof Date) ? new Date(val) : new Date(String(val).replace(/T.*$/,'T00:00:00'));
     const localISO = (val=new Date()) => {
       const d = toDate(val);
@@ -218,13 +218,49 @@
       d.setDate(d.getDate()+n);
       return localISO(d);
     };
-    /* =============================================== */
 
     const LS = {
       get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
       set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
     };
     const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
+
+    /* ===== MIGRAÇÃO ÚNICA: normaliza chaves antigas (UTC) para data local ===== */
+    const MIGR_KEY = `bp_localdate_migrated_${NIVEL}`;
+    function migrateToLocalKeys(){
+      if(LS.get(MIGR_KEY,false)) return;
+      const isLocal = k => /^\d{4}-\d{2}-\d{2}$/.test(k);
+
+      // Habitos
+      HABITS.forEach(h=>{
+        const hist = LS.get(keyHabit(h.id), null);
+        if(!hist) return;
+        let changed=false;
+        const newer={};
+        for(const [k,v] of Object.entries(hist)){
+          if(isLocal(k)){ newer[k]=v; continue; }
+          const local = localISO(new Date(k));
+          if(local){ newer[local]=v; changed=true; }
+        }
+        if(changed) LS.set(keyHabit(h.id), newer);
+      });
+
+      // Dia completo
+      const dcomp = LS.get(KEY_DAYCOMP,null);
+      if(dcomp){
+        let changed=false;
+        const newer={};
+        for(const [k,v] of Object.entries(dcomp)){
+          if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
+          const local = localISO(new Date(k));
+          if(local){ newer[local]=v; changed=true; }
+        }
+        if(changed) LS.set(KEY_DAYCOMP,newer);
+      }
+
+      LS.set(MIGR_KEY,true);
+    }
+    /* ======================================================================== */
 
     function renderHabitDots(){
       const wrap = $('#streakList');
@@ -332,6 +368,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{
+      migrateToLocalKeys();          /* <- roda uma única vez */
       renderHabitDots();
       updateGoalProgress();
       hookSaveDay();
