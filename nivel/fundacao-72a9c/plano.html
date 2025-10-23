@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação · Tarefas e Neuro-Hábito</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    /* Texto justificado nesta página */
+    .content p, .content li { text-align: justify; }
+
+    /* Abas e painéis (mesmo padrão do Card 1) */
+    .tabs{display:flex;gap:8px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .meta{color:var(--ink-2);font-size:.95rem;margin-bottom:6px}
+    .note{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+  </style>
+</head>
+<body class="layout-with-sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
+      <div class="nivel">Nível Fundação</div>
+    </div>
+    <nav class="sb-nav">
+      <a class="sb-item" href="./">Início</a>
+      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item active" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item" href="./suporte.html">Suporte</a>
+    </nav>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+  </aside>
+
+  <main class="content">
+    <!-- Banner (apenas imagem, mesmo padrão) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+
+    <!-- CARD · Tarefas & Neuro-hábito -->
+    <section class="card">
+      <h2>Tarefas & Neuro-Hábito</h2>
+      <p class="muted">
+        Aqui você recebe <strong>tarefas semanais de mindset</strong> e <strong>microtarefas a cada 3 dias</strong>
+        para aplicar na rotina. O gotejamento começa quando você abre esta página pela primeira vez. Você pode
+        ver conteúdos anteriores, mas os próximos ficam bloqueados até a data ficar disponível.
+      </p>
+
+      <div class="note">
+        <strong>Diário recomendado:</strong> mantenha um caderno (ou notas do celular) para registrar
+        reflexões, emoções e pequenas vitórias. A escrita consolida o aprendizado e fortalece o hábito.
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="semanais" role="tab">Tarefas semanais (mindset)</button>
+        <button class="tab" data-tab="micro" role="tab">Microtarefas · a cada 3 dias</button>
+        <button class="tab" data-tab="guia" role="tab">Como usar / Diário</button>
+      </div>
+
+      <!-- Painel: Tarefas semanais -->
+      <div class="panel active" id="panel-semanais">
+        <div class="meta" id="sem-meta">Semana —</div>
+        <h3 id="sem-titulo">Carregando…</h3>
+        <p id="sem-texto" style="margin-top:6px">—</p>
+
+        <div class="row-actions">
+          <button class="btn ghost" id="semPrev">Anterior</button>
+          <button class="btn" id="semNext">Próxima</button>
+        </div>
+
+        <div class="note small" style="margin-top:12px">
+          <strong>Dica:</strong> ao final da semana, escreva 3 aprendizados e 1 ajuste para a próxima.
+        </div>
+      </div>
+
+      <!-- Painel: Microtarefas (3 em 3 dias) -->
+      <div class="panel" id="panel-micro">
+        <div class="meta" id="mic-meta">Bloco —</div>
+        <h3 id="mic-titulo">Carregando…</h3>
+        <p id="mic-texto" style="margin-top:6px">—</p>
+
+        <div class="row-actions">
+          <button class="btn ghost" id="micPrev">Anterior</button>
+          <button class="btn" id="micNext">Próxima</button>
+        </div>
+
+        <div class="note small" style="margin-top:12px">
+          <strong>Aplicação:</strong> pratique por 3 dias e anote: gatilhos, facilidade/dificuldade e
+          como adaptar para o seu contexto.
+        </div>
+      </div>
+
+      <!-- Painel: Guia / Diário -->
+      <div class="panel" id="panel-guia">
+        <h3>Como usar este módulo</h3>
+        <ul>
+          <li><strong>Ritmo sustentável:</strong> 1 tarefa de mindset por semana e 1 microtarefa a cada 3 dias.</li>
+          <li><strong>Registro:</strong> use um diário para consolidar o que sentiu, aprendeu e aplicou.</li>
+          <li><strong>Sem pressa:</strong> volte conteúdos anteriores quando quiser; os futuros abrem no tempo certo.</li>
+        </ul>
+        <div class="note">
+          <strong>Modelo simples de entrada no diário:</strong><br>
+          • Intenção do dia · • Gatilho observado · • Recompensa percebida · • Ajuste para amanhã
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* Configs desta página */
+    window.NIVEL = "fundacao-72a9c";
+
+    /* JSONs sugeridos (crie quando quiser; o JS lida com ausência e mostra placeholders) */
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/semanais-fundacao.json";  // array de 8 itens [{titulo, texto}]
+    window.DATA_MICRO_TAREFAS   = "../../_data/micro-fundacao.json";      // array de ~20 itens (um por bloco de 3 dias) [{titulo, texto}]
+  </script>
+  <!-- motor de gotejamento (já usado no card 1) -->
+  <script src="../../assets/js/drip.js?v=18" defer></script>
+  <!-- JS desta página -->
+  <script src="./plano.js?v=18" defer></script>
+</body>
+</html>
