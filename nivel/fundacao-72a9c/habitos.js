@@ -1,159 +1,200 @@
-/* ====== Card 3 — Hábitos e Recompensas ====== */
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
+// ===== Helpers =====
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const LS = {
   get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
   set:(k,v)=>localStorage.setItem(k, JSON.stringify(v)),
-  del:(k)=>localStorage.removeItem(k),
+  del:(k)=>localStorage.removeItem(k)
+};
+const iso = d => new Date(d).toISOString().slice(0,10);
+const todayISO = () => iso(new Date());
+
+// Keys por nível
+const LEVEL = window.NIVEL || "fundacao-72a9c";
+const K = {
+  dayLog:   (date) => `hab_${LEVEL}_day_${date}`,      // marcações do dia (checkboxes)
+  daySaved: (date) => `hab_${LEVEL}_saved_${date}`,    // flag bloqueio do dia
+  daysDone:         `hab_${LEVEL}_days_complete`,      // contagem acumulada de dias completos
+  goalCurrent:      `hab_${LEVEL}_goal_current`,       // meta ativa {name, target, startedISO, progressDays}
+  goalArchive:      `hab_${LEVEL}_goal_archive`        // metas anteriores (array)
 };
 
-const NIVEL = window.NIVEL || 'fundacao-72a9c';
-const KEY_LOG_PREFIX   = `habitos_log_${NIVEL}_`;          // por data: habitos_log_<nivel>_YYYY-MM-DD -> {checked:[..], complete:true}
-const KEY_DONE_COUNT   = `habitos_daysComplete_${NIVEL}`;   // número total de dias completos
-const KEY_LAST_SAVED   = `habitos_lastSaved_${NIVEL}`;      // última data salva (YYYY-MM-DD)
-const KEY_GOALS        = `recomp_goals_${NIVEL}`;           // array de metas [{id,nome,alvo,createdAt,achievedAt?}]
-const todayISO = () => new Date().toISOString().slice(0,10);
-
-/* ---------- abas ---------- */
+// ===== Tabs =====
 (function tabs(){
-  const map = { trk:'#panel-trk', rc:'#panel-rc', tools:'#panel-tools' };
+  const map = { rastreador: '#panel-rastreador', recompensas:'#panel-recompensas', ferramentas:'#panel-ferramentas' };
   $$('.tab').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const t = btn.dataset.tab;
       $$('.tab').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      document.querySelector(map[t])?.classList.add('active');
+      $$('.panel').forEach(p=>p.classList.remove('active'));
+      $(map[btn.dataset.tab]).classList.add('active');
     });
   });
 })();
 
-/* ---------- RASTREADOR: salvar dia, bloquear até amanhã ---------- */
-function updateTrackerUI(){
-  const last = LS.get(KEY_LAST_SAVED, null);
-  const isTodaySaved = last === todayISO();
-  const status = $('#trk_status');
+// ===== Rastreador: carregar estado do dia =====
+const today = todayISO();
+const savedToday = !!LS.get(K.daySaved(today), false);
 
-  // travar/destravar
-  $$('.hb').forEach(hb => { hb.disabled = isTodaySaved; });
-  if($('#trk_save'))  $('#trk_save').disabled  = isTodaySaved;
-  if($('#trk_clear')) $('#trk_clear').disabled = isTodaySaved;
-
-  if(isTodaySaved){
-    status.innerHTML = '✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.';
-  } else {
-    status.textContent = '—';
+function setDisabledAll(disabled){
+  $$('#panel-rastreador input[type="checkbox"]').forEach(cb => cb.disabled = disabled);
+  $('#btnSaveDay').disabled = disabled;
+  $('#btnClearDay').disabled = disabled;
+}
+function loadDay(){
+  const log = LS.get(K.dayLog(today), {});
+  $$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+    const id = cb.dataset.habit;
+    cb.checked = !!log[id];
+  });
+  if(savedToday){
+    setDisabledAll(true);
+    $('#saveInfo').style.display = 'flex';
+  }else{
+    setDisabledAll(false);
+    $('#saveInfo').style.display = 'none';
   }
 }
+loadDay();
 
-function computeDayComplete(){
-  const boxes = $$('.hb');
-  return boxes.length > 0 && boxes.every(hb => hb.checked);
-}
+// Limpar marcações (sem salvar)
+$('#btnClearDay').addEventListener('click', ()=>{
+  if(savedToday) return;
+  $$('#panel-rastreador input[type="checkbox"]').forEach(cb=> cb.checked = false);
+  LS.set(K.dayLog(today), {}); // limpa rascunho do dia
+});
 
-function saveDay(){
-  const date = todayISO();
-  const checked = $$('.hb').filter(hb=>hb.checked).map(hb=>hb.value);
-  const complete = computeDayComplete();
+// Auto-rascunho ao clicar
+$$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    if(savedToday) return;
+    const log = LS.get(K.dayLog(today), {});
+    log[cb.dataset.habit] = cb.checked;
+    LS.set(K.dayLog(today), log);
+  });
+});
 
-  // salva log do dia
-  LS.set(KEY_LOG_PREFIX + date, { checked, complete });
+// Salvar dia
+$('#btnSaveDay').addEventListener('click', ()=>{
+  if(savedToday) return;
 
-  // se for completo e ainda não foi salvo hoje, incrementa contador
-  const last = LS.get(KEY_LAST_SAVED, null);
-  if(last !== date){
-    if(complete){
-      const done = (LS.get(KEY_DONE_COUNT, 0) || 0) + 1;
-      LS.set(KEY_DONE_COUNT, done);
-      renderGoals(); // atualiza progressos
+  const log = LS.get(K.dayLog(today), {});
+  // Essenciais
+  const essentials = ['agua','sono','movimento','alimentacao'];
+  const allEssential = essentials.every(h => !!log[h]);
+
+  // Persiste “dia salvo” (bloqueia)
+  LS.set(K.daySaved(today), true);
+
+  // Atualiza contagem de dias completos (se bateu essenciais)
+  if(allEssential){
+    const done = +LS.get(K.daysDone, 0) + 1;
+    LS.set(K.daysDone, done);
+    // Avança meta atual (se existir)
+    const cur = LS.get(K.goalCurrent, null);
+    if(cur){
+      cur.progressDays = Math.min(cur.target, (cur.progressDays||0) + 1);
+      LS.set(K.goalCurrent, cur);
     }
-    LS.set(KEY_LAST_SAVED, date);
   }
 
-  updateTrackerUI();
-}
+  // UI
+  setDisabledAll(true);
+  $('#saveInfo').style.display = 'flex';
 
-function clearMarks(){
-  // se já salvou hoje, não permite limpar
-  if(LS.get(KEY_LAST_SAVED,null) === todayISO()){
-    $('#trk_status').textContent = 'O dia já foi salvo; não é possível limpar as marcações de hoje.';
+  // Atualiza painel de metas (progresso)
+  renderGoal();
+});
+
+// ===== Recompensas =====
+function renderGoalsArchive(){
+  const list = $('#goalsList');
+  const arc = LS.get(K.goalArchive, []);
+  list.innerHTML = '';
+  if(!arc.length){
+    list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
     return;
   }
-  $$('.hb').forEach(hb => hb.checked = false);
-  $('#trk_status').textContent = 'Marcações limpas (não salvas).';
-}
-
-$('#trk_save')?.addEventListener('click', saveDay);
-$('#trk_clear')?.addEventListener('click', clearMarks);
-updateTrackerUI();
-
-/* ---------- METAS (recompensas): salvar e listar ---------- */
-function renderGoals(){
-  const list = $('#rc_lista');
-  const goals = LS.get(KEY_GOALS, []) || [];
-  const done  = LS.get(KEY_DONE_COUNT, 0) || 0;
-  if($('#rc_done')) $('#rc_done').textContent = String(done);
-
-  if(goals.length === 0){
-    list.innerHTML = '<div class="calc-out">Nenhuma meta cadastrada ainda.</div>';
-    return;
-  }
-
-  list.innerHTML = goals.map(g=>{
-    // marca como alcançada se atingiu e ainda não marcado
-    if(done >= g.alvo && !g.achievedAt){
-      g.achievedAt = todayISO();
-    }
-    const pct = Math.max(0, Math.min(100, Math.round(done / g.alvo * 100)));
-    const status = g.achievedAt
-      ? `<span class="small muted">Alcançada em ${g.achievedAt}</span>`
-      : `<span class="small muted">${done}/${g.alvo} dias completos</span>`;
-
-    return `
-      <div class="item" data-id="${g.id}">
-        <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;width:100%">
-          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
-            <strong>${g.nome}</strong>
-            <div class="progress"><span style="width:${pct}%"></span></div>
-            ${status}
-          </div>
-          <button class="btn ghost" data-del="${g.id}">Excluir</button>
-        </div>
-      </div>`;
-  }).join('');
-
-  // salvar possíveis alterações (achievedAt)
-  LS.set(KEY_GOALS, goals);
-
-  // handlers de exclusão
-  list.querySelectorAll('[data-del]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const id = btn.getAttribute('data-del');
-      const arr = (LS.get(KEY_GOALS, [])||[]).filter(g=> String(g.id) !== String(id));
-      LS.set(KEY_GOALS, arr);
-      renderGoals();
-    });
+  arc.forEach((g,i)=>{
+    const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
+    const node = document.createElement('div');
+    node.className = 'goal-card';
+    node.innerHTML = `
+      <div class="hdr">
+        <div class="name">${g.name || 'Meta'}</div>
+        <small>${g.startedISO || '—'}</small>
+      </div>
+      <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
+      <small>${g.progressDays||0}/${g.target} dias completos</small>
+    `;
+    list.appendChild(node);
   });
 }
 
-function saveGoal(){
-  const nome = ($('#rc_nome')?.value||'').trim();
-  const alvo = Math.max(1, Math.min(60, parseInt($('#rc_alvo')?.value||'0',10)));
-  if(!nome){ alert('Descreva a recompensa.'); return; }
-  if(!alvo){ alert('Informe o número de dias completos para merecer.'); return; }
-
-  const goals = LS.get(KEY_GOALS, []) || [];
-  goals.push({
-    id: Date.now(),
-    nome, alvo,
-    createdAt: todayISO()
-  });
-  LS.set(KEY_GOALS, goals);
-
-  if($('#rc_nome')) $('#rc_nome').value = '';
-  if($('#rc_alvo')) $('#rc_alvo').value = '20';
-  renderGoals();
+function renderGoal(){
+  const cur = LS.get(K.goalCurrent, null);
+  const wrap = $('#goalCurrentWrap');
+  if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
+  wrap.style.display = '';
+  $('#goalCurrentName').textContent = cur.name || 'Meta';
+  const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
+  $('#goalProgress').style.width = pct + '%';
+  $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
+  renderGoalsArchive();
 }
+renderGoal();
 
-$('#rc_save')?.addEventListener('click', saveGoal);
-renderGoals();
+// Salvar meta (ativa e vai para topo)
+$('#btnSaveGoal').addEventListener('click', ()=>{
+  const name = $('#goal_name').value.trim();
+  const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
+  if(!name || !target){ return; }
+
+  // Se já havia meta atual, manda para o arquivo
+  const prev = LS.get(K.goalCurrent, null);
+  if(prev){
+    const arc = LS.get(K.goalArchive, []);
+    arc.unshift(prev);
+    LS.set(K.goalArchive, arc);
+  }
+
+  const cur = {
+    name, target,
+    startedISO: todayISO(),
+    progressDays: 0
+  };
+  LS.set(K.goalCurrent, cur);
+
+  // Limpa inputs e atualiza UI
+  $('#goal_name').value = '';
+  $('#goal_days').value = '';
+  renderGoal();
+});
+
+// Limpar meta atual (move para arquivo)
+$('#btnClearGoal').addEventListener('click', ()=>{
+  const cur = LS.get(K.goalCurrent, null);
+  if(cur){
+    const arc = LS.get(K.goalArchive, []);
+    arc.unshift(cur);
+    LS.set(K.goalArchive, arc);
+    LS.del(K.goalCurrent);
+    renderGoal();
+  }
+});
+
+// ===== Ferramentas: água =====
+(function waterTool(){
+  const peso = $('#w_peso'), out = $('#w_out');
+  function calc(){
+    const p = +peso.value || 0;
+    if(p>0){
+      const low = Math.round(p*30), high = Math.round(p*35);
+      out.innerHTML = `Meta sugerida: <strong>${low}–${high} ml/dia</strong> (30–35 ml/kg).`;
+    }else{
+      out.textContent = 'Informe seu peso para estimar a meta diária de água.';
+    }
+  }
+  peso.addEventListener('input', calc);
+  calc();
+})();
