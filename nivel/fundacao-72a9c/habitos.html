@@ -5,61 +5,64 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação · Hábitos e Recompensas</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=17">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=17">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
-
   <style>
-    /* ===== Ajustes locais ===== */
+    /* ===== Ajustes locais desta página ===== */
     .content p, .content li { text-align: justify; }
 
-    /* Campos e containers */
-    .habit-list{display:grid;gap:8px;margin:12px 0}
-    .habit-item{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#0f1318;}
-    .habit-item label{flex:1;font-weight:500;color:var(--ink);}
-    .habit-item input{transform:scale(1.2);}
+    /* Tabs */
+    .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
 
-    .meta-config{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#0f1318;}
-    .meta-list{margin-top:12px;padding-left:16px;}
-    .meta-list li{margin:4px 0;color:var(--ink-2);}
+    .panel{display:none}
+    .panel.active{display:block}
 
-    .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-
-    /* ===== Progresso 21 dias ===== */
-    .streak-block{ margin:12px 0 18px; }
-    .streak-title{ margin:0 0 6px; font-weight:700; color: var(--ink); }
-
-    .streak-grid{
-      display:grid;
-      grid-template-columns: repeat(21, 14px);
-      gap:6px;
-      align-items:center;
+    /* Listas de hábitos */
+    .habits-group{margin-top:12px}
+    .habits-title{font-weight:800;color:var(--serenity-2);margin:8px 0}
+    .habits-grid{
+      display:grid;grid-template-columns:1fr;gap:10px;align-items:center
+    }
+    @media (min-width:760px){
+      .habits-grid{grid-template-columns:1fr 1fr}
+    }
+    .habit-item{
+      display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+      background:#0f1318;padding:10px;border-radius:12px;min-height:48px
+    }
+    .habit-item input[type="checkbox"]{
+      width:20px;height:20px;accent-color:#6fb7ff;cursor:pointer
     }
 
-    .dot{
-      width:14px; height:14px;
-      border-radius:50%;
-      border:1px solid var(--line);
-      background:#0f1318;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+    /* Meta atual */
+    .progress-wrap{margin-top:10px}
+    .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
+    .muted-ok{display:flex;gap:8px;align-items:center;margin-top:10px}
+
+    /* Lista de metas salvas */
+    .goal-list{display:grid;gap:10px;margin-top:10px}
+    .goal-card{
+      border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:10px
     }
-
-    .dot.ok{ background:#16a34a; border-color:#16a34a; }    /* marcado */
-    .dot.no{ background:#7f1d1d; border-color:#7f1d1d; }    /* não marcado (dia salvo) */
-    .dot.na{ background:#0f1318; border-color:#1f2937; }    /* sem registro */
-
-    .streak-legend{ font-size:.85rem; color: var(--ink-2); margin-top:6px; }
+    .goal-card .hdr{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .goal-card .name{font-weight:700}
+    .goal-card small{color:var(--silver)}
   </style>
 </head>
 
 <body class="layout-with-sidebar">
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
-      <img src="../../assets/img/logo.svg" alt="EVO360" class="logo">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
       <div class="nivel">Nível Fundação</div>
     </div>
-
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
       <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
@@ -68,82 +71,107 @@
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-
-    <div class="sb-footer">
-      <div class="quote">Você está florescendo.</div>
-      <div class="ver">v1.0 · © Bella Prime</div>
-    </div>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
-  <!-- CONTEÚDO -->
+  <!-- Conteúdo -->
   <main class="content">
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Rastreador de hábitos -->
+    <!-- Card -->
     <section class="card">
-      <h2>Rastreador de Hábitos</h2>
-      <p>Marque abaixo os hábitos fixos do nível Fundação. Esses são comportamentos que sustentam seus resultados e determinam as recompensas alcançadas.</p>
+      <h2>Hábitos e Recompensas</h2>
+      <p>
+        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+      </p>
 
-      <div class="habit-list">
-        <div class="habit-item">
-          <input type="checkbox" id="hab1" data-habit-id="treino">
-          <label for="hab1">Treino de força / Musculação</label>
-        </div>
-        <div class="habit-item">
-          <input type="checkbox" id="hab2" data-habit-id="alimentacao">
-          <label for="hab2">Alimentação equilibrada durante o dia</label>
-        </div>
-        <div class="habit-item">
-          <input type="checkbox" id="hab3" data-habit-id="sono">
-          <label for="hab3">Sono de qualidade (mín. 7h)</label>
-        </div>
-        <div class="habit-item">
-          <input type="checkbox" id="hab4" data-habit-id="agua">
-          <label for="hab4">Ingestão adequada de água (2–3L)</label>
-        </div>
-        <div class="habit-item">
-          <input type="checkbox" id="hab5" data-habit-id="mentalidade">
-          <label for="hab5">Prática mental / reflexão do dia</label>
-        </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="rastreador">Rastreador diário</button>
+        <button class="tab" data-tab="recompensas">Recompensas</button>
+        <button class="tab" data-tab="ferramentas">Ferramentas</button>
       </div>
 
-      <div class="row-actions">
-        <button class="btn" id="btnSalvarHabitos">Salvar dia</button>
-        <button class="btn ghost" id="btnLimparHabitos">Limpar marcações</button>
-      </div>
+      <!-- Painel: Rastreador -->
+      <div class="panel active" id="panel-rastreador">
+        <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
 
-      <small class="muted">Ao salvar, as marcações são registradas e o quadro abaixo será atualizado. O rastreamento diário só pode ser marcado novamente amanhã.</small>
-    </section>
+        <div class="habits-group">
+          <div class="habits-title">Essenciais (contam para “dia completo”)</div>
+          <div class="habits-grid" id="essenciais">
+            <label class="habit-item"><input type="checkbox" data-habit="agua"><span>Água na meta do dia</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sono"><span>Higiene do sono (rotina + ≥7h)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="movimento"><span>Movimento do dia (≥30 min leve/mod.)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="alimentacao"><span>Alimentação consciente (3 boas escolhas)</span></label>
+          </div>
+        </div>
 
-    <!-- PROGRESSO 21 DIAS -->
-    <section class="card" id="progress-21">
-      <h3>Progresso (últimos 21 dias)</h3>
-      <div id="habProgressWrap"></div>
-      <small class="muted">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</small>
-    </section>
+        <div class="habits-group">
+          <div class="habits-title">Complementares (registro extra)</div>
+          <div class="habits-grid" id="complementares">
+            <label class="habit-item"><input type="checkbox" data-habit="mobilidade"><span>Mobilidade/Postura (5–10 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sol"><span>Ar livre / Sol (10–15 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="forca"><span>Treino de força/musculação</span></label>
+          </div>
+        </div>
 
-    <!-- Metas e Recompensas -->
-    <section class="card">
-      <h2>Metas e Recompensas</h2>
-      <p>Defina pequenas recompensas que você alcançará ao manter sua constância. As metas são liberadas de acordo com o número de dias salvos com hábitos completos.</p>
-
-      <div class="meta-config">
-        <label for="metaInput">Nova meta:</label>
-        <input type="text" id="metaInput" placeholder="ex: Comprar um top novo, sair para jantar, etc.">
         <div class="row-actions">
-          <button class="btn" id="btnAddMeta">Salvar meta</button>
-          <button class="btn ghost" id="btnClearMetas">Limpar metas</button>
+          <button class="btn" id="btnSaveDay">Salvar dia</button>
+          <button class="btn ghost" id="btnClearDay">Limpar marcações</button>
+        </div>
+
+        <div class="alert info muted-ok" id="saveInfo" style="display:none">
+          <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
         </div>
       </div>
 
-      <ul class="meta-list" id="metaList"></ul>
+      <!-- Painel: Recompensas -->
+      <div class="panel" id="panel-recompensas">
+        <h3 class="habits-title">Meta de recompensa (baseada em dias completos)</h3>
+
+        <div class="grid-2">
+          <label>Recompensa (ex.: “Spa em casa”, “Filme + pipoca”)<br>
+            <input type="text" id="goal_name" placeholder="Ex.: Spa em casa">
+          </label>
+          <label>Dias completos para merecer<br>
+            <input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20">
+          </label>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn" id="btnSaveGoal">Salvar meta</button>
+          <button class="btn ghost" id="btnClearGoal">Limpar meta</button>
+        </div>
+
+        <div class="progress-wrap" id="goalCurrentWrap" style="display:none">
+          <div class="muted">Alvo: <strong id="goalCurrentName"></strong></div>
+          <div class="progress"><i id="goalProgress" style="width:0%"></i></div>
+          <div class="muted" id="goalProgressText">Progresso: —</div>
+        </div>
+
+        <hr class="divisor">
+
+        <h3 class="habits-title">Minhas metas</h3>
+        <div id="goalsList" class="goal-list">
+          <div class="muted">Nenhuma meta cadastrada ainda.</div>
+        </div>
+      </div>
+
+      <!-- Painel: Ferramentas (simples) -->
+      <div class="panel" id="panel-ferramentas">
+        <p class="muted">Pequenas ferramentas que ajudam a manter bons hábitos.</p>
+        <div class="grid-2">
+          <label>Calculadora simples de água (ml/kg) — alvo sugerido 30–35 ml/kg<br>
+            <input type="number" id="w_peso" placeholder="Peso (kg)">
+          </label>
+          <div class="calc-out" id="w_out">Informe seu peso para estimar a meta diária de água.</div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- SCRIPTS -->
-  <script>
-    window.NIVEL = "fundacao-72a9c";
-  </script>
-  <script src="./habitos.js?v=17" defer></script>
+  <script>window.NIVEL="fundacao-72a9c";</script>
+  <script src="./habitos.js?v=18" defer></script>
 </body>
 </html>
