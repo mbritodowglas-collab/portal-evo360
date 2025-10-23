@@ -42,6 +42,7 @@
     .goal-card .hdr{display:flex;justify-content:space-between;gap:10px;align-items:center}
     .goal-card .name{font-weight:700}
     .goal-card small{color:var(--silver)}
+    .goal-card[data-edit]{cursor:pointer}
 
     /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
     .streak-box{ margin-top:18px }
@@ -187,241 +188,138 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Script adicional: Progresso 20 dias por hábito + reset 3 ausências -->
+  <!-- Script adicional: Progresso / datas locais / snapshot / migração -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const KEY_DAYCOMP = `bp_progress_${NIVEL}`; // dia completo: 1, 0
+    const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
     const HABITS = [
-      {id:'forca',        label:'Treino de força / Musculação'},
-      {id:'agua',         label:'Ingestão adequada de água'},
-      {id:'sono',         label:'Higiene do sono'},
-      {id:'movimento',    label:'Movimento do dia'},
-      {id:'alimentacao',  label:'Alimentação consciente'},
-      {id:'mobilidade',   label:'Mobilidade/Postura'},
-      {id:'sol',          label:'Ar livre / Sol'}
+      {id:'forca',label:'Treino de força / Musculação'},
+      {id:'agua',label:'Ingestão adequada de água'},
+      {id:'sono',label:'Higiene do sono'},
+      {id:'movimento',label:'Movimento do dia'},
+      {id:'alimentacao',label:'Alimentação consciente'},
+      {id:'mobilidade',label:'Mobilidade/Postura'},
+      {id:'sol',label:'Ar livre / Sol'}
     ];
-    const $ = s => document.querySelector(s);
-
-    /* ==== DATAS LOCAIS (sem UTC) ==== */
-    const toDate = (val) => (val instanceof Date) ? new Date(val) : new Date(String(val).replace(/T.*$/,'T00:00:00'));
-    const localISO = (val=new Date()) => {
-      const d = toDate(val);
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const day = String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${day}`;
-    };
-    const today = () => localISO(new Date());
-    const addDays = (dateISO, n) => {
-      const d = toDate(`${dateISO}T00:00:00`);
-      d.setDate(d.getDate()+n);
-      return localISO(d);
-    };
-
-    const LS = {
-      get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
-      set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
-    };
+    const $ = s=>document.querySelector(s);
+    const toDate = v => (v instanceof Date)?new Date(v):new Date(String(v).replace(/T.*$/,'T00:00:00'));
+    const localISO = (v=new Date())=>{const d=toDate(v);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    const today = ()=>localISO(new Date());
+    const addDays = (iso,n)=>{const d=toDate(`${iso}T00:00:00`);d.setDate(d.getDate()+n);return localISO(d);}
+    const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
     const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
 
-    /* ===== MIGRAÇÃO ÚNICA: normaliza chaves antigas (UTC) para data local ===== */
-    const MIGR_KEY = `bp_localdate_migrated_${NIVEL}`;
+    const MIGR_KEY=`bp_localdate_migrated_${NIVEL}`;
     function migrateToLocalKeys(){
       if(LS.get(MIGR_KEY,false)) return;
-      const isLocal = k => /^\d{4}-\d{2}-\d{2}$/.test(k);
-
-      // Habitos
+      const isLocal=k=>/^\d{4}-\d{2}-\d{2}$/.test(k);
       HABITS.forEach(h=>{
-        const hist = LS.get(keyHabit(h.id), null);
-        if(!hist) return;
-        let changed=false;
-        const newer={};
-        for(const [k,v] of Object.entries(hist)){
-          if(isLocal(k)){ newer[k]=v; continue; }
-          const local = localISO(new Date(k));
-          if(local){ newer[local]=v; changed=true; }
-        }
-        if(changed) LS.set(keyHabit(h.id), newer);
+        const hist=LS.get(keyHabit(h.id),null); if(!hist) return;
+        let changed=false; const newer={};
+        for(const [k,v] of Object.entries(hist)){ if(isLocal(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; }
+        if(changed) LS.set(keyHabit(h.id),newer);
       });
-
-      // Dia completo
-      const dcomp = LS.get(KEY_DAYCOMP,null);
-      if(dcomp){
-        let changed=false;
-        const newer={};
-        for(const [k,v] of Object.entries(dcomp)){
-          if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
-          const local = localISO(new Date(k));
-          if(local){ newer[local]=v; changed=true; }
-        }
-        if(changed) LS.set(KEY_DAYCOMP,newer);
-      }
-
+      const dcomp=LS.get(KEY_DAYCOMP,null);
+      if(dcomp){ let changed=false; const newer={}; for(const [k,v] of Object.entries(dcomp)){ if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; } if(changed) LS.set(KEY_DAYCOMP,newer); }
       LS.set(MIGR_KEY,true);
     }
-    /* ======================================================================== */
 
     function renderHabitDots(){
-      const wrap = $('#streakList');
-      if(!wrap) return;
-      wrap.innerHTML = '';
-      const days = [];
-      for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(localISO(d)); }
+      const wrap=$('#streakList'); if(!wrap) return; wrap.innerHTML='';
+      const days=[]; for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(localISO(d)); }
       HABITS.forEach(h=>{
-        const hist = LS.get(keyHabit(h.id), {});
-        const row  = document.createElement('div');
-        row.className = 'streak-row';
-        const label = document.createElement('div');
-        label.className = 'streak-label';
-        label.textContent = h.label;
-        const grid = document.createElement('div');
-        grid.className = 'streak-grid';
-        days.forEach(k=>{
-          const el = document.createElement('i');
-          el.className = 'dot' + (hist[k]===1?' ok':(hist[k]===0?' no':''));
-          grid.appendChild(el);
-        });
-        row.appendChild(label);
-        row.appendChild(grid);
-        wrap.appendChild(row);
+        const hist=LS.get(keyHabit(h.id),{});
+        const row=document.createElement('div'); row.className='streak-row';
+        const label=document.createElement('div'); label.className='streak-label'; label.textContent=h.label;
+        const grid=document.createElement('div'); grid.className='streak-grid';
+        days.forEach(k=>{ const el=document.createElement('i'); el.className='dot'+(hist[k]===1?' ok':(hist[k]===0?' no':'')); grid.appendChild(el); });
+        row.appendChild(label); row.appendChild(grid); wrap.appendChild(row);
       });
     }
 
     function updateGoalProgress(){
-      const hist = LS.get(KEY_DAYCOMP, {});
-      const goalWrap = $('#goalCurrentWrap');
-      if(!goalWrap) return;
-      const goalName = $('#goalCurrentName');
-      const goalProg = $('#goalProgress');
-      const goalTxt  = $('#goalProgressText');
-      const goalNote = $('#goalResetNote');
-
-      const daysTarget = parseInt(($('#goal_days')?.value)||0,10) || 20;
-      const name = ($('#goal_name')?.value)||'Recompensa';
-
-      const dates = Object.keys(hist).sort();
-      let lastResetIdx = -1;
-      for(let i=0;i<dates.length;i++){
-        const a = hist[dates[i]]   ?? null;
-        const b = hist[dates[i+1]] ?? null;
-        const c = hist[dates[i+2]] ?? null;
-        if(a===0 && b===0 && c===0){ lastResetIdx = i+2; }
-      }
-      let startCountIdx = (lastResetIdx>=0) ? lastResetIdx+1 : 0;
-      let completed = 0;
-      for(let i=startCountIdx;i<dates.length;i++){
-        if(hist[dates[i]]===1) completed++;
-      }
-      goalWrap.style.display = 'block';
-      goalName.textContent = name;
-      const pct = Math.max(0, Math.min(100, Math.round((completed / daysTarget) * 100)));
-      goalProg.style.width = pct + '%';
-      goalTxt.textContent = `Progresso: ${completed}/${daysTarget} dias completos`;
-      goalNote.style.display = lastResetIdx>=0 ? 'block' : 'none';
+      const hist=LS.get(KEY_DAYCOMP,{}), wrap=$('#goalCurrentWrap'); if(!wrap) return;
+      const name=($('#goal_name')?.value)||'Recompensa';
+      const target=parseInt(($('#goal_days')?.value)||0,10)||20;
+      const dates=Object.keys(hist).sort();
+      let lastReset=-1; for(let i=0;i<dates.length;i++){ const a=hist[dates[i]],b=hist[dates[i+1]],c=hist[dates[i+2]]; if(a===0&&b===0&&c===0){ lastReset=i+2; } }
+      let start=(lastReset>=0)?lastReset+1:0, done=0; for(let i=start;i<dates.length;i++){ if(hist[dates[i]]===1) done++; }
+      wrap.style.display='block';
+      $('#goalCurrentName').textContent=name;
+      $('#goalProgress').style.width=Math.max(0,Math.min(100,Math.round((done/target)*100)))+'%';
+      $('#goalProgressText').textContent=`Progresso: ${done}/${target} dias completos`;
+      $('#goalResetNote').style.display=lastReset>=0?'block':'none';
     }
 
-    /* =========================
-       hookSaveDay com SNAPSHOT
-       ========================= */
     function hookSaveDay(){
-      const saveBtn = document.getElementById('btnSaveDay');
-      if(!saveBtn) return;
-
-      saveBtn.addEventListener('click', ()=>{
-        const snap = {};
-        HABITS.forEach(h=>{
-          const el = document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`);
-          snap[h.id] = !!(el && el.checked);
-        });
-
-        setTimeout(()=> {
-          const todayISO = today();
-
-          HABITS.forEach(h=>{
-            const hist = LS.get(keyHabit(h.id), {});
-            hist[todayISO] = snap[h.id] ? 1 : 0;
-            LS.set(keyHabit(h.id), hist);
-          });
-
-          const essentials = ['agua','sono','movimento','alimentacao'];
-          const all = essentials.every(id => snap[id]);
-          const dcomp = LS.get(KEY_DAYCOMP, {});
-          dcomp[todayISO] = all ? 1 : 0;
-          LS.set(KEY_DAYCOMP, dcomp);
-
-          const d1 = todayISO, d0 = addDays(d1, -1), dm1 = addDays(d1, -2);
-          if( (dcomp[dm1]===0) && (dcomp[d0]===0) && (dcomp[d1]===0) ){
-            LS.set(`bp_progress_reset_at_${NIVEL}`, d1);
-          }
-
-          renderHabitDots();
-          updateGoalProgress();
-        }, 0);
+      const btn=document.getElementById('btnSaveDay'); if(!btn) return;
+      btn.addEventListener('click',()=>{
+        const snap={}; HABITS.forEach(h=>{ const el=document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`); snap[h.id]=!!(el&&el.checked); });
+        setTimeout(()=>{
+          const t=today();
+          HABITS.forEach(h=>{ const hist=LS.get(keyHabit(h.id),{}); hist[t]=snap[h.id]?1:0; LS.set(keyHabit(h.id),hist); });
+          const essentials=['agua','sono','movimento','alimentacao'];
+          const all=essentials.every(id=>snap[id]); const dcomp=LS.get(KEY_DAYCOMP,{}); dcomp[t]=all?1:0; LS.set(KEY_DAYCOMP,dcomp);
+          const d1=t,d0=addDays(d1,-1),dm1=addDays(d1,-2); if(dcomp[dm1]===0&&dcomp[d0]===0&&dcomp[d1]===0){ LS.set(`bp_progress_reset_at_${NIVEL}`,d1); }
+          renderHabitDots(); updateGoalProgress();
+        },0);
       });
     }
+    function hookClearDay(){ const b=document.getElementById('btnClearDay'); if(!b) return; b.addEventListener('click',()=>setTimeout(renderHabitDots,60)); }
 
-    function hookClearDay(){
-      const btn = document.getElementById('btnClearDay');
-      if(!btn) return;
-      btn.addEventListener('click', ()=> setTimeout(renderHabitDots, 60));
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      migrateToLocalKeys();          /* <- roda uma única vez */
+    document.addEventListener('DOMContentLoaded',()=>{
+      migrateToLocalKeys();
       renderHabitDots();
       updateGoalProgress();
       hookSaveDay();
       hookClearDay();
-      window.updateGoalProgress = updateGoalProgress;
+      window.updateGoalProgress=updateGoalProgress;
     });
   })();
   </script>
 
-  <!-- Script ORIGINAL de comportamento geral da página -->
+  <!-- Script ORIGINAL -->
   <script src="./habitos.js?v=18" defer></script>
 
-  <!-- Script EXTRA (somente metas) – mantém excluir/definir alvo -->
+  <!-- Script EXTRA (somente metas) – REMOVE “Alvo atual/Definir como alvo”
+       e permite clicar no card para editar a meta -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
     const GOALS_KEY = `bp_goals_${NIVEL}`;
-    const CUR_KEY   = `bp_goal_current_${NIVEL}`;
     const $ = s=>document.querySelector(s);
     const LS = {get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
     const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const goals = ()=>LS.get(GOALS_KEY,[]);
     const save  = g => LS.set(GOALS_KEY,g);
 
+    function loadGoalToEditor(g){
+      if($('#goal_name')) $('#goal_name').value = g?.name || '';
+      if($('#goal_days')) $('#goal_days').value = g?.days || '';
+      if(typeof window.updateGoalProgress==='function') window.updateGoalProgress();
+    }
+
     function renderGoals(){
       const box=$('#goalsList'); if(!box) return;
       const arr=goals();
-      const cur=LS.get(CUR_KEY,null)?.id||null;
       if(!arr.length){ box.innerHTML='<div class="muted">Nenhuma meta cadastrada ainda.</div>'; return; }
       box.innerHTML = arr.map(g=>`
-        <div class="goal-card" data-id="${g.id}">
+        <div class="goal-card" data-id="${g.id}" data-edit>
           <div class="hdr">
             <div class="name">${esc(g.name)}</div>
             <div class="small muted">${g.createdISO||''}</div>
           </div>
           <small class="muted">0/${g.days} dias completos</small>
           <div class="row-actions" style="margin-top:8px">
-            <button class="btn ${cur===g.id?'':'ghost'}" data-set="${g.id}">${cur===g.id?'Alvo atual':'Definir como alvo'}</button>
             <button class="btn ghost" data-del="${g.id}">Excluir</button>
           </div>
         </div>`).join('');
     }
 
-    function setCurrent(goal){
-      const val = goal?{id:goal.id,name:goal.name,days:goal.days}:null;
-      LS.set(CUR_KEY, val);
-      if($('#goal_name')) $('#goal_name').value = goal?.name || '';
-      if($('#goal_days')) $('#goal_days').value = goal?.days || '';
-      if(typeof window.updateGoalProgress==='function') window.updateGoalProgress();
-    }
-
     document.addEventListener('DOMContentLoaded', ()=>{
       renderGoals();
+
       const btnSave = document.getElementById('btnSaveGoal');
       const btnClear= document.getElementById('btnClearGoal');
       const list    = document.getElementById('goalsList');
@@ -433,30 +331,30 @@
         if(!name) return;
         const arr = goals();
         const goal = { id: Date.now().toString(36), name, days, createdISO: new Date().toISOString().slice(0,10) };
-        arr.unshift(goal); save(arr); setCurrent(goal); renderGoals();
+        arr.unshift(goal); save(arr); renderGoals();
       }, true);
 
       btnClear?.addEventListener('click', (e)=>{
         e.stopImmediatePropagation(); e.preventDefault();
         if($('#goal_name')) $('#goal_name').value='';
         if($('#goal_days')) $('#goal_days').value='';
+        if(typeof window.updateGoalProgress==='function') window.updateGoalProgress();
       }, true);
 
+      // clique no card -> carrega para edição
       list?.addEventListener('click', (e)=>{
         const t = e.target;
         const delId = t?.dataset?.del;
-        const setId = t?.dataset?.set;
         if(delId){
           e.stopImmediatePropagation(); e.preventDefault();
           const arr = goals().filter(g=>g.id!==delId); save(arr);
-          const cur = LS.get(CUR_KEY,null);
-          if(cur && cur.id===delId) setCurrent(null);
           renderGoals();
           return;
         }
-        if(setId){
-          e.stopImmediatePropagation(); e.preventDefault();
-          const g = goals().find(x=>x.id===setId); if(g){ setCurrent(g); renderGoals(); }
+        const card = t.closest('.goal-card');
+        if(card && card.dataset.id){
+          const g = goals().find(x=>x.id===card.dataset.id);
+          if(g){ loadGoalToEditor(g); }
         }
       }, true);
     });
