@@ -9,8 +9,10 @@
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
+    /* ===== Ajustes locais desta página ===== */
     .content p, .content li { text-align: justify; }
 
+    /* Tabs */
     .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
@@ -18,6 +20,7 @@
     .panel{display:none}
     .panel.active{display:block}
 
+    /* Listas de hábitos */
     .habits-group{margin-top:12px}
     .habits-title{font-weight:800;color:var(--serenity-2);margin:8px 0}
     .habits-grid{display:grid;grid-template-columns:1fr;gap:10px;align-items:center}
@@ -27,17 +30,20 @@
 
     .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
+    /* Meta atual */
     .progress-wrap{margin-top:10px}
     .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
     .muted-ok{display:flex;gap:8px;align-items:center;margin-top:10px}
 
+    /* Lista de metas salvas */
     .goal-list{display:grid;gap:10px;margin-top:10px}
     .goal-card{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:10px}
     .goal-card .hdr{display:flex;justify-content:space-between;gap:10px;align-items:center}
     .goal-card .name{font-weight:700}
     .goal-card small{color:var(--silver)}
 
+    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
     .streak-list{ display:grid; gap:12px; margin-top:12px }
@@ -45,12 +51,13 @@
     .streak-label{ color:var(--silver); font-weight:600 }
     .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
     .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
   </style>
 </head>
 
 <body class="layout-with-sidebar">
+  <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
@@ -67,12 +74,18 @@
     <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
+  <!-- Conteúdo -->
   <main class="content">
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
+    <!-- Card -->
     <section class="card">
       <h2>Hábitos e Recompensas</h2>
-      <p>Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução. O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).</p>
+      <p>
+        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+      </p>
 
       <div class="tabs">
         <button class="tab active" data-tab="rastreador">Rastreador diário</button>
@@ -80,7 +93,7 @@
         <button class="tab" data-tab="ferramentas">Ferramentas</button>
       </div>
 
-      <!-- Rastreador -->
+      <!-- Painel: Rastreador -->
       <div class="panel active" id="panel-rastreador">
         <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
 
@@ -112,7 +125,7 @@
           <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
         </div>
 
-        <!-- Progresso -->
+        <!-- Progresso 20 dias por hábito -->
         <div class="streak-box" id="progress20">
           <h3 class="habits-title">Progresso (últimos 20 dias)</h3>
           <div class="streak-legend">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</div>
@@ -120,13 +133,17 @@
         </div>
       </div>
 
-      <!-- Recompensas -->
+      <!-- Painel: Recompensas -->
       <div class="panel" id="panel-recompensas">
         <h3 class="habits-title">Meta de recompensa (baseada em dias completos)</h3>
 
         <div class="grid-2">
-          <label>Recompensa<br><input type="text" id="goal_name" placeholder="Ex.: Spa em casa"></label>
-          <label>Dias completos para merecer<br><input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20"></label>
+          <label>Recompensa (ex.: “Spa em casa”, “Filme + pipoca”)<br>
+            <input type="text" id="goal_name" placeholder="Ex.: Spa em casa">
+          </label>
+          <label>Dias completos para merecer<br>
+            <input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20">
+          </label>
         </div>
 
         <div class="row-actions">
@@ -142,17 +159,26 @@
         </div>
 
         <hr class="divisor">
-        <h3 class="habits-title">Minhas metas</h3>
-        <div id="goalsList" class="goal-list"><div class="muted">Nenhuma meta cadastrada ainda.</div></div>
 
-        <p class="muted" style="margin-top:12px"><strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos), a contagem da recompensa é <strong>zerada</strong> automaticamente.</p>
+        <h3 class="habits-title">Minhas metas</h3>
+        <div id="goalsList" class="goal-list">
+          <div class="muted">Nenhuma meta cadastrada ainda.</div>
+        </div>
+
+        <!-- Aviso de regra -->
+        <p class="muted" style="margin-top:12px">
+          <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
+          a contagem da recompensa é <strong>zerada</strong> automaticamente.
+        </p>
       </div>
 
-      <!-- Ferramentas -->
+      <!-- Painel: Ferramentas (simples) -->
       <div class="panel" id="panel-ferramentas">
         <p class="muted">Pequenas ferramentas que ajudam a manter bons hábitos.</p>
         <div class="grid-2">
-          <label>Calculadora simples de água (ml/kg)<br><input type="number" id="w_peso" placeholder="Peso (kg)"></label>
+          <label>Calculadora simples de água (ml/kg) — alvo sugerido 30–35 ml/kg<br>
+            <input type="number" id="w_peso" placeholder="Peso (kg)">
+          </label>
           <div class="calc-out" id="w_out">Informe seu peso para estimar a meta diária de água.</div>
         </div>
       </div>
@@ -161,66 +187,154 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Mantém seus scripts -->
-  <script src="./habitos.js?v=18" defer></script>
-
-  <!-- Script final: correção de metas -->
+  <!-- Script adicional: Progresso 20 dias por hábito + reset 3 ausências -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const GOALS_KEY = `bp_goals_${NIVEL}`;
-    const CUR_KEY = `bp_goal_current_${NIVEL}`;
-    const $ = s=>document.querySelector(s);
-    const LS = {get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
-    const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    const goals=()=>LS.get(GOALS_KEY,[]),save=g=>LS.set(GOALS_KEY,g);
-    const updateUI=()=>{if(typeof window.updateGoalProgress==='function')window.updateGoalProgress();};
+    const KEY_DAYCOMP = `bp_progress_${NIVEL}`; // dia completo: 1, 0
+    const KEY_RESET   = `bp_progress_reset_at_${NIVEL}`; // ISO da data do último reset
+    const HABITS = [
+      {id:'forca',        label:'Treino de força / Musculação'},
+      {id:'agua',         label:'Ingestão adequada de água'},
+      {id:'sono',         label:'Higiene do sono'},
+      {id:'movimento',    label:'Movimento do dia'},
+      {id:'alimentacao',  label:'Alimentação consciente'},
+      {id:'mobilidade',   label:'Mobilidade/Postura'},
+      {id:'sol',          label:'Ar livre / Sol'}
+    ];
+    const $ = s => document.querySelector(s);
 
-    function render(){
-      const box=$('#goalsList');if(!box)return;
-      const arr=goals(),cur=LS.get(CUR_KEY,null)?.id||null;
-      if(!arr.length){box.innerHTML='<div class="muted">Nenhuma meta cadastrada ainda.</div>';return;}
-      box.innerHTML=arr.map(g=>`
-        <div class="goal-card" data-id="${g.id}">
-          <div class="hdr"><div class="name">${esc(g.name)}</div><div class="small muted">${g.createdISO||''}</div></div>
-          <small class="muted">0/${g.days} dias completos</small>
-          <div class="row-actions" style="margin-top:8px">
-            <button class="btn ${cur===g.id?'':'ghost'}" data-set="${g.id}">${cur===g.id?'Alvo atual':'Definir como alvo'}</button>
-            <button class="btn ghost" data-del="${g.id}">Excluir</button>
-          </div>
-        </div>`).join('');
-    }
+    const iso = d => new Date(d).toISOString().slice(0,10);
+    const today = () => iso(new Date());
+    const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return iso(x); }
+    const LS = {
+      get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
+      set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
+    };
 
-    function setCurrent(g){
-      LS.set(CUR_KEY,g||null);
-      if($('#goal_name'))$('#goal_name').value=g?.name||'';
-      if($('#goal_days'))$('#goal_days').value=g?.days||'';
-      updateUI();
-    }
+    const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
 
-    function saveGoal(){
-      const name=($('#goal_name')?.value||'').trim(),days=parseInt($('#goal_days')?.value,10)||20;
-      if(!name)return;
-      const arr=goals();const goal={id:Date.now().toString(36),name,days,createdISO:new Date().toISOString().slice(0,10)};
-      arr.unshift(goal);save(arr);setCurrent(goal);render();
-    }
+    function renderHabitDots(){
+      const wrap = $('#streakList');
+      if(!wrap) return;
+      wrap.innerHTML = '';
+      const days = [];
+      for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(iso(d)); }
 
-    function delGoal(id){
-      const arr=goals().filter(g=>g.id!==id);save(arr);
-      const cur=LS.get(CUR_KEY,null);if(cur&&cur.id===id)setCurrent(null);render();
-    }
+      HABITS.forEach(h=>{
+        const hist = LS.get(keyHabit(h.id), {});
+        const row  = document.createElement('div');
+        row.className = 'streak-row';
 
-    document.addEventListener('DOMContentLoaded',()=>{
-      const cur=LS.get(CUR_KEY,null);if(cur)setCurrent(cur);render();
-      $('#btnSaveGoal')?.addEventListener('click',saveGoal);
-      $('#btnClearGoal')?.addEventListener('click',()=>{if($('#goal_name'))$('#goal_name').value='';if($('#goal_days'))$('#goal_days').value='';});
-      $('#goalsList')?.addEventListener('click',e=>{
-        const idDel=e.target?.dataset?.del,idSet=e.target?.dataset?.set;
-        if(idDel)delGoal(idDel);
-        if(idSet){const g=goals().find(x=>x.id===idSet);if(g)setCurrent(g);render();}
+        const label = document.createElement('div');
+        label.className = 'streak-label';
+        label.textContent = h.label;
+
+        const grid = document.createElement('div');
+        grid.className = 'streak-grid';
+        days.forEach(k=>{
+          const el = document.createElement('i');
+          el.className = 'dot' + (hist[k]===1?' ok':(hist[k]===0?' no':''));
+          grid.appendChild(el);
+        });
+
+        row.appendChild(label);
+        row.appendChild(grid);
+        wrap.appendChild(row);
       });
+    }
+
+    function updateGoalProgress(){
+      const hist = LS.get(KEY_DAYCOMP, {});
+      const goalWrap = $('#goalCurrentWrap');
+      if(!goalWrap) return;
+
+      const goalName = $('#goalCurrentName');
+      const goalProg = $('#goalProgress');
+      const goalTxt  = $('#goalProgressText');
+      const goalNote = $('#goalResetNote');
+
+      const daysTarget = parseInt(($('#goal_days')?.value)||0,10) || 20;
+      const name = ($('#goal_name')?.value)||'Recompensa';
+
+      const dates = Object.keys(hist).sort();
+      let lastResetIdx = -1;
+      for(let i=0;i<dates.length;i++){
+        const a = hist[dates[i]]   ?? null;
+        const b = hist[dates[i+1]] ?? null;
+        const c = hist[dates[i+2]] ?? null;
+        if(a===0 && b===0 && c===0){ lastResetIdx = i+2; }
+      }
+
+      let startCountIdx = (lastResetIdx>=0) ? lastResetIdx+1 : 0;
+
+      let completed = 0;
+      for(let i=startCountIdx;i<dates.length;i++){
+        if(hist[dates[i]]===1) completed++;
+      }
+
+      goalWrap.style.display = 'block';
+      goalName.textContent = name;
+      const pct = Math.max(0, Math.min(100, Math.round((completed / daysTarget) * 100)));
+      goalProg.style.width = pct + '%';
+      goalTxt.textContent = `Progresso: ${completed}/${daysTarget} dias completos`;
+      goalNote.style.display = lastResetIdx>=0 ? 'block' : 'none';
+    }
+
+    function hookSaveDay(){
+      const saveBtn = document.getElementById('btnSaveDay');
+      if(!saveBtn) return;
+
+      saveBtn.addEventListener('click', ()=>{
+        setTimeout(()=> {
+          const todayISO = today();
+
+          HABITS.forEach(h=>{
+            const hist = LS.get(keyHabit(h.id), {});
+            const el = document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`);
+            const val = el ? (el.checked ? 1 : 0) : null;
+            if(val!==null) hist[todayISO] = val;
+            LS.set(keyHabit(h.id), hist);
+          });
+
+          const essentials = ['agua','sono','movimento','alimentacao'];
+          let all = true;
+          essentials.forEach(id=>{
+            const el = document.querySelector(`input[type="checkbox"][data-habit="${id}"]`);
+            if(!el || !el.checked) all = false;
+          });
+          const dcomp = LS.get(KEY_DAYCOMP, {});
+          dcomp[todayISO] = all ? 1 : 0;
+          LS.set(KEY_DAYCOMP, dcomp);
+
+          const d1 = todayISO;
+          const d0 = addDays(d1, -1);
+          const dm1 = addDays(d1, -2);
+          if( (dcomp[dm1]===0) && (dcomp[d0]===0) && (dcomp[d1]===0) ){
+            LS.set(`bp_progress_reset_at_${NIVEL}`, d1);
+          }
+
+          renderHabitDots();
+          updateGoalProgress();
+        }, 80);
+      });
+    }
+
+    function hookClearDay(){
+      const btn = document.getElementById('btnClearDay');
+      if(!btn) return;
+      btn.addEventListener('click', ()=> setTimeout(renderHabitDots, 60));
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderHabitDots();
+      updateGoalProgress();
+      hookSaveDay();
+      hookClearDay();
     });
   })();
   </script>
+
+  <script src="./habitos.js?v=18" defer></script>
 </body>
 </html>
