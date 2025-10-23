@@ -43,14 +43,14 @@
     .goal-card .name{font-weight:700}
     .goal-card small{color:var(--silver)}
 
-    /* === Progresso (20 dias por hábito) === */
+    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
-    .streak-list{ display:grid; gap:10px; margin-top:12px }
-    .streak-row{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:12px }
-    .streak-label{ color:var(--silver); }
-    .streak-grid{ display:grid; grid-template-columns:repeat(20,14px); gap:6px; }
-    .dot{ width:14px; height:14px; border-radius:50%; background:#40464f; border:1px solid #30343b }
+    .streak-list{ display:grid; gap:12px; margin-top:12px }
+    .streak-row{ display:flex; flex-direction:column; gap:6px }
+    .streak-label{ color:var(--silver); font-weight:600 }
+    .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
+    .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
     .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
     .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
   </style>
@@ -164,6 +164,12 @@
         <div id="goalsList" class="goal-list">
           <div class="muted">Nenhuma meta cadastrada ainda.</div>
         </div>
+
+        <!-- Aviso de regra -->
+        <p class="muted" style="margin-top:12px">
+          <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
+          a contagem da recompensa é <strong>zerada</strong> automaticamente.
+        </p>
       </div>
 
       <!-- Painel: Ferramentas (simples) -->
@@ -206,15 +212,12 @@
       set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
     };
 
-    // chave para histórico por hábito
     const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
 
-    // Renderiza lista de linhas (um grid de 20 bolinhas por hábito)
     function renderHabitDots(){
       const wrap = $('#streakList');
       if(!wrap) return;
       wrap.innerHTML = '';
-      // pré-calcular últimos 20 dias (mais antigo -> mais recente)
       const days = [];
       for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(iso(d)); }
 
@@ -241,10 +244,8 @@
       });
     }
 
-    // Atualiza progresso da meta (usando histórico de dia completo + regra de reset 3 ausências)
     function updateGoalProgress(){
-      const hist = LS.get(KEY_DAYCOMP, {});              // { '2025-01-01': 1|0, ... }
-      const resetAt = LS.get(KEY_RESET, null);           // pode ser null
+      const hist = LS.get(KEY_DAYCOMP, {});
       const goalWrap = $('#goalCurrentWrap');
       if(!goalWrap) return;
 
@@ -253,35 +254,25 @@
       const goalTxt  = $('#goalProgressText');
       const goalNote = $('#goalResetNote');
 
-      // fonte dos alvos atuais: inputs visíveis no painel de recompensas (se o usuário já salvou, seu JS principal deve popular)
       const daysTarget = parseInt(($('#goal_days')?.value)||0,10) || 20;
       const name = ($('#goal_name')?.value)||'Recompensa';
 
-      // aplicar regra do reset: procura a sequência mais recente de 3 zeros consecutivos
-      const dates = Object.keys(hist).sort(); // crescente
+      const dates = Object.keys(hist).sort();
       let lastResetIdx = -1;
       for(let i=0;i<dates.length;i++){
         const a = hist[dates[i]]   ?? null;
         const b = hist[dates[i+1]] ?? null;
         const c = hist[dates[i+2]] ?? null;
-        if(a===0 && b===0 && c===0){ lastResetIdx = i+2; } // zera a partir do dia após o 3º zero
+        if(a===0 && b===0 && c===0){ lastResetIdx = i+2; }
       }
 
-      let startCountIdx = 0;
-      if(lastResetIdx>=0){ startCountIdx = lastResetIdx+1; }
-      // se houver KEY_RESET salvo (de execução anterior), respeita
-      if(resetAt){
-        const idx = dates.indexOf(resetAt);
-        if(idx>=0) startCountIdx = Math.max(startCountIdx, idx+1);
-      }
+      let startCountIdx = (lastResetIdx>=0) ? lastResetIdx+1 : 0;
 
-      // soma 1s de startCountIdx até o fim
       let completed = 0;
       for(let i=startCountIdx;i<dates.length;i++){
         if(hist[dates[i]]===1) completed++;
       }
 
-      // atualizar UI
       goalWrap.style.display = 'block';
       goalName.textContent = name;
       const pct = Math.max(0, Math.min(100, Math.round((completed / daysTarget) * 100)));
@@ -290,17 +281,14 @@
       goalNote.style.display = lastResetIdx>=0 ? 'block' : 'none';
     }
 
-    // Ao salvar o dia (botão "Salvar dia"), gravamos: por hábito e dia completo
     function hookSaveDay(){
       const saveBtn = document.getElementById('btnSaveDay');
       if(!saveBtn) return;
 
       saveBtn.addEventListener('click', ()=>{
-        // aguarda o JS principal concluir a própria gravação
         setTimeout(()=> {
           const todayISO = today();
 
-          // 1) salvar por-hábito
           HABITS.forEach(h=>{
             const hist = LS.get(keyHabit(h.id), {});
             const el = document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`);
@@ -309,7 +297,6 @@
             LS.set(keyHabit(h.id), hist);
           });
 
-          // 2) salvar/atualizar “dia completo” (todas essenciais marcadas?)
           const essentials = ['agua','sono','movimento','alimentacao'];
           let all = true;
           essentials.forEach(id=>{
@@ -320,12 +307,11 @@
           dcomp[todayISO] = all ? 1 : 0;
           LS.set(KEY_DAYCOMP, dcomp);
 
-          // 3) se hoje + 2 dias anteriores forem 0 => grava data de reset
           const d1 = todayISO;
           const d0 = addDays(d1, -1);
           const dm1 = addDays(d1, -2);
           if( (dcomp[dm1]===0) && (dcomp[d0]===0) && (dcomp[d1]===0) ){
-            LS.set(KEY_RESET, d1);
+            LS.set(`bp_progress_reset_at_${NIVEL}`, d1);
           }
 
           renderHabitDots();
@@ -334,7 +320,6 @@
       });
     }
 
-    // “Limpar marcações” não altera histórico, apenas re-renderiza tabela
     function hookClearDay(){
       const btn = document.getElementById('btnClearDay');
       if(!btn) return;
