@@ -8,52 +8,36 @@
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    /* ===== Ajustes locais desta página ===== */
+    /* texto justificado local */
     .content p, .content li { text-align: justify; }
 
-    /* Tabs (padrão) */
+    /* abas/painéis */
     .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
     .panel{display:none}
     .panel.active{display:block}
 
+    /* preparação colapsável */
+    details.prep{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:10px}
+    details.prep > summary{cursor:pointer;font-weight:700;color:var(--serenity-2);margin:-6px 0 6px 0;list-style:none}
+    details.prep > summary::-webkit-details-marker{display:none}
+
+    /* controles */
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
 
-    .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    /* roteiro simples */
+    .script-box{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:10px}
+    .script-line{font-size:1rem;line-height:1.6}
+    .script-line strong{color:var(--serenity-2)}
+    .muted small{color:var(--silver)}
 
-    .box{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px}
-    .muted-ok{display:flex;gap:8px;align-items:center;margin-top:10px}
-
-    /* Visualização: sub-abas simples */
-    .subtabs{display:flex;gap:6px;margin:8px 0}
-    .subtab{padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;font-size:.95rem}
-    .subtab.active{border-color:rgba(203,229,255,.35);background:#12161B}
-
-    .script-step{
-      border:1px dashed var(--line);
-      background:rgba(255,255,255,.02);
-      padding:12px;border-radius:10px;
-      min-height:64px;display:flex;align-items:center
-    }
-
-    .list-history{display:grid;gap:10px;margin-top:10px}
-    .hist-item{border:1px solid var(--line);background:#0f1318;border-radius:10px;padding:10px}
-    .hist-item .hdr{display:flex;justify-content:space-between;gap:10px}
-    .hist-item .tt{font-weight:700}
-    .hist-item .dt{color:var(--silver)}
-
-    .timer{
-      font-variant-numeric:tabular-nums;
-      font-weight:800;font-size:1.6rem;
-      color:var(--serenity-2)
-    }
-
-    .tip{
-      border-left:3px solid #67b2ff;
-      padding:8px 10px;background:#0f1318;border-radius:8px;margin:8px 0
-    }
+    /* respirador (contador) */
+    .breath-phase{font-weight:800;color:var(--serenity-2)}
+    .breath-count{font-size:2rem;font-weight:800}
   </style>
 </head>
 
@@ -80,378 +64,135 @@
     <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Card -->
+    <!-- Card principal -->
     <section class="card">
       <h2>Práticas Mentais</h2>
-      <p>
-        Use estas práticas para regular o estresse, treinar foco com visualizações e promover relaxamento. 
-        <strong>Sugestão:</strong> tenha um caderno/diário por perto para anotar sensações, imagens e insights.
-      </p>
+      <p>Entre em estado de foco calmo. Abaixo, você encontra três práticas: respiração para gerenciamento de estresse, visualização mental e relaxamento guiado. O ping suave toca a cada 60 segundos como âncora de atenção.</p>
 
       <div class="tabs">
-        <button class="tab active" data-tab="estresse">Gerenciamento de Estresse</button>
-        <button class="tab" data-tab="visualizacao">Visualização Mental</button>
-        <button class="tab" data-tab="relaxamento">Relaxamento Guiado</button>
+        <button class="tab active" data-tab="resp">Respiração (Gerenciamento de Estresse)</button>
+        <button class="tab" data-tab="viz">Visualização Mental</button>
+        <button class="tab" data-tab="relax">Relaxamento Guiado</button>
       </div>
 
-      <!-- ABA 1: Estresse -->
-      <div class="panel active" id="panel-estresse">
-        <div class="box">
-          <h3>Respiração 4–4–6 (2–5 min)</h3>
-          <p class="muted">Inspire 4s • segure 4s • expire 6s. Mantenha ombros soltos e mandíbula relaxada.</p>
-          <div class="grid-2">
-            <div>
-              <div class="timer" id="stressTimer">00:00</div>
-              <div class="tip">Dica: feche os olhos, solte os ombros, descruze as pernas.</div>
-              <div class="row-actions">
-                <button class="btn" id="stressStart">Iniciar prática</button>
-                <button class="btn ghost" id="stressStop">Parar</button>
-                <button class="btn ghost" id="stressSave">Salvar sensação</button>
-              </div>
-            </div>
-            <div>
-              <label>Como você se sente agora?<br>
-                <textarea id="stressNote" rows="5" placeholder="Breve nota (opcional)"></textarea>
-              </label>
-            </div>
-          </div>
+      <!-- Painel: Respiração -->
+      <div class="panel active" id="panel-resp">
+        <details class="prep" open>
+          <summary>Orientação de preparação</summary>
+          <ul>
+            <li>Encontre um espaço tranquilo e confortável. Use fones, se desejar, com música leve/instrumental.</li>
+            <li>Silencie notificações. Avise que você fará uma prática breve.</li>
+            <li>Faça 3 respirações lentas: inspire 4s, segure 2s, expire 6s.</li>
+          </ul>
+        </details>
+
+        <div class="grid-2" style="margin-top:10px">
+          <label>Duração<br>
+            <select id="r_dur">
+              <option value="120">2 minutos</option>
+              <option value="300">5 minutos</option>
+              <option value="600">10 minutos</option>
+            </select>
+          </label>
+          <div class="muted">Ping a cada 60s. Ritmo: <strong>4–2–6</strong> (inspire, segure, expire).</div>
         </div>
 
-        <h3 class="habits-title" style="margin-top:16px">Histórico</h3>
-        <div id="stressHist" class="list-history">
-          <div class="muted">Sem registros ainda.</div>
-        </div>
-      </div>
-
-      <!-- ABA 2: Visualização -->
-      <div class="panel" id="panel-visualizacao">
-        <div class="box">
-          <h3>Escolha o modo</h3>
-          <div class="subtabs">
-            <button class="subtab active" data-subtab="guiada">Guiada</button>
-            <button class="subtab" data-subtab="livre">Livre (diário)</button>
-          </div>
-
-          <!-- Guiada -->
-          <div id="viz-guiada" class="subpanel" style="display:block">
-            <div class="grid-2">
-              <label>Roteiro<br>
-                <select id="vizScript">
-                  <option value="preTreino">Antes do treino (foco & energia)</option>
-                  <option value="autoestima">Autoconfiança & postura</option>
-                  <option value="consistencia">Constância & hábito</option>
-                </select>
-              </label>
-
-              <div>
-                <div class="muted">Etapa <span id="vizStepIdx">1</span>/<span id="vizStepTotal">1</span></div>
-                <div class="script-step" id="vizStepText">Selecione um roteiro e clique em Iniciar.</div>
-                <div class="row-actions">
-                  <button class="btn" id="vizStart">Iniciar</button>
-                  <button class="btn ghost" id="vizPrev">◀</button>
-                  <button class="btn ghost" id="vizNext">▶</button>
-                  <button class="btn ghost" id="vizSave">Salvar registro</button>
-                </div>
-              </div>
-            </div>
-            <div class="tip">Respire lento. Visualize com todos os sentidos (imagem, som, sensação corporal).</div>
-          </div>
-
-          <!-- Livre -->
-          <div id="viz-livre" class="subpanel" style="display:none">
-            <div class="grid-2">
-              <label>O que você visualizou hoje?<br>
-                <textarea id="vizLivreText" rows="6" placeholder="Descreva a cena, objetivos, sensações..."></textarea>
-              </label>
-              <div>
-                <label>Nota de 0–10 (clareza/qualidade)<br>
-                  <input id="vizLivreScore" type="number" min="0" max="10" placeholder="Ex.: 7">
-                </label>
-                <div class="row-actions">
-                  <button class="btn" id="vizLivreSave">Salvar no diário</button>
-                  <button class="btn ghost" id="vizLivreClear">Limpar</button>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="calc-out" id="r_status">
+          <div class="breath-phase" id="r_phase">Pronto</div>
+          <div class="breath-count" id="r_count">—</div>
+          <div class="muted"><small id="r_timer">00:00</small></div>
         </div>
 
-        <h3 class="habits-title" style="margin-top:16px">Histórico</h3>
-        <div id="vizHist" class="list-history">
-          <div class="muted">Sem registros ainda.</div>
+        <div class="row-actions">
+          <button class="btn" id="r_start">Iniciar</button>
+          <button class="btn ghost" id="r_stop" disabled>Parar</button>
         </div>
       </div>
 
-      <!-- ABA 3: Relaxamento -->
-      <div class="panel" id="panel-relaxamento">
-        <div class="box">
-          <h3>Relaxamento guiado corporal</h3>
-          <p class="muted">Percorra o corpo dos pés à cabeça, soltando regiões com a expiração.</p>
+      <!-- Painel: Visualização (AJUSTADO: ler tudo antes, depois iniciar) -->
+      <div class="panel" id="panel-viz">
+        <details class="prep" open>
+          <summary>Orientação de preparação</summary>
+          <ul>
+            <li>Postura confortável. Se preferir, fones de ouvido.</li>
+            <li>Defina um objetivo claro (ex.: “corpo leve e ativo”, “consistência nos treinos”).</li>
+            <li><strong>Leia o roteiro abaixo por completo</strong>. Ao final, <strong>feche os olhos e pressione Iniciar</strong>.</li>
+            <li>Durante a prática, o roteiro avança automaticamente a cada 4s e o ping toca a cada 60s para recentrar a atenção.</li>
+          </ul>
+        </details>
 
-          <div class="grid-2">
-            <div>
-              <div class="script-step" id="relaxText">Clique em Iniciar para começar.</div>
-              <div class="row-actions">
-                <button class="btn" id="relaxStart">Iniciar</button>
-                <button class="btn ghost" id="relaxNext">Próximo</button>
-                <button class="btn ghost" id="relaxSave">Salvar sensação</button>
-              </div>
-            </div>
-            <div>
-              <label>Como você se sente agora?<br>
-                <textarea id="relaxNote" rows="5" placeholder="Breve nota (opcional)"></textarea>
-              </label>
-            </div>
-          </div>
+        <div class="grid-2" style="margin-top:10px">
+          <label>Duração<br>
+            <select id="v_dur">
+              <option value="120">2 minutos</option>
+              <option value="300">5 minutos</option>
+              <option value="600">10 minutos</option>
+            </select>
+          </label>
+          <div class="muted">Depois de ler o roteiro, feche os olhos e inicie.</div>
         </div>
 
-        <h3 class="habits-title" style="margin-top:16px">Histórico</h3>
-        <div id="relaxHist" class="list-history">
-          <div class="muted">Sem registros ainda.</div>
+        <!-- ROTEIRO PARA LER ANTES -->
+        <div class="calc-out" id="v_readfirst">
+          <!-- preenchido via JS com o roteiro completo -->
+        </div>
+
+        <!-- CAIXA DURANTE A PRÁTICA -->
+        <div class="script-box" id="v_box" style="margin-top:10px">
+          <div class="script-line" id="v_line"><em>Pronto para começar? Depois de ler, feche os olhos e pressione Iniciar.</em></div>
+          <div class="row-actions" style="margin-top:10px">
+            <button class="btn ghost" id="v_prev" disabled>◀︎ Anterior</button>
+            <button class="btn ghost" id="v_next" disabled>Próximo ▶︎</button>
+          </div>
+          <div class="muted" style="margin-top:6px"><small id="v_timer">00:00</small></div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn" id="v_start">Iniciar</button>
+          <button class="btn ghost" id="v_stop" disabled>Parar</button>
+        </div>
+      </div>
+
+      <!-- Painel: Relaxamento (inalterado) -->
+      <div class="panel" id="panel-relax">
+        <details class="prep" open>
+          <summary>Orientação de preparação</summary>
+          <ul>
+            <li>Deite-se ou sente-se com apoio. Relaxe ombros e mandíbula.</li>
+            <li>Permaneça atento às sensações do corpo. Se divagar, volte gentilmente com o ping.</li>
+            <li>O roteiro avança sozinho a cada 4s. Ping a cada 60s.</li>
+          </ul>
+        </details>
+
+        <div class="grid-2" style="margin-top:10px">
+          <label>Duração<br>
+            <select id="l_dur">
+              <option value="120">2 minutos</option>
+              <option value="300">5 minutos</option>
+              <option value="600">10 minutos</option>
+            </select>
+          </label>
+          <div class="muted">Percorra o corpo de cima a baixo, liberando tensões.</div>
+        </div>
+
+        <div class="script-box" id="l_box">
+          <div class="script-line" id="l_line"><strong>Início:</strong> solte o ar… permita que o peso do corpo afunde.</div>
+          <div class="row-actions" style="margin-top:10px">
+            <button class="btn ghost" id="l_prev">◀︎ Anterior</button>
+            <button class="btn ghost" id="l_next">Próximo ▶︎</button>
+          </div>
+          <div class="muted" style="margin-top:6px"><small id="l_timer">00:00</small></div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn" id="l_start">Iniciar</button>
+          <button class="btn ghost" id="l_stop" disabled>Parar</button>
         </div>
       </div>
     </section>
   </main>
 
   <script>window.NIVEL="fundacao-72a9c";</script>
-  <script defer>
-  (function(){
-    const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const PAGE  = 'praticas';
-    const $  = s=>document.querySelector(s);
-    const $$ = s=>Array.from(document.querySelectorAll(s));
-
-    /* ===== Datas locais (sem UTC) ===== */
-    const toDate = (val) => (val instanceof Date) ? new Date(val) : new Date(String(val).replace(/T.*$/,'T00:00:00'));
-    const localISO = (val=new Date())=>{
-      const d = toDate(val);
-      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${day}`;
-    };
-    const todayISO = ()=> localISO(new Date());
-
-    /* ===== Storage ===== */
-    const LS = {
-      get:(k,def)=>{ try{const v=localStorage.getItem(k);return v?JSON.parse(v):def }catch(_){return def} },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
-    const key = (suffix)=> `bp_${PAGE}_${suffix}_${NIVEL}`;
-
-    /* ===== Tabs ===== */
-    const panels = { estresse:'#panel-estresse', visualizacao:'#panel-visualizacao', relaxamento:'#panel-relaxamento' };
-    $$('.tab').forEach(tb=>{
-      tb.addEventListener('click', ()=>{
-        $$('.tab').forEach(x=>x.classList.remove('active'));
-        tb.classList.add('active');
-        $$('.panel').forEach(p=>p.classList.remove('active'));
-        $(panels[tb.dataset.tab]).classList.add('active');
-      });
-    });
-
-    /* ==========================================================
-       1) GERENCIAMENTO DE ESTRESSE – timer 4–4–6 + diário
-       ========================================================== */
-    (function(){
-      let running=false, t0=null, rafId=null, phase=0, lastTick=0;
-      const phases = [4,4,6]; // in, hold, out
-      const timerEl = $('#stressTimer');
-
-      function fmt(ms){
-        const s = Math.floor(ms/1000);
-        const m = String(Math.floor(s/60)).padStart(2,'0');
-        const ss = String(s%60).padStart(2,'0');
-        return `${m}:${ss}`;
-      }
-
-      function loop(ts){
-        if(!running){ cancelAnimationFrame(rafId); return; }
-        if(!t0) t0=ts;
-        const elapsed = ts - t0;
-        timerEl.textContent = fmt(elapsed);
-
-        // troca fase a cada X segundos
-        if(elapsed - lastTick >= (phases[phase]*1000)){
-          lastTick += phases[phase]*1000;
-          phase = (phase+1)%phases.length;
-        }
-        rafId = requestAnimationFrame(loop);
-      }
-
-      $('#stressStart')?.addEventListener('click', ()=>{
-        if(running) return;
-        running=true; t0=null; lastTick=0; phase=0;
-        rafId = requestAnimationFrame(loop);
-      });
-
-      $('#stressStop')?.addEventListener('click', ()=>{
-        running=false; cancelAnimationFrame(rafId);
-      });
-
-      function renderHist(){
-        const box = $('#stressHist');
-        const arr = LS.get(key('stress_hist'),[]);
-        if(!arr.length){ box.innerHTML = '<div class="muted">Sem registros ainda.</div>'; return; }
-        box.innerHTML = arr.map(i=>`
-          <div class="hist-item">
-            <div class="hdr"><div class="tt">Respiração 4–4–6</div><div class="dt">${i.date}</div></div>
-            <div>${(i.note||'').replace(/</g,'&lt;')}</div>
-          </div>`).join('');
-      }
-      $('#stressSave')?.addEventListener('click', ()=>{
-        const note = $('#stressNote')?.value || '';
-        const arr = LS.get(key('stress_hist'),[]);
-        arr.unshift({date: todayISO(), note});
-        LS.set(key('stress_hist'), arr);
-        $('#stressNote').value='';
-        renderHist();
-      });
-      document.addEventListener('DOMContentLoaded', renderHist);
-    })();
-
-    /* ==========================================================
-       2) VISUALIZAÇÃO MENTAL – guiada + livre
-       ========================================================== */
-    (function(){
-      /* Sub-abas */
-      const subtPanels = { guiada:'#viz-guiada', livre:'#viz-livre' };
-      $$('.subtab').forEach(st=>{
-        st.addEventListener('click', ()=>{
-          $$('.subtab').forEach(x=>x.classList.remove('active'));
-          st.classList.add('active');
-          Object.values(subtPanels).forEach(sel=>$(sel).style.display='none');
-          $(subtPanels[st.dataset.subtab]).style.display='block';
-        });
-      });
-
-      /* Roteiros guiados */
-      const SCRIPTS = {
-        preTreino: [
-          "Feche os olhos e visualize você chegando ao treino com energia e foco.",
-          "Veja os movimentos sendo executados com técnica e confiança.",
-          "Sinta o corpo responder forte e coordenado, respiração fluindo.",
-          "Projete o final do treino: orgulho, satisfação, autocuidado honrado."
-        ],
-        autoestima: [
-          "Endireite a postura: coluna alta, peito aberto, queixo paralelo.",
-          "Visualize uma versão sua confiante, presente e serena.",
-          "A cada respiração, reforce: 'Eu posso. Eu consigo. Eu me respeito.'",
-          "Traga essa imagem consigo para o resto do dia."
-        ],
-        consistencia: [
-          "Veja um calendário com vários dias marcados: constância em ação.",
-          "Visualize você vencendo o momento de preguiça e iniciando a tarefa.",
-          "Sinta a pequena vitória diária somando com as anteriores.",
-          "Reforce: 'Pequenos passos hoje constroem grandes mudanças.'"
-        ]
-      };
-      let curScript = 'preTreino', idx = 0;
-
-      function loadScript(){
-        const steps = SCRIPTS[curScript] || [];
-        $('#vizStepTotal').textContent = String(steps.length||1);
-        idx = 0;
-        renderStep();
-      }
-      function renderStep(){
-        const steps = SCRIPTS[curScript] || [];
-        const txt   = steps[idx] || '—';
-        $('#vizStepText').textContent = txt;
-        $('#vizStepIdx').textContent  = String(idx+1);
-      }
-
-      $('#vizScript')?.addEventListener('change', (e)=>{
-        curScript = e.target.value || 'preTreino';
-        loadScript();
-      });
-      $('#vizStart')?.addEventListener('click', loadScript);
-      $('#vizPrev')?.addEventListener('click', ()=>{ if(idx>0){ idx--; renderStep(); } });
-      $('#vizNext')?.addEventListener('click', ()=>{
-        const steps = SCRIPTS[curScript] || [];
-        if(idx < steps.length-1){ idx++; renderStep(); }
-      });
-
-      function renderVizHist(){
-        const box = $('#vizHist');
-        const arr = LS.get(key('viz_hist'),[]);
-        if(!arr.length){ box.innerHTML = '<div class="muted">Sem registros ainda.</div>'; return; }
-        box.innerHTML = arr.map(i=>`
-          <div class="hist-item">
-            <div class="hdr"><div class="tt">${i.type==='guiada'?'Visualização guiada':'Visualização livre'}</div><div class="dt">${i.date}</div></div>
-            <div>${(i.text||'').replace(/</g,'&lt;')}${i.score!=null?` <small class="muted">(nota: ${i.score})</small>`:''}</div>
-          </div>`).join('');
-      }
-
-      $('#vizSave')?.addEventListener('click', ()=>{
-        const arr = LS.get(key('viz_hist'),[]);
-        const steps = SCRIPTS[curScript] || [];
-        arr.unshift({date: todayISO(), type:'guiada', text:`Roteiro: ${curScript} | etapa ${idx+1}/${steps.length}`});
-        LS.set(key('viz_hist'), arr);
-        renderVizHist();
-      });
-
-      $('#vizLivreSave')?.addEventListener('click', ()=>{
-        const text = $('#vizLivreText')?.value?.trim() || '';
-        const score = ($('#vizLivreScore')?.value ? parseInt($('#vizLivreScore').value,10) : null);
-        if(!text) return;
-        const arr = LS.get(key('viz_hist'),[]);
-        arr.unshift({date: todayISO(), type:'livre', text, score});
-        LS.set(key('viz_hist'), arr);
-        $('#vizLivreText').value=''; $('#vizLivreScore').value='';
-        renderVizHist();
-      });
-      $('#vizLivreClear')?.addEventListener('click', ()=>{
-        $('#vizLivreText').value=''; $('#vizLivreScore').value='';
-      });
-
-      document.addEventListener('DOMContentLoaded', ()=>{
-        loadScript();
-        renderVizHist();
-      });
-    })();
-
-    /* ==========================================================
-       3) RELAXAMENTO GUIADO – sequência curta + diário
-       ========================================================== */
-    (function(){
-      const STEPS = [
-        "Acomode-se. Solte os ombros e descruze as pernas.",
-        "Leve a atenção aos pés e panturrilhas. Ao expirar, solte a tensão.",
-        "Relaxe coxas e quadris. Respiração lenta.",
-        "Solte abdome, peito e costas. Sinta o apoio da cadeira.",
-        "Relaxe ombros, braços, mãos. Maxilar solto, língua suave.",
-        "Atenção ao rosto e testa. Suavize a expressão.",
-        "Permaneça alguns instantes respirando com conforto."
-      ];
-      let i=0;
-
-      function render(){ $('#relaxText').textContent = STEPS[i] || '—'; }
-
-      $('#relaxStart')?.addEventListener('click', ()=>{ i=0; render(); });
-      $('#relaxNext') ?.addEventListener('click', ()=>{ if(i<STEPS.length-1){ i++; render(); } });
-
-      function renderHist(){
-        const box = $('#relaxHist');
-        const arr = LS.get(key('relax_hist'),[]);
-        if(!arr.length){ box.innerHTML = '<div class="muted">Sem registros ainda.</div>'; return; }
-        box.innerHTML = arr.map(i=>`
-          <div class="hist-item">
-            <div class="hdr"><div class="tt">Relaxamento guiado</div><div class="dt">${i.date}</div></div>
-            <div>${(i.note||'').replace(/</g,'&lt;')}</div>
-          </div>`).join('');
-      }
-      $('#relaxSave')?.addEventListener('click', ()=>{
-        const note = $('#relaxNote')?.value || '';
-        const arr = LS.get(key('relax_hist'),[]);
-        arr.unshift({date: todayISO(), note});
-        LS.set(key('relax_hist'), arr);
-        $('#relaxNote').value='';
-        renderHist();
-      });
-
-      document.addEventListener('DOMContentLoaded', renderHist);
-    })();
-
-  })();
-  </script>
+  <script src="./praticas.js?v=2" defer></script>
 </body>
 </html>
