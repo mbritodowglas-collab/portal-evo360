@@ -43,13 +43,16 @@
     .goal-card .name{font-weight:700}
     .goal-card small{color:var(--silver)}
 
-    /* === Progresso (últimos 20 dias) === */
+    /* === Progresso (20 dias por hábito) === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
-    .streak-grid{ display:grid; grid-template-columns:repeat(20,14px); gap:6px; margin-top:10px; align-items:center }
+    .streak-list{ display:grid; gap:10px; margin-top:12px }
+    .streak-row{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:12px }
+    .streak-label{ color:var(--silver); }
+    .streak-grid{ display:grid; grid-template-columns:repeat(20,14px); gap:6px; }
     .dot{ width:14px; height:14px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
   </style>
 </head>
 
@@ -122,11 +125,11 @@
           <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
         </div>
 
-        <!-- Progresso 20 dias -->
+        <!-- Progresso 20 dias por hábito -->
         <div class="streak-box" id="progress20">
           <h3 class="habits-title">Progresso (últimos 20 dias)</h3>
           <div class="streak-legend">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</div>
-          <div id="streakGrid" class="streak-grid" aria-live="polite"></div>
+          <div id="streakList" class="streak-list" aria-live="polite"></div>
         </div>
       </div>
 
@@ -152,6 +155,7 @@
           <div class="muted">Alvo: <strong id="goalCurrentName"></strong></div>
           <div class="progress"><i id="goalProgress" style="width:0%"></i></div>
           <div class="muted" id="goalProgressText">Progresso: —</div>
+          <div class="muted" id="goalResetNote" style="display:none">Contagem reiniciada por 3 ausências seguidas.</div>
         </div>
 
         <hr class="divisor">
@@ -177,58 +181,172 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Script adicional: Progresso 20 dias -->
+  <!-- Script adicional: Progresso 20 dias por hábito + reset 3 ausências -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const KEY   = `bp_progress_${NIVEL}`;
-    const $     = s => document.querySelector(s);
+    const KEY_DAYCOMP = `bp_progress_${NIVEL}`; // dia completo: 1, 0
+    const KEY_RESET   = `bp_progress_reset_at_${NIVEL}`; // ISO da data do último reset
+    const HABITS = [
+      {id:'forca',        label:'Treino de força / Musculação'},
+      {id:'agua',         label:'Ingestão adequada de água'},
+      {id:'sono',         label:'Higiene do sono'},
+      {id:'movimento',    label:'Movimento do dia'},
+      {id:'alimentacao',  label:'Alimentação consciente'},
+      {id:'mobilidade',   label:'Mobilidade/Postura'},
+      {id:'sol',          label:'Ar livre / Sol'}
+    ];
+    const $ = s => document.querySelector(s);
 
     const iso = d => new Date(d).toISOString().slice(0,10);
     const today = () => iso(new Date());
+    const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return iso(x); }
     const LS = {
-      get:(k,def={})=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
+      get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
       set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
     };
 
-    function renderDots(){
-      const hist = LS.get(KEY,{});
-      const wrap = $('#streakGrid');
+    // chave para histórico por hábito
+    const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
+
+    // Renderiza lista de linhas (um grid de 20 bolinhas por hábito)
+    function renderHabitDots(){
+      const wrap = $('#streakList');
       if(!wrap) return;
       wrap.innerHTML = '';
-      for(let i=19;i>=0;i--){
-        const d = new Date(); d.setDate(d.getDate()-i);
-        const k = iso(d);
-        const val = hist[k];
-        const el = document.createElement('i');
-        el.className = 'dot' + (val===1?' ok':(val===0?' no':''));
-        el.title = k + (val===1?' · completo':(val===0?' · não completo':' · sem registro'));
-        wrap.appendChild(el);
+      // pré-calcular últimos 20 dias (mais antigo -> mais recente)
+      const days = [];
+      for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(iso(d)); }
+
+      HABITS.forEach(h=>{
+        const hist = LS.get(keyHabit(h.id), {});
+        const row  = document.createElement('div');
+        row.className = 'streak-row';
+
+        const label = document.createElement('div');
+        label.className = 'streak-label';
+        label.textContent = h.label;
+
+        const grid = document.createElement('div');
+        grid.className = 'streak-grid';
+        days.forEach(k=>{
+          const el = document.createElement('i');
+          el.className = 'dot' + (hist[k]===1?' ok':(hist[k]===0?' no':''));
+          grid.appendChild(el);
+        });
+
+        row.appendChild(label);
+        row.appendChild(grid);
+        wrap.appendChild(row);
+      });
+    }
+
+    // Atualiza progresso da meta (usando histórico de dia completo + regra de reset 3 ausências)
+    function updateGoalProgress(){
+      const hist = LS.get(KEY_DAYCOMP, {});              // { '2025-01-01': 1|0, ... }
+      const resetAt = LS.get(KEY_RESET, null);           // pode ser null
+      const goalWrap = $('#goalCurrentWrap');
+      if(!goalWrap) return;
+
+      const goalName = $('#goalCurrentName');
+      const goalProg = $('#goalProgress');
+      const goalTxt  = $('#goalProgressText');
+      const goalNote = $('#goalResetNote');
+
+      // fonte dos alvos atuais: inputs visíveis no painel de recompensas (se o usuário já salvou, seu JS principal deve popular)
+      const daysTarget = parseInt(($('#goal_days')?.value)||0,10) || 20;
+      const name = ($('#goal_name')?.value)||'Recompensa';
+
+      // aplicar regra do reset: procura a sequência mais recente de 3 zeros consecutivos
+      const dates = Object.keys(hist).sort(); // crescente
+      let lastResetIdx = -1;
+      for(let i=0;i<dates.length;i++){
+        const a = hist[dates[i]]   ?? null;
+        const b = hist[dates[i+1]] ?? null;
+        const c = hist[dates[i+2]] ?? null;
+        if(a===0 && b===0 && c===0){ lastResetIdx = i+2; } // zera a partir do dia após o 3º zero
       }
+
+      let startCountIdx = 0;
+      if(lastResetIdx>=0){ startCountIdx = lastResetIdx+1; }
+      // se houver KEY_RESET salvo (de execução anterior), respeita
+      if(resetAt){
+        const idx = dates.indexOf(resetAt);
+        if(idx>=0) startCountIdx = Math.max(startCountIdx, idx+1);
+      }
+
+      // soma 1s de startCountIdx até o fim
+      let completed = 0;
+      for(let i=startCountIdx;i<dates.length;i++){
+        if(hist[dates[i]]===1) completed++;
+      }
+
+      // atualizar UI
+      goalWrap.style.display = 'block';
+      goalName.textContent = name;
+      const pct = Math.max(0, Math.min(100, Math.round((completed / daysTarget) * 100)));
+      goalProg.style.width = pct + '%';
+      goalTxt.textContent = `Progresso: ${completed}/${daysTarget} dias completos`;
+      goalNote.style.display = lastResetIdx>=0 ? 'block' : 'none';
     }
 
-    function essentialsCompleted(){
-      const box = document.querySelectorAll('#essenciais input[type="checkbox"][data-habit]');
-      if(!box.length) return null;
-      let all = true, any = false;
-      box.forEach(chk => { any = true; if(!chk.checked) all = false; });
-      return any ? all : null;
+    // Ao salvar o dia (botão "Salvar dia"), gravamos: por hábito e dia completo
+    function hookSaveDay(){
+      const saveBtn = document.getElementById('btnSaveDay');
+      if(!saveBtn) return;
+
+      saveBtn.addEventListener('click', ()=>{
+        // aguarda o JS principal concluir a própria gravação
+        setTimeout(()=> {
+          const todayISO = today();
+
+          // 1) salvar por-hábito
+          HABITS.forEach(h=>{
+            const hist = LS.get(keyHabit(h.id), {});
+            const el = document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`);
+            const val = el ? (el.checked ? 1 : 0) : null;
+            if(val!==null) hist[todayISO] = val;
+            LS.set(keyHabit(h.id), hist);
+          });
+
+          // 2) salvar/atualizar “dia completo” (todas essenciais marcadas?)
+          const essentials = ['agua','sono','movimento','alimentacao'];
+          let all = true;
+          essentials.forEach(id=>{
+            const el = document.querySelector(`input[type="checkbox"][data-habit="${id}"]`);
+            if(!el || !el.checked) all = false;
+          });
+          const dcomp = LS.get(KEY_DAYCOMP, {});
+          dcomp[todayISO] = all ? 1 : 0;
+          LS.set(KEY_DAYCOMP, dcomp);
+
+          // 3) se hoje + 2 dias anteriores forem 0 => grava data de reset
+          const d1 = todayISO;
+          const d0 = addDays(d1, -1);
+          const dm1 = addDays(d1, -2);
+          if( (dcomp[dm1]===0) && (dcomp[d0]===0) && (dcomp[d1]===0) ){
+            LS.set(KEY_RESET, d1);
+          }
+
+          renderHabitDots();
+          updateGoalProgress();
+        }, 80);
+      });
     }
 
-    function saveTodayToProgress(){
-      const comp = essentialsCompleted();
-      if(comp===null) return;
-      const hist = LS.get(KEY,{});
-      hist[today()] = comp ? 1 : 0;
-      const keys = Object.keys(hist).sort();
-      while(keys.length > 120){ delete hist[keys.shift()]; }
-      LS.set(KEY, hist);
-      renderDots();
+    // “Limpar marcações” não altera histórico, apenas re-renderiza tabela
+    function hookClearDay(){
+      const btn = document.getElementById('btnClearDay');
+      if(!btn) return;
+      btn.addEventListener('click', ()=> setTimeout(renderHabitDots, 60));
     }
 
-    const btn = document.getElementById('btnSaveDay');
-    if(btn){ btn.addEventListener('click', ()=> setTimeout(saveTodayToProgress, 50)); }
-    document.addEventListener('DOMContentLoaded', renderDots);
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderHabitDots();
+      updateGoalProgress();
+      hookSaveDay();
+      hookClearDay();
+    });
   })();
   </script>
 
