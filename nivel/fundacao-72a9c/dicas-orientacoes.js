@@ -1,200 +1,189 @@
-/* tarefas-orientacoes.js (v16) */
+// ============================
+// EVO360 · Fundação
+// Página: Dicas e Orientações
+// ============================
 
-/* -------------------------------------------
-   Utilidades básicas
-------------------------------------------- */
+// Utilidades locais
 const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-/* -------------------------------------------
-   Dica/Tarefa do dia (Drip) – com proteção
-------------------------------------------- */
-(function initDripSafely() {
+// ---------- DRIP: Dica do dia (usa Drip.js já incluído) ----------
+(async function dicaDrip() {
   try {
-    if (!window.Drip) throw new Error('Drip indisponível');
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
-    const DRIP_ID  = 'card1_tarefas';
+    const DRIP_ID  = 'card1_dicas_orientacoes';
     const MAX_DAYS = 60;
 
+    // garante start e índice do dia (1..60)
     const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
     const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
 
-    async function loadJSON(url){
-      try{
-        const r = await fetch(url, { cache: 'no-store' });
-        if(!r.ok) throw 0;
-        return await r.json();
-      }catch(_){ return null; }
-    }
+    // carrega dataset
+    const load = async (url) => {
+      try { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw 0; return await r.json(); }
+      catch { return null; }
+    };
+    const data = await load(window.DATA_DICAS);
 
-    (async () => {
-      const data = await loadJSON(window.DATA_DICAS);
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      const prev  = $('#btnPrev');
-      const next  = $('#btnNext');
-
-      const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-      let day = (Drip.LS && Drip.LS.get) ? Drip.LS.get(VIEW_KEY, todayIdx) : todayIdx;
-
-      function render(){
-        day = Math.max(1, Math.min(day, todayIdx));
-        const item = data && data[day-1];
-        if(item){
-          const cat = item.categoria === 'treino' ? 'Treino' : 'Nutrição';
-          meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${cat}`;
-          texto.textContent = item.texto || '—';
-        } else {
-          meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
-          texto.textContent = 'Dica indisponível.';
-        }
-        prev.disabled = (day <= 1);
-        next.disabled = (day >= todayIdx);
-        Drip.LS?.set?.(VIEW_KEY, day);
-      }
-
-      prev?.addEventListener('click', ()=>{ day--; render(); });
-      next?.addEventListener('click', ()=>{ day++; render(); });
-      render();
-    })();
-  } catch (err) {
-    // Se o Drip falhar, não quebra o restante da página
+    // elementos
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
-    if (meta)  meta.textContent  = 'Dia —';
-    if (texto) texto.textContent = 'Dica indisponível no momento.';
+    const prev  = $('#btnPrev');
+    const next  = $('#btnNext');
+
+    // estado de visualização (lembra onde o usuário parou)
+    const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
+    let day = Drip.LS.get(VIEW_KEY, todayIdx);
+
+    function render() {
+      // trava visualização no passado/presente (sem futuro)
+      day = Math.max(1, Math.min(day, todayIdx));
+
+      const item = data && data[day - 1];
+      if (item) {
+        const rotulo = item.categoria === 'treino' ? 'Treino' : (item.categoria === 'nutricao' ? 'Nutrição' : 'Dica');
+        meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}`;
+        texto.textContent = item.texto;
+      } else {
+        meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
+        texto.textContent = 'Dica indisponível.';
+      }
+
+      prev.disabled = (day <= 1);
+      next.disabled = (day >= todayIdx);
+      Drip.LS.set(VIEW_KEY, day);
+    }
+
+    prev?.addEventListener('click', () => { day--; render(); });
+    next?.addEventListener('click', () => { day++; render(); });
+    render();
+  } catch (e) {
+    // falha silenciosa para não travar a página
+    console.warn('drip init falhou:', e);
   }
 })();
 
-/* -------------------------------------------
-   Tabs simples (Calculadoras)
-------------------------------------------- */
-(function initTabs(){
+// ---------- Abas (Calculadoras) ----------
+(function tabs() {
   const tabs = $$('.tab');
-  const panels = {
-    karvonen: '#panel-karvonen',
-    tmb:      '#panel-tmb'
-  };
-  tabs.forEach(tb=>{
-    tb.addEventListener('click', ()=>{
-      tabs.forEach(x=>x.classList.remove('active'));
+  tabs.forEach(tb => {
+    tb.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
       tb.classList.add('active');
-      $$('.panel').forEach(p=>p.classList.remove('active'));
-      const sel = panels[tb.dataset.tab];
-      if (sel) $(sel)?.classList.add('active');
+      // alterna painéis
+      $$('.panel').forEach(p => p.classList.remove('active'));
+      const id = tb.dataset.tab;
+      const map = { karvonen: '#panel-karvonen', tmb: '#panel-tmb' };
+      const target = $(map[id]);
+      if (target) target.classList.add('active');
     });
   });
 })();
 
-/* -------------------------------------------
-   Calculadora Karvonen (com tabela 50–80%)
-------------------------------------------- */
-function calcKarvonenTable(age, fcr){
-  const a = +age;
-  const r = +fcr;
-  if(!(a>0 && r>0)) return null;
-  const fcMax = 220 - a;
-  const result = {
-    fcMax,
-    alvo50_65: [ // faixa sugerida ao nível
-      Math.round(((fcMax - r) * 0.50) + r),
-      Math.round(((fcMax - r) * 0.65) + r)
-    ],
-    linhas: []
-  };
-  for(let pct = 50; pct <= 80; pct += 5){
-    const frac = pct / 100;
-    const alvo = Math.round(((fcMax - r) * frac) + r);
-    result.linhas.push({ pct, bpm: alvo });
-  }
-  return result;
-}
-
-function renderKarvonen(){
+// ---------- Calculadora · FC de Reserva (Karvonen) ----------
+(function karvonen() {
   const idade = $('#k_idade');
   const fcr   = $('#k_fcr');
   const out   = $('#k_out');
-  const tbl   = $('#k_table');
+  const table = $('#k_table');
+  const btn   = $('#k_calcBtn');
+  const clr   = $('#k_clearBtn');
 
-  const data = calcKarvonenTable(idade?.value, fcr?.value);
+  if (!idade || !fcr || !out || !table || !btn || !clr) return; // HTML não encontrado
 
-  if(!data){
-    if(out) out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
-    if(tbl) tbl.innerHTML   = '';
-    return;
+  function karvonenTarget(fcMax, fcRep, frac) {
+    // Fórmula Karvonen: alvo = ((FCmax - FCrep) * frac) + FCrep
+    return Math.round(((fcMax - fcRep) * frac) + fcRep);
   }
 
-  // resumo
-  if(out){
-    out.innerHTML =
-      `FC máx. estimada: <strong>${data.fcMax} bpm</strong><br>` +
-      `<span class="small muted">Faixa sugerida (Fundação): ${data.alvo50_65[0]}–${data.alvo50_65[1]} bpm (50–65%).</span>`;
+  function construirTabela(fcMax, fcRep) {
+    // zonas de 50% a 80% (de 5 em 5)
+    const linhas = [];
+    for (let pct = 50; pct <= 80; pct += 5) {
+      const frac = pct / 100;
+      const alvo = karvonenTarget(fcMax, fcRep, frac);
+      linhas.push(`<div class="row" style="justify-content:space-between">
+        <span>${pct}% da FC de reserva</span>
+        <strong>${alvo} bpm</strong>
+      </div>`);
+    }
+    return linhas.join('');
   }
 
-  // tabela 50–80%
-  if(tbl){
-    const rows = data.linhas
-      .map(l => `<tr><td>${l.pct}%</td><td><strong>${l.bpm} bpm</strong></td></tr>`)
-      .join('');
-    tbl.innerHTML =
-      `<div class="small muted" style="margin-bottom:6px">Zonas por FC de Reserva</div>
-       <table class="table-compact" style="width:100%">
-         <thead><tr><th style="text-align:left">Intensidade</th><th style="text-align:left">Alvo</th></tr></thead>
-         <tbody>${rows}</tbody>
-       </table>`;
-  }
-}
+  function calcular() {
+    const a = +idade.value || 0;
+    const r = +fcr.value   || 0;
 
-/* -------------------------------------------
-   Calculadora TMB (Mifflin-St Jeor)
-------------------------------------------- */
-function renderTMB(){
+    if (a <= 0 || r <= 0) {
+      out.textContent = 'Informe idade e FC de repouso.';
+      table.innerHTML = '';
+      return;
+    }
+
+    const fcMax = 220 - a;                 // FCmáx estimada
+    const alvo50 = karvonenTarget(fcMax, r, 0.50);
+    const alvo65 = karvonenTarget(fcMax, r, 0.65);
+
+    out.innerHTML = `
+      FC máx. estimada: <strong>${fcMax} bpm</strong><br>
+      <span class="small muted">Faixa sugerida (Fundação): ${alvo50}–${alvo65} bpm</span>
+    `;
+
+    table.innerHTML = construirTabela(fcMax, r);
+  }
+
+  function limpar() {
+    idade.value = '';
+    fcr.value   = '';
+    out.textContent   = 'Informe os dados e clique em Calcular.';
+    table.innerHTML   = '';
+  }
+
+  // eventos
+  btn.addEventListener('click', calcular);
+  clr.addEventListener('click', limpar);
+
+  // acessibilidade: Enter nos inputs dispara cálculo
+  [idade, fcr].forEach(el => {
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        calcular();
+      }
+    });
+  });
+})();
+
+// ---------- Calculadora · TMB (Mifflin-St Jeor) ----------
+(function tmb() {
   const peso = $('#t_peso');
   const alt  = $('#t_altura');
   const ida  = $('#t_idade');
   const sex  = $('#t_sexo');
   const out  = $('#t_out');
 
-  const p = +peso?.value || 0;
-  const h = +alt?.value  || 0;
-  const i = +ida?.value  || 0;
-  const s = sex?.value   || 'f';
+  if (!peso || !alt || !ida || !sex || !out) return;
 
-  if(!(p>0 && h>0 && i>0)){
-    if(out) out.textContent = 'Preencha peso, altura e idade.';
-    return;
+  function calc() {
+    const p = +peso.value || 0;
+    const h = +alt.value  || 0;
+    const i = +ida.value  || 0;
+    const s = sex.value || 'f';
+
+    if (p > 0 && h > 0 && i > 0) {
+      const base = Math.round((10 * p) + (6.25 * h) - (5 * i) + (s === 'f' ? -161 : 5));
+      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
+        <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+    } else {
+      out.textContent = 'Preencha peso, altura e idade.';
+    }
   }
-  const base = (10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5);
-  if(out){
-    out.innerHTML = `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br>` +
-                    `<span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
-  }
-}
 
-/* -------------------------------------------
-   Bind dos botões/inputs ao carregar DOM
-------------------------------------------- */
-document.addEventListener('DOMContentLoaded', () => {
-  // Karvonen
-  $('#k_calcBtn')?.addEventListener('click', renderKarvonen);
-  $('#k_clearBtn')?.addEventListener('click', () => {
-    $('#k_idade').value = '';
-    $('#k_fcr').value   = '';
-    $('#k_out').textContent = 'Informe os dados e clique em Calcular.';
-    $('#k_table').innerHTML = '';
-    $('#k_idade').focus();
+  ['input', 'change'].forEach(ev => {
+    peso.addEventListener(ev, calc);
+    alt.addEventListener(ev, calc);
+    ida.addEventListener(ev, calc);
+    sex.addEventListener(ev, calc);
   });
-
-  // (Opcional) permitir Enter nos campos disparar cálculo
-  ['k_idade','k_fcr'].forEach(id => {
-    $(`#${id}`)?.addEventListener('keydown', e=>{
-      if(e.key === 'Enter'){ e.preventDefault(); renderKarvonen(); }
-    });
-  });
-
-  // TMB
-  ['t_peso','t_altura','t_idade','t_sexo'].forEach(id => {
-    $(`#${id}`)?.addEventListener('input', renderTMB);
-    $(`#${id}`)?.addEventListener('change', renderTMB);
-  });
-});
+  calc();
+})();
