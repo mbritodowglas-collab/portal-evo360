@@ -613,3 +613,27 @@ input:focus, select:focus {
   .card { padding: 18px; }
 }
 
+/* ===== Progresso 21 dias (hábitos) ===== */
+.streak-block{ margin:12px 0 18px; }
+.streak-title{ margin:0 0 6px; font-weight:700; color: var(--ink); }
+
+.streak-grid{
+  display:grid;
+  grid-template-columns: repeat(21, 14px);
+  gap:6px;
+  align-items:center;
+}
+
+.dot{
+  width:14px; height:14px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:#0f1318;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.dot.ok{ background:#16a34a; border-color:#16a34a; }    /* marcado */
+.dot.no{ background:#7f1d1d; border-color:#7f1d1d; }    /* não marcado (dia salvo) */
+.dot.na{ background:#0f1318; border-color:#1f2937; }    /* sem registro naquele dia */
+
+.streak-legend{ font-size:.85rem; color: var(--ink-2); margin-top:6px; }
