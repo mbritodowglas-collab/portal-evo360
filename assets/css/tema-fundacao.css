@@ -637,3 +637,53 @@ input:focus, select:focus {
 .dot.na{ background:#0f1318; border-color:#1f2937; }    /* sem registro naquele dia */
 
 .streak-legend{ font-size:.85rem; color: var(--ink-2); margin-top:6px; }
+
+/* ==== FIX layout dos itens de hábitos (card 3) ==== */
+.habit-list{ 
+  display: grid; 
+  gap: 10px; 
+  margin: 12px 0;
+}
+
+/* Força cada item a ter 2 colunas: [checkbox | texto] */
+.habit-item{
+  display: grid !important;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0f1318;
+  min-height: 0; /* evita blocos altos */
+}
+
+/* Checkbox bem alinhado à esquerda */
+.habit-item input[type="checkbox"]{
+  width: 18px; height: 18px;
+  margin: 0;
+  justify-self: start;
+  transform: none; /* remove escala que podia desalinha-lo */
+}
+
+/* Texto do hábito ocupa a 2ª coluna, sem alinhamento estranho */
+.habit-item label{
+  margin: 0;
+  text-align: left;
+  line-height: 1.35;
+  font-weight: 500;
+  color: var(--ink);
+  word-break: break-word; /* evita “empurrar” layout */
+}
+
+/* Em telas muito estreitas, mantém o mesmo grid sem quebrar */
+@media (max-width: 380px){
+  .habit-item{
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+  }
+}
+
+/* Opcional: rolagem horizontal suave do quadro de 21 dias em telas estreitas */
+#habProgressWrap{ overflow-x: auto; padding-bottom: 4px; }
+#habProgressWrap .streak-grid{ min-width: 21*14px + 20px; } /* proteção */
