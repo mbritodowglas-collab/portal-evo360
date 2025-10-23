@@ -13,11 +13,9 @@
     .two-col{ display:grid; gap:12px; grid-template-columns:1fr; }
     @media (min-width:860px){ .two-col{ grid-template-columns: 1.2fr .8fr; } }
 
-    /* grades internas */
     .grid-videos{ display:grid; gap:12px; grid-template-columns:1fr; }
     @media (min-width:720px){ .grid-videos{ grid-template-columns:repeat(2,1fr); } }
 
-    /* “cards” internos reaproveitando o estilo global */
     .inner-card{
       border:1px solid var(--line);
       background:#0f1318;
@@ -36,7 +34,6 @@
   </style>
 </head>
 <body class="layout-with-sidebar">
-  <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
@@ -53,15 +50,12 @@
     <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
-  <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
     <section class="card">
       <h2>Suporte</h2>
       <div class="two-col">
-        <!-- COLUNA PRINCIPAL -->
         <div>
           <h3>Sobre o Nível Fundação</h3>
           <p>
@@ -79,26 +73,39 @@
 
           <h3>Últimos conteúdos</h3>
 
-          <!-- CARD: YouTube -->
+          <!-- ===== YouTube ===== -->
           <section class="inner-card" style="margin-top:12px">
-            <h4 style="margin:0 0 8px 0">YouTube — últimos vídeos</h4>
+            <h4 style="margin:0 0 8px 0">YouTube — últimas playlists</h4>
             <p class="muted" style="margin-top:0">
-              Reproduza diretamente aqui ou abra o canal em uma nova aba.
+              Assista às playlists oficiais direto aqui ou abra no YouTube.
             </p>
-            <div class="iframe-wrap" aria-label="Últimos vídeos do YouTube">
-              <iframe
-                src="https://www.youtube.com/embed?listType=user_uploads&list=marciodowglastreinador"
-                title="Últimos vídeos"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen></iframe>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <a class="btn" href="https://www.youtube.com/@marciodowglastreinador" target="_blank" rel="noopener">Abrir canal</a>
+
+            <div class="grid-videos">
+              <div>
+                <div class="iframe-wrap">
+                  <iframe
+                    src="https://www.youtube.com/embed/videoseries?list=PLyHDAg9JOEnwA_QHpPrUbBBtagjQPT8tZ"
+                    title="Playlist 1 — Neurociência e Treino"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen></iframe>
+                </div>
+                <a class="btn ghost" href="https://youtube.com/playlist?list=PLyHDAg9JOEnwA_QHpPrUbBBtagjQPT8tZ" target="_blank" rel="noopener" style="margin-top:8px; display:inline-block">Abrir playlist 1</a>
+              </div>
+
+              <div>
+                <div class="iframe-wrap">
+                  <iframe
+                    src="https://www.youtube.com/embed/videoseries?list=PLyHDAg9JOEnxubgaUYGLFrZJkPDi6lBX-"
+                    title="Playlist 2 — Conteúdos Reconnect"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen></iframe>
+                </div>
+                <a class="btn ghost" href="https://youtube.com/playlist?list=PLyHDAg9JOEnxubgaUYGLFrZJkPDi6lBX-" target="_blank" rel="noopener" style="margin-top:8px; display:inline-block">Abrir playlist 2</a>
+              </div>
             </div>
           </section>
 
-          <!-- CARD: Blog -->
+          <!-- ===== Blog ===== -->
           <section class="inner-card" style="margin-top:12px">
             <h4 style="margin:0 0 8px 0">Blog — últimos posts</h4>
             <div id="blog_list" class="grid-videos">
@@ -110,7 +117,7 @@
           </section>
         </div>
 
-        <!-- COLUNA LATERAL -->
+        <!-- ===== Sidebar ===== -->
         <aside>
           <h3>Canais</h3>
           <div class="channel-buttons row">
@@ -124,65 +131,51 @@
           <h3>Como usar este nível</h3>
           <ul>
             <li><strong>Treino:</strong> priorize consistência. Pequenos passos diários superam grandes picos esporádicos.</li>
-            <li><strong>Nutrição:</strong> foque em <em>boas escolhas</em> e hidratação. Sem extremismo — sustentabilidade primeiro.</li>
+            <li><strong>Nutrição:</strong> foque em boas escolhas e hidratação. Sem extremismo — sustentabilidade primeiro.</li>
             <li><strong>Neurociência do comportamento:</strong> hábitos empilhados, rituais simples e reforço positivo.</li>
           </ul>
-          <p class="muted">Se algo não carregar (internet fraca / bloqueio de feed), use os botões para abrir o conteúdo direto na plataforma.</p>
+          <p class="muted">Se algo não carregar, use os botões para abrir o conteúdo direto na plataforma.</p>
         </aside>
       </div>
     </section>
   </main>
 
   <script>
-    // ====== Config ======
     const BLOG_BASE = "https://mbritodowglas-collab.github.io/mdpersonal/blog/";
     const BLOG_FEEDS = ["feed.xml", "index.xml", "rss.xml", "atom.xml"];
-
-    // ====== Util ======
     const $ = (s)=>document.querySelector(s);
-    const esc = (s)=>String(s||"").replace(/[&<>"]/g, c=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
-    function fmtDate(dstr){
-      const d = new Date(dstr || Date.now());
-      const dd = String(d.getDate()).padStart(2,'0');
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const yy = d.getFullYear();
-      return `${dd}/${mm}/${yy}`;
-    }
+    const esc = (s)=>String(s||"").replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+    function fmtDate(dstr){ const d = new Date(dstr||Date.now()); return d.toLocaleDateString("pt-BR"); }
 
-    // ====== Blog RSS loader ======
     async function tryFetch(url){
       try{
-        const r = await fetch(url, {mode:"cors"});
-        if(!r.ok) throw new Error("fetch not ok");
-        return await r.text();
+        const r = await fetch(url,{mode:"cors"}); if(!r.ok) throw new Error("fail"); return await r.text();
       }catch(_){ return null; }
     }
 
     async function loadBlogFeed(){
-      const box = $("#blog_list");
-      if(!box) return;
+      const box = $("#blog_list"); if(!box) return;
       for (const path of BLOG_FEEDS){
         const url = BLOG_BASE.replace(/\/+$/,'/') + path;
         const xmlText = await tryFetch(url);
         if(!xmlText) continue;
 
         const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "text/xml");
+        const xml = parser.parseFromString(xmlText,"text/xml");
         let items = Array.from(xml.querySelectorAll("rss channel item")).map(it=>({
           title: it.querySelector("title")?.textContent?.trim(),
-          link:  it.querySelector("link")?.textContent?.trim(),
-          date:  it.querySelector("pubDate")?.textContent?.trim(),
-          desc:  it.querySelector("description")?.textContent?.trim()
+          link: it.querySelector("link")?.textContent?.trim(),
+          date: it.querySelector("pubDate")?.textContent?.trim(),
+          desc: it.querySelector("description")?.textContent?.trim()
         }));
         if(items.length===0){
           items = Array.from(xml.querySelectorAll("feed entry")).map(it=>({
             title: it.querySelector("title")?.textContent?.trim(),
-            link:  it.querySelector("link")?.getAttribute("href"),
-            date:  it.querySelector("updated")?.textContent?.trim() || it.querySelector("published")?.textContent?.trim(),
-            desc:  it.querySelector("summary")?.textContent?.trim() || it.querySelector("content")?.textContent?.trim()
+            link: it.querySelector("link")?.getAttribute("href"),
+            date: it.querySelector("updated")?.textContent?.trim() || it.querySelector("published")?.textContent?.trim(),
+            desc: it.querySelector("summary")?.textContent?.trim() || it.querySelector("content")?.textContent?.trim()
           }));
         }
-
         if(items.length){
           const last = items.slice(0,6);
           box.innerHTML = last.map(p=>`
@@ -196,11 +189,7 @@
           return;
         }
       }
-      box.innerHTML = `
-        <div class="muted">
-          Não foi possível carregar o feed do blog agora. 
-          <a class="link" href="${BLOG_BASE}" target="_blank" rel="noopener">Abrir blog</a>.
-        </div>`;
+      box.innerHTML = `<div class="muted">Não foi possível carregar o feed do blog agora. <a class="link" href="${BLOG_BASE}" target="_blank" rel="noopener">Abrir blog</a>.</div>`;
     }
 
     document.addEventListener("DOMContentLoaded", loadBlogFeed);
