@@ -1,12 +1,362 @@
 [
-  { "dia": 1, "categoria": "nutrição", "texto": "Coma devagar: o cérebro leva ~15 min para sinalizar saciedade." },
-  { "dia": 2, "categoria": "treino",   "texto": "Constância vence intensidade. Aparecer vale mais que exagerar." },
-  { "dia": 3, "categoria": "nutrição", "texto": "Inclua proteína em 3 refeições para saciedade e recuperação." },
-  { "dia": 4, "categoria": "treino",   "texto": "No ciclo menstrual, adapte intensidade. Pausar não é regra." },
-  { "dia": 5, "categoria": "nutrição", "texto": "Água antes das refeições ajuda a regular fome e foco." },
-  { "dia": 6, "categoria": "treino",   "texto": "Seu corpo aprende com repetição gentil, não com punição." },
-  { "dia": 7, "categoria": "nutrição", "texto": "Deixe frutas visíveis: ambiente guia o comportamento." },
-  { "dia": 8, "categoria": "treino",   "texto": "Alongar leve após caminhar ajuda a reduzir rigidez." },
-  { "dia": 9, "categoria": "nutrição", "texto": "Prato simples: 1/2 legumes, 1/4 proteína, 1/4 carbo." },
-  { "dia": 10,"categoria": "treino",   "texto": "Microvitórias diárias constroem coragem para o próximo passo." }
+  {
+    "dia": 1,
+    "categoria": "mentalidade",
+    "titulo": "Começo é pra aprender, não pra ser perfeita",
+    "texto": "Não tenta acertar tudo logo no início. O Fundação é pra entender o corpo, criar ritmo e se conhecer. Treina com calma, o resto vem depois."
+  },
+  {
+    "dia": 2,
+    "categoria": "treino",
+    "titulo": "Controle vence intensidade",
+    "texto": "Não é o peso que vai te transformar, é o controle do movimento. Sente o músculo trabalhar, executa bonito. Corpo responde à precisão, não à pressa."
+  },
+  {
+    "dia": 3,
+    "categoria": "nutrição",
+    "titulo": "Não é dieta, é direção",
+    "texto": "Quando você entende o porquê de cada escolha alimentar, tudo muda. Comer bem não é castigo, é uma forma de cuidar da tua energia."
+  },
+  {
+    "dia": 4,
+    "categoria": "mentalidade",
+    "titulo": "Constância é a chave",
+    "texto": "Nem todo dia vai ser incrível, e tá tudo bem. O que vai te levar longe é continuar mesmo quando não estiver animada. Isso é disciplina de verdade."
+  },
+  {
+    "dia": 5,
+    "categoria": "treino",
+    "titulo": "Treino bom é treino feito",
+    "texto": "Para de esperar o momento perfeito pra treinar. O melhor treino é o que você consegue fazer hoje. Depois ajusta, mas faz."
+  },
+  {
+    "dia": 6,
+    "categoria": "nutrição",
+    "titulo": "Comer pouco não é o caminho",
+    "texto": "Você precisa comer pra secar. Cortar demais só te deixa sem energia e aumenta a compulsão. O segredo tá no equilíbrio e na constância."
+  },
+  {
+    "dia": 7,
+    "categoria": "mentalidade",
+    "titulo": "O corpo muda quando a mente muda",
+    "texto": "O treino é físico, mas o processo é mental. Se tua mente ainda tá presa nos velhos padrões, teu corpo também vai ficar."
+  },
+  {
+    "dia": 8,
+    "categoria": "treino",
+    "titulo": "A execução é tua assinatura",
+    "texto": "Cada repetição é uma conversa entre você e o teu corpo. Não joga o movimento, sente. É assim que se constrói resultado de verdade."
+  },
+  {
+    "dia": 9,
+    "categoria": "nutrição",
+    "titulo": "Proteína é tua aliada",
+    "texto": "Quer secar e firmar o corpo? Garante proteína em todas as refeições. Ela ajuda a saciar e preservar massa magra."
+  },
+  {
+    "dia": 10,
+    "categoria": "mentalidade",
+    "titulo": "Você não tá atrasada",
+    "texto": "Para de se comparar. Cada mulher tem seu tempo. O que importa é que você começou — e isso já te coloca à frente de muita gente."
+  },
+  {
+    "dia": 11,
+    "categoria": "treino",
+    "titulo": "Postura é poder",
+    "texto": "Antes de pensar em peso, pensa na postura. Corpo alinhado é corpo eficiente. E sim, isso também é treino."
+  },
+  {
+    "dia": 12,
+    "categoria": "nutrição",
+    "titulo": "Água muda teu corpo",
+    "texto": "Não é só sobre hidratar. Água ajuda no foco, melhora a pele, regula o intestino e até o humor. Mantém tua garrafinha por perto o dia todo."
+  },
+  {
+    "dia": 13,
+    "categoria": "mentalidade",
+    "titulo": "Tua mente também treina",
+    "texto": "Cada vez que você vence a preguiça ou resiste a um impulso, tua mente fica mais forte. E é ela que sustenta os resultados lá na frente."
+  },
+  {
+    "dia": 14,
+    "categoria": "treino",
+    "titulo": "Treina pra se sentir viva",
+    "texto": "Não faz só pra mudar o corpo. Treina pra sentir energia, clareza mental e poder sobre ti mesma. O corpo é o bônus."
+  },
+  {
+    "dia": 15,
+    "categoria": "nutrição",
+    "titulo": "Não pula refeição",
+    "texto": "Ficar muito tempo sem comer não ajuda a emagrecer. Só bagunça teus hormônios e aumenta o risco de exagerar depois."
+  },
+  {
+    "dia": 16,
+    "categoria": "mentalidade",
+    "titulo": "Autoestima vem da ação",
+    "texto": "Não é o corpo que te dá confiança, é o hábito de cuidar dele. Toda vez que você faz o que prometeu pra si, a confiança cresce."
+  },
+  {
+    "dia": 17,
+    "categoria": "treino",
+    "titulo": "Menos pressa, mais presença",
+    "texto": "Treino não é corrida. É presença. Cada repetição é uma chance de se conectar com teu corpo. Faz com consciência."
+  },
+  {
+    "dia": 18,
+    "categoria": "nutrição",
+    "titulo": "O corpo sente o que você come",
+    "texto": "Quer acordar melhor? Janta leve. Quer disposição? Cuida do café da manhã. Tua alimentação dita teu humor e tua performance."
+  },
+  {
+    "dia": 19,
+    "categoria": "mentalidade",
+    "titulo": "Você não é o número da balança",
+    "texto": "Teu valor não cabe num número. A balança mostra peso, não mostra tua evolução mental, tua força, nem tua constância."
+  },
+  {
+    "dia": 20,
+    "categoria": "treino",
+    "titulo": "Suor é sinal de progresso",
+    "texto": "Não foge do desconforto. O suor é o corpo dizendo que tá se adaptando. E é isso que transforma."
+  },
+  {
+    "dia": 21,
+    "categoria": "nutrição",
+    "titulo": "Come devagar",
+    "texto": "Respira entre as garfadas. Mastiga com calma. A saciedade demora a chegar — se você atropela, come o dobro."
+  },
+  {
+    "dia": 22,
+    "categoria": "mentalidade",
+    "titulo": "Tua mente é treinável",
+    "texto": "Assim como o corpo, ela responde à repetição. Todo pensamento saudável repetido vira hábito mental."
+  },
+  {
+    "dia": 23,
+    "categoria": "treino",
+    "titulo": "Regularidade vence intensidade",
+    "texto": "Não precisa treinar 2h. Precisa aparecer todo dia. O corpo responde à frequência, não à exaustão."
+  },
+  {
+    "dia": 24,
+    "categoria": "nutrição",
+    "titulo": "Não demoniza o carboidrato",
+    "texto": "Ele não é o vilão. O problema é o excesso e a má qualidade. Usa o carbo certo, na hora certa, e ele vira combustível."
+  },
+  {
+    "dia": 25,
+    "categoria": "mentalidade",
+    "titulo": "Aprende com os dias ruins",
+    "texto": "Vai ter dia que não flui, e tá tudo certo. Esses dias te ensinam mais sobre disciplina do que os dias bons."
+  },
+  {
+    "dia": 26,
+    "categoria": "treino",
+    "titulo": "O espelho é consequência",
+    "texto": "Não vive em função do espelho. Ele só reflete o que você faz todos os dias. Cuida do processo que o resultado vem."
+  },
+  {
+    "dia": 27,
+    "categoria": "nutrição",
+    "titulo": "Micronutrientes importam",
+    "texto": "Vitaminas e minerais são o que mantém teu corpo funcionando bem. Come colorido, quanto mais cores no prato, melhor."
+  },
+  {
+    "dia": 28,
+    "categoria": "mentalidade",
+    "titulo": "Cuida do teu diálogo interno",
+    "texto": "Como você fala contigo importa. Se trata com respeito. Tua mente acredita no que você repete."
+  },
+  {
+    "dia": 29,
+    "categoria": "treino",
+    "titulo": "A técnica vem antes do peso",
+    "texto": "Corrige primeiro, carrega depois. Técnica boa faz o músculo crescer e evita lesão. Ego não constrói shape."
+  },
+  {
+    "dia": 30,
+    "categoria": "nutrição",
+    "titulo": "Equilíbrio é o segredo",
+    "texto": "Nem 8 nem 80. Dá pra comer saudável e aproveitar momentos sociais. É constância, não restrição."
+  },
+  {
+    "dia": 31,
+    "categoria": "mentalidade",
+    "titulo": "Faz por você",
+    "texto": "Não treina pra provar nada pra ninguém. Faz por ti. Porque teu corpo e tua mente merecem isso."
+  },
+  {
+    "dia": 32,
+    "categoria": "treino",
+    "titulo": "Desempenho vem do descanso",
+    "texto": "Dormir bem é parte do treino. O músculo cresce e a mente recupera enquanto você descansa. Não negligencia isso."
+  },
+  {
+    "dia": 33,
+    "categoria": "nutrição",
+    "titulo": "Evita beliscar o dia todo",
+    "texto": "Come refeições completas. Ficar beliscando o tempo todo bagunça a fome e a saciedade. Cria horários e respeita."
+  },
+  {
+    "dia": 34,
+    "categoria": "mentalidade",
+    "titulo": "Seja paciente com o processo",
+    "texto": "Corpo e mente levam tempo pra se ajustar. Se planta hoje, se colhe depois. Não desiste no meio do caminho."
+  },
+  {
+    "dia": 35,
+    "categoria": "treino",
+    "titulo": "Não compara intensidade",
+    "texto": "Teu treino é teu. O que é leve pra uma pode ser pesado pra outra. O que importa é você se desafiar um pouco a cada dia."
+  },
+  {
+    "dia": 36,
+    "categoria": "nutrição",
+    "titulo": "Não se pesa todo dia",
+    "texto": "Teu corpo varia, é normal. Peso oscila com água, hormônio e até sono. Acompanha medidas e roupa, não só balança."
+  },
+  {
+    "dia": 37,
+    "categoria": "mentalidade",
+    "titulo": "Autossabotagem é medo disfarçado",
+    "texto": "Toda vez que você foge do treino ou da rotina, é medo tentando te proteger. Reconhece e segue mesmo assim."
+  },
+  {
+    "dia": 38,
+    "categoria": "treino",
+    "titulo": "Treinar menstruada é possível",
+    "texto": "Respeita teu corpo, ajusta intensidade, mas não precisa parar. Movimento leve ajuda até nas cólicas."
+  },
+  {
+    "dia": 39,
+    "categoria": "nutrição",
+    "titulo": "Comer é emocional também",
+    "texto": "Tudo bem sentir vontade de algo, só não deixa isso te dominar. Aprende a diferenciar fome física de emocional."
+  },
+  {
+    "dia": 40,
+    "categoria": "mentalidade",
+    "titulo": "Pequenas vitórias contam",
+    "texto": "Acordou no horário, foi treinar mesmo cansada? Isso já é vitória. Aprende a celebrar os microprogressos."
+  },
+  {
+    "dia": 41,
+    "categoria": "treino",
+    "titulo": "Treina de verdade",
+    "texto": "Não é pra fazer de qualquer jeito. É pra estar presente. Se for pra fazer meia boca, respira, foca e recomeça."
+  },
+  {
+    "dia": 42,
+    "categoria": "nutrição",
+    "titulo": "Sente o sabor da comida",
+    "texto": "Desliga o celular, mastiga, sente o cheiro e o sabor. Isso ajuda a comer menos e aproveitar mais."
+  },
+  {
+    "dia": 43,
+    "categoria": "mentalidade",
+    "titulo": "Não se puna, se observe",
+    "texto": "Escorregou? Tudo bem. Aprende, ajusta e segue. Culpa não constrói disciplina, consciência constrói."
+  },
+  {
+    "dia": 44,
+    "categoria": "treino",
+    "titulo": "Cardio não é castigo",
+    "texto": "Pensa no cardio como movimento, não punição. Ele te ajuda a respirar melhor, dormir melhor e pensar melhor."
+  },
+  {
+    "dia": 45,
+    "categoria": "nutrição",
+    "titulo": "Não faz detox, faz rotina",
+    "texto": "Detox de verdade é dormir bem, beber água e comer limpo todos os dias. O resto é marketing."
+  },
+  {
+    "dia": 46,
+    "categoria": "mentalidade",
+    "titulo": "Teu corpo é teu projeto",
+    "texto": "Cuida dele com amor e paciência. É o lugar onde você vai morar pra sempre."
+  },
+  {
+    "dia": 47,
+    "categoria": "treino",
+    "titulo": "Mobilidade é força disfarçada",
+    "texto": "Não ignora o alongamento nem os exercícios de mobilidade. Eles te deixam mais forte, estável e resistente."
+  },
+  {
+    "dia": 48,
+    "categoria": "nutrição",
+    "titulo": "Não segue tudo da internet",
+    "texto": "Cada corpo reage diferente. Testa, observa e vê o que funciona pra ti. Isso é autoconhecimento, não regra."
+  },
+  {
+    "dia": 49,
+    "categoria": "mentalidade",
+    "titulo": "Treino é autocuidado, não castigo",
+    "texto": "Não treina pra pagar o que comeu. Treina pra cuidar de ti. O corpo entende quando vem amor, não culpa."
+  },
+  {
+    "dia": 50,
+    "categoria": "treino",
+    "titulo": "Falha controlada é progresso",
+    "texto": "Chegar perto da falha é bom. Mostra que teu corpo tá sendo desafiado. Mas aprende a respeitar o limite técnico."
+  },
+  {
+    "dia": 51,
+    "categoria": "nutrição",
+    "titulo": "Cafeína com consciência",
+    "texto": "Um café antes do treino ajuda. Três xícaras durante o dia atrapalham. Usa a dose certa pra teu corpo."
+  },
+  {
+    "dia": 52,
+    "categoria": "mentalidade",
+    "titulo": "A constância é o novo talento",
+    "texto": "Tem gente que nasce com genética, outras com disciplina. Adivinha quem chega mais longe?"
+  },
+  {
+    "dia": 53,
+    "categoria": "treino",
+    "titulo": "Sente o músculo trabalhar",
+    "texto": "Durante o exercício, pensa no músculo que tá sendo usado. Isso ativa mais fibras e melhora o resultado."
+  },
+  {
+    "dia": 54,
+    "categoria": "nutrição",
+    "titulo": "Come o que planta resultado",
+    "texto": "Escolhe alimentos que te deixam bem depois, não só durante. Isso é pensar como quem quer evoluir."
+  },
+  {
+    "dia": 55,
+    "categoria": "mentalidade",
+    "titulo": "Tudo é treino",
+    "texto": "Treinar paciência, foco e compaixão faz parte. Tua mente também precisa de repetição pra evoluir."
+  },
+  {
+    "dia": 56,
+    "categoria": "treino",
+    "titulo": "Respiração é performance",
+    "texto": "Aprende a respirar certo durante o treino. Inspira na descida, solta na subida. Isso te dá controle e força."
+  },
+  {
+    "dia": 57,
+    "categoria": "nutrição",
+    "titulo": "Docinho com estratégia",
+    "texto": "Quer comer algo doce? Tudo bem. Só programa pra não virar rotina. É prazer, não válvula de escape."
+  },
+  {
+    "dia": 58,
+    "categoria": "mentalidade",
+    "titulo": "Tua mente cria o ritmo",
+    "texto": "A pressa te tira do presente. Quando você desacelera, o corpo responde melhor. Foco é velocidade inteligente."
+  },
+  {
+    "dia": 59,
+    "categoria": "treino",
+    "titulo": "Treinar é investir em si",
+    "texto": "Cada gota de suor é um voto no teu futuro. É sobre se comprometer com quem você quer ser."
+  },
+  {
+    "dia": 60,
+    "categoria": "nutrição",
+    "titulo": "Consistência alimenta resultado",
+    "texto": "Não é a refeição perfeita, é o padrão. A rotina é o que transforma o corpo, não a exceção."
+  }
 ]
