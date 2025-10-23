@@ -10,8 +10,25 @@
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* mínimos para layout; o visual segue seu CSS global */
-    .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
-    .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#0f1318;cursor:pointer}
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      /* AJUSTE: tudo na mesma linha */
+      flex-wrap:nowrap;
+      overflow:hidden;
+    }
+    .tab{
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#0f1318;
+      cursor:pointer;
+      /* AJUSTE: largura uniforme e texto sem quebra */
+      flex:1;
+      text-align:center;
+      white-space:nowrap;
+    }
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
     .panel{display:none}.panel.active{display:block}
     .prep{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px;margin-top:8px}
@@ -55,9 +72,10 @@
       </p>
 
       <div class="tabs">
-        <button class="tab active" data-tab="respiracao">Respiração Guiada</button>
-        <button class="tab" data-tab="visualizacao">Visualização Mental</button>
-        <button class="tab" data-tab="relax">Relaxamento Guiado</button>
+        <!-- AJUSTE: rótulos encurtados; data-tab mantido -->
+        <button class="tab active" data-tab="respiracao">Respiração</button>
+        <button class="tab" data-tab="visualizacao">Visualização</button>
+        <button class="tab" data-tab="relax">Relaxamento</button>
       </div>
 
       <!-- ===================== RESPIRAÇÃO (4-4-6) ===================== -->
