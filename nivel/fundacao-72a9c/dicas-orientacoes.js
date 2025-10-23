@@ -3,43 +3,50 @@
 // Página: Dicas e Orientações
 // ============================
 
-// Utilidades locais
+// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-// ---------- DRIP: Dica do dia (usa Drip.js já incluído) ----------
+// ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
     const DRIP_ID  = 'card1_dicas_orientacoes';
     const MAX_DAYS = 60;
 
-    // garante start e índice do dia (1..60)
-    const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
-    const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
+    // pode não existir se drip.js não carregar, por isso o try/catch
+    const startISO = (typeof Drip !== 'undefined')
+      ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
+      : (new Date()).toISOString().slice(0,10);
 
-    // carrega dataset
+    const todayIdx = (typeof Drip !== 'undefined')
+      ? Drip.getTodayIndex(startISO, MAX_DAYS)
+      : 1;
+
     const load = async (url) => {
       try { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw 0; return await r.json(); }
       catch { return null; }
     };
     const data = await load(window.DATA_DICAS);
 
-    // elementos
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
 
-    // estado de visualização (lembra onde o usuário parou)
     const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-    let day = Drip.LS.get(VIEW_KEY, todayIdx);
+    const LS = {
+      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+    };
+
+    let day = LS.get(VIEW_KEY, todayIdx);
 
     function render() {
-      // trava visualização no passado/presente (sem futuro)
-      day = Math.max(1, Math.min(day, todayIdx));
-
+      const cap = Math.max(1, todayIdx);
+      day = Math.max(1, Math.min(day, cap));
       const item = data && data[day - 1];
+
       if (item) {
         const rotulo = item.categoria === 'treino' ? 'Treino' : (item.categoria === 'nutricao' ? 'Nutrição' : 'Dica');
         meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}`;
@@ -49,16 +56,15 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
         texto.textContent = 'Dica indisponível.';
       }
 
-      prev.disabled = (day <= 1);
-      next.disabled = (day >= todayIdx);
-      Drip.LS.set(VIEW_KEY, day);
+      if (prev) prev.disabled = (day <= 1);
+      if (next) next.disabled = (day >= cap);
+      LS.set(VIEW_KEY, day);
     }
 
     prev?.addEventListener('click', () => { day--; render(); });
     next?.addEventListener('click', () => { day++; render(); });
     render();
   } catch (e) {
-    // falha silenciosa para não travar a página
     console.warn('drip init falhou:', e);
   }
 })();
@@ -70,12 +76,9 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     tb.addEventListener('click', () => {
       tabs.forEach(x => x.classList.remove('active'));
       tb.classList.add('active');
-      // alterna painéis
       $$('.panel').forEach(p => p.classList.remove('active'));
-      const id = tb.dataset.tab;
-      const map = { karvonen: '#panel-karvonen', tmb: '#panel-tmb' };
-      const target = $(map[id]);
-      if (target) target.classList.add('active');
+      const target = tb.dataset.tab === 'karvonen' ? '#panel-karvonen' : '#panel-tmb';
+      $(target)?.classList.add('active');
     });
   });
 })();
@@ -89,23 +92,23 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const btn   = $('#k_calcBtn');
   const clr   = $('#k_clearBtn');
 
-  if (!idade || !fcr || !out || !table || !btn || !clr) return; // HTML não encontrado
+  if (!idade || !fcr || !out || !table || !btn || !clr) return;
 
   function karvonenTarget(fcMax, fcRep, frac) {
-    // Fórmula Karvonen: alvo = ((FCmax - FCrep) * frac) + FCrep
     return Math.round(((fcMax - fcRep) * frac) + fcRep);
   }
 
   function construirTabela(fcMax, fcRep) {
-    // zonas de 50% a 80% (de 5 em 5)
     const linhas = [];
     for (let pct = 50; pct <= 80; pct += 5) {
       const frac = pct / 100;
       const alvo = karvonenTarget(fcMax, fcRep, frac);
-      linhas.push(`<div class="row" style="justify-content:space-between">
-        <span>${pct}% da FC de reserva</span>
-        <strong>${alvo} bpm</strong>
-      </div>`);
+      linhas.push(
+        `<div class="row" style="justify-content:space-between">
+          <span>${pct}% da FC de reserva</span>
+          <strong>${alvo} bpm</strong>
+        </div>`
+      );
     }
     return linhas.join('');
   }
@@ -120,7 +123,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
-    const fcMax = 220 - a;                 // FCmáx estimada
+    const fcMax = 220 - a; // estimativa
     const alvo50 = karvonenTarget(fcMax, r, 0.50);
     const alvo65 = karvonenTarget(fcMax, r, 0.65);
 
@@ -128,33 +131,27 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       FC máx. estimada: <strong>${fcMax} bpm</strong><br>
       <span class="small muted">Faixa sugerida (Fundação): ${alvo50}–${alvo65} bpm</span>
     `;
-
     table.innerHTML = construirTabela(fcMax, r);
   }
 
   function limpar() {
     idade.value = '';
     fcr.value   = '';
-    out.textContent   = 'Informe os dados e clique em Calcular.';
-    table.innerHTML   = '';
+    out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
+    table.innerHTML = '';
   }
 
-  // eventos
   btn.addEventListener('click', calcular);
   clr.addEventListener('click', limpar);
 
-  // acessibilidade: Enter nos inputs dispara cálculo
   [idade, fcr].forEach(el => {
     el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        calcular();
-      }
+      if (e.key === 'Enter') { e.preventDefault(); calcular(); }
     });
   });
 })();
 
-// ---------- Calculadora · TMB (Mifflin-St Jeor) ----------
+// ---------- Calculadora · TMB ----------
 (function tmb() {
   const peso = $('#t_peso');
   const alt  = $('#t_altura');
@@ -171,7 +168,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const s = sex.value || 'f';
 
     if (p > 0 && h > 0 && i > 0) {
-      const base = Math.round((10 * p) + (6.25 * h) - (5 * i) + (s === 'f' ? -161 : 5));
+      const base = Math.round((10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5));
       out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
         <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
     } else {
@@ -179,7 +176,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     }
   }
 
-  ['input', 'change'].forEach(ev => {
+  ['input','change'].forEach(ev=>{
     peso.addEventListener(ev, calc);
     alt.addEventListener(ev, calc);
     ida.addEventListener(ev, calc);
