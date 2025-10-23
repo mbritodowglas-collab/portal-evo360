@@ -1,228 +1,159 @@
-// EVO360 · Fundação · Card 3 (Hábitos e Recompensas)
-// Mantém o mesmo padrão dos demais cards
-
-/* ===== Helpers ===== */
-const $$ = (s) => document.querySelector(s);
-const $on = (el, ev, fn) => el && el.addEventListener(ev, fn);
+/* ====== Card 3 — Hábitos e Recompensas ====== */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 const LS = {
   get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
   set:(k,v)=>localStorage.setItem(k, JSON.stringify(v)),
   del:(k)=>localStorage.removeItem(k),
 };
+
+const NIVEL = window.NIVEL || 'fundacao-72a9c';
+const KEY_LOG_PREFIX   = `habitos_log_${NIVEL}_`;          // por data: habitos_log_<nivel>_YYYY-MM-DD -> {checked:[..], complete:true}
+const KEY_DONE_COUNT   = `habitos_daysComplete_${NIVEL}`;   // número total de dias completos
+const KEY_LAST_SAVED   = `habitos_lastSaved_${NIVEL}`;      // última data salva (YYYY-MM-DD)
+const KEY_GOALS        = `recomp_goals_${NIVEL}`;           // array de metas [{id,nome,alvo,createdAt,achievedAt?}]
 const todayISO = () => new Date().toISOString().slice(0,10);
 
-/* ===== Tabs ===== */
+/* ---------- abas ---------- */
 (function tabs(){
-  const tabs = document.querySelectorAll(".tab");
-  const map = {
-    rastreador:"#panel-rastreador",
-    recompensas:"#panel-recompensas",
-    ferramentas:"#panel-ferramentas",
-  };
-  tabs.forEach(tb=>{
-    $on(tb,"click",()=>{
-      tabs.forEach(x=>x.classList.remove("active"));
-      tb.classList.add("active");
-      document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-      $$(map[tb.dataset.tab]).classList.add("active");
+  const map = { trk:'#panel-trk', rc:'#panel-rc', tools:'#panel-tools' };
+  $$('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const t = btn.dataset.tab;
+      $$('.tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.querySelector(map[t])?.classList.add('active');
     });
   });
 })();
 
-/* ===== Rastreador diário ===== */
-(function habits(){
-  const LEVEL_ID = window.NIVEL || "fundacao-72a9c";
-  const DATE_KEY = `hab_today_${LEVEL_ID}`;     // data do último registro salvo
-  const HAB_KEY  = `hab_checks_${LEVEL_ID}`;    // objeto { yyyy-mm-dd: {habitId:bool,...}, ... }
-  const DONE_KEY = `hab_days_done_${LEVEL_ID}`; // inteiro: dias completos acumulados
+/* ---------- RASTREADOR: salvar dia, bloquear até amanhã ---------- */
+function updateTrackerUI(){
+  const last = LS.get(KEY_LAST_SAVED, null);
+  const isTodaySaved = last === todayISO();
+  const status = $('#trk_status');
 
-  const HABITS = [
-    { id:"water",   label:"Hidratação adequada" },
-    { id:"sleep",   label:"Sono 7h+" },
-    { id:"food",    label:"Alimentação base (sem ultraprocessados principais)" },
-    { id:"move",    label:"Movimento 20+ minutos" },
-    { id:"mind",    label:"Check-in mental (emocional)" },
-  ];
+  // travar/destravar
+  $$('.hb').forEach(hb => { hb.disabled = isTodaySaved; });
+  if($('#trk_save'))  $('#trk_save').disabled  = isTodaySaved;
+  if($('#trk_clear')) $('#trk_clear').disabled = isTodaySaved;
 
-  // monta lista
-  const list = $$("#habit-list");
-  list.innerHTML = "";
-  HABITS.forEach(h=>{
-    const row = document.createElement("div");
-    row.className = "habit-item";
-    row.innerHTML = `
-      <label for="hab_${h.id}">
-        <input type="checkbox" id="hab_${h.id}" data-habit="${h.id}">
-        <span>${h.label}</span>
-      </label>
-      <span class="chip" id="chip_${h.id}">—</span>
-    `;
-    list.appendChild(row);
-  });
-
-  // estado de hoje
-  const today = todayISO();
-  $$("#hab-meta").textContent = `Hoje — ${today}`;
-
-  const allData = LS.get(HAB_KEY, {}); // histórico
-  const todayData = allData[today] || {};
-  HABITS.forEach(h=>{
-    const cb = $(`#hab_${h.id}`);
-    cb.checked = !!todayData[h.id];
-  });
-
-  // contagem e barra
-  function refreshCounts(){
-    const total = HABITS.length;
-    const done = HABITS.reduce((acc,h)=> acc + ($(`#hab_${h.id}`).checked?1:0), 0);
-    $$("#hab-count").textContent = `${done}`;
-    const pct = Math.round(done/total*100);
-    $$("#hab-bar").style.width = pct+"%";
-    // chips individuais
-    HABITS.forEach(h=>{
-      const chip = $(`#chip_${h.id}`);
-      chip.textContent = $(`#hab_${h.id}`).checked ? "feito" : "pendente";
-    });
-    return {done,total,pct};
+  if(isTodaySaved){
+    status.innerHTML = '✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.';
+  } else {
+    status.textContent = '—';
   }
-  refreshCounts();
+}
 
-  // eventos de clique nos hábitos
-  HABITS.forEach(h=>{
-    $on($(`#hab_${h.id}`),"change", refreshCounts);
-  });
+function computeDayComplete(){
+  const boxes = $$('.hb');
+  return boxes.length > 0 && boxes.every(hb => hb.checked);
+}
 
-  // salvar / limpar dia
-  $on($$("#hab-save"),"click",()=>{
-    const {done,total} = refreshCounts();
-    const data = LS.get(HAB_KEY, {});
-    data[today] = {};
-    HABITS.forEach(h=>{ data[today][h.id] = $(`#hab_${h.id}`).checked; });
-    LS.set(HAB_KEY, data);
-    LS.set(DATE_KEY, today);
+function saveDay(){
+  const date = todayISO();
+  const checked = $$('.hb').filter(hb=>hb.checked).map(hb=>hb.value);
+  const complete = computeDayComplete();
 
-    // se completou todos, incrementa contador de dias completos (apenas 1x por dia)
-    let fullDays = LS.get(DONE_KEY, 0);
-    const wasFull = Object.values(todayData||{}).length === total && Object.values(todayData||{}).every(Boolean);
-    const isFull  = done === total;
-    // incrementa quando virou de “não completo” para “completo”, ou se ainda não havia salvo hoje
-    if(!wasFull && isFull){ fullDays += 1; LS.set(DONE_KEY, fullDays); }
-    $$("#hab-days-complete").textContent = fullDays;
-  });
+  // salva log do dia
+  LS.set(KEY_LOG_PREFIX + date, { checked, complete });
 
-  $on($$("#hab-clear"),"click",()=>{
-    HABITS.forEach(h=>{ $(`#hab_${h.id}`).checked = false; });
-    refreshCounts();
-    const data = LS.get(HAB_KEY, {});
-    delete data[today];
-    LS.set(HAB_KEY, data);
-  });
-
-  // carregar contagem de dias completos
-  $$("#hab-days-complete").textContent = LS.get(DONE_KEY, 0);
-
-  // helper de query
-  function $(s){ return document.querySelector(s); }
-})();
-
-/* ===== Recompensas ===== */
-(function rewards(){
-  const LEVEL_ID = window.NIVEL || "fundacao-72a9c";
-  const NAME_KEY = `rec_name_${LEVEL_ID}`;
-  const GOAL_KEY = `rec_goal_${LEVEL_ID}`;
-
-  const nameInp = $$("#rec_nome");
-  const goalInp = $$("#rec_meta");
-  const outName = $$("#rec_nome_out");
-  const outTxt  = $$("#rec_prog_txt");
-  const bar     = $$("#rec_bar");
-
-  function load(){
-    const n = LS.get(NAME_KEY, "");
-    const g = Math.max(1, Math.min(60, +(LS.get(GOAL_KEY, 12)||12)));
-    nameInp.value = n;
-    goalInp.value = g;
-    outName.textContent = n || "—";
-    renderProgress();
-  }
-
-  function renderProgress(){
-    const g = Math.max(1, Math.min(60, +goalInp.value || 12));
-    const done = +(LS.get(`hab_days_done_${LEVEL_ID}`, 0) || 0);
-    const pct = Math.max(0, Math.min(100, Math.round(done/g*100)));
-    bar.style.width = pct + "%";
-    outTxt.textContent = `${done}/${g} dias completos`;
-  }
-
-  $on($$("#rec_salvar"),"click",()=>{
-    const n = (nameInp.value||"").trim();
-    const g = Math.max(1, Math.min(60, +goalInp.value || 12));
-    LS.set(NAME_KEY, n);
-    LS.set(GOAL_KEY, g);
-    outName.textContent = n || "—";
-    renderProgress();
-    // micro celebração visual (pulse)
-    bar.animate([{transform:"scaleX(1)"},{transform:"scaleX(1.02)"},{transform:"scaleX(1)"}],{duration:300});
-  });
-
-  // quando os “dias completos” mudarem (ex.: após salvar no rastreador), recalcule ao voltar p/ aba
-  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) renderProgress(); });
-
-  load();
-})();
-
-/* ===== Ferramentas: água ===== */
-(function water(){
-  const LEVEL_ID = window.NIVEL || "fundacao-72a9c";
-  const KG_KEY = `agua_peso_${LEVEL_ID}`;
-  const ML_KEY = `agua_ml_${LEVEL_ID}_${todayISO()}`; // diário
-
-  const peso = $$("#agua_peso");
-  const out  = $$("#agua_out");
-  const mlEl = $$("#agua_ml");
-  const copEl= $$("#agua_copos");
-  const bar  = $$("#agua_bar");
-
-  function metaMl(){
-    const kg = +peso.value || 0;
-    return Math.max(0, Math.round(kg * 35)); // ml
-  }
-  function renderMeta(){
-    const m = metaMl();
-    if(m>0){
-      out.innerHTML = `Meta diária estimada: <strong>${m} ml</strong> (${(m/1000).toFixed(2)} L)`;
-    }else{
-      out.textContent = "Informe seu peso para ver a meta diária.";
+  // se for completo e ainda não foi salvo hoje, incrementa contador
+  const last = LS.get(KEY_LAST_SAVED, null);
+  if(last !== date){
+    if(complete){
+      const done = (LS.get(KEY_DONE_COUNT, 0) || 0) + 1;
+      LS.set(KEY_DONE_COUNT, done);
+      renderGoals(); // atualiza progressos
     }
-    renderBar();
-  }
-  function getMl(){
-    return +LS.get(ML_KEY, 0) || 0;
-  }
-  function setMl(v){
-    const ml = Math.max(0, v|0);
-    LS.set(ML_KEY, ml);
-    mlEl.textContent = `${ml} ml`;
-    copEl.textContent = Math.floor(ml/250);
-    renderBar();
-  }
-  function renderBar(){
-    const m = metaMl();
-    const v = getMl();
-    const pct = m>0 ? Math.min(100, Math.round(v/m*100)) : 0;
-    bar.style.width = pct+"%";
+    LS.set(KEY_LAST_SAVED, date);
   }
 
-  // init
-  peso.value = LS.get(KG_KEY, "");
-  renderMeta();
-  setMl(getMl());
+  updateTrackerUI();
+}
 
-  // events
-  $on(peso, "input", ()=>{
-    LS.set(KG_KEY, peso.value || "");
-    renderMeta();
+function clearMarks(){
+  // se já salvou hoje, não permite limpar
+  if(LS.get(KEY_LAST_SAVED,null) === todayISO()){
+    $('#trk_status').textContent = 'O dia já foi salvo; não é possível limpar as marcações de hoje.';
+    return;
+  }
+  $$('.hb').forEach(hb => hb.checked = false);
+  $('#trk_status').textContent = 'Marcações limpas (não salvas).';
+}
+
+$('#trk_save')?.addEventListener('click', saveDay);
+$('#trk_clear')?.addEventListener('click', clearMarks);
+updateTrackerUI();
+
+/* ---------- METAS (recompensas): salvar e listar ---------- */
+function renderGoals(){
+  const list = $('#rc_lista');
+  const goals = LS.get(KEY_GOALS, []) || [];
+  const done  = LS.get(KEY_DONE_COUNT, 0) || 0;
+  if($('#rc_done')) $('#rc_done').textContent = String(done);
+
+  if(goals.length === 0){
+    list.innerHTML = '<div class="calc-out">Nenhuma meta cadastrada ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = goals.map(g=>{
+    // marca como alcançada se atingiu e ainda não marcado
+    if(done >= g.alvo && !g.achievedAt){
+      g.achievedAt = todayISO();
+    }
+    const pct = Math.max(0, Math.min(100, Math.round(done / g.alvo * 100)));
+    const status = g.achievedAt
+      ? `<span class="small muted">Alcançada em ${g.achievedAt}</span>`
+      : `<span class="small muted">${done}/${g.alvo} dias completos</span>`;
+
+    return `
+      <div class="item" data-id="${g.id}">
+        <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;width:100%">
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+            <strong>${g.nome}</strong>
+            <div class="progress"><span style="width:${pct}%"></span></div>
+            ${status}
+          </div>
+          <button class="btn ghost" data-del="${g.id}">Excluir</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // salvar possíveis alterações (achievedAt)
+  LS.set(KEY_GOALS, goals);
+
+  // handlers de exclusão
+  list.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-del');
+      const arr = (LS.get(KEY_GOALS, [])||[]).filter(g=> String(g.id) !== String(id));
+      LS.set(KEY_GOALS, arr);
+      renderGoals();
+    });
   });
-  $on($$("#agua_add"), "click", ()=> setMl(getMl() + 250));
-  $on($$("#agua_reset"), "click", ()=> setMl(0));
-})();
+}
+
+function saveGoal(){
+  const nome = ($('#rc_nome')?.value||'').trim();
+  const alvo = Math.max(1, Math.min(60, parseInt($('#rc_alvo')?.value||'0',10)));
+  if(!nome){ alert('Descreva a recompensa.'); return; }
+  if(!alvo){ alert('Informe o número de dias completos para merecer.'); return; }
+
+  const goals = LS.get(KEY_GOALS, []) || [];
+  goals.push({
+    id: Date.now(),
+    nome, alvo,
+    createdAt: todayISO()
+  });
+  LS.set(KEY_GOALS, goals);
+
+  if($('#rc_nome')) $('#rc_nome').value = '';
+  if($('#rc_alvo')) $('#rc_alvo').value = '20';
+  renderGoals();
+}
+
+$('#rc_save')?.addEventListener('click', saveGoal);
+renderGoals();
