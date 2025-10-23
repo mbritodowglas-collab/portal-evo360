@@ -404,3 +404,52 @@
   </script>
 </body>
 </html>
+
+<!-- Script adicional: Desbloqueio automático diário -->
+  <script defer>
+    (function(){
+      const NIVEL = window.NIVEL || 'fundacao-72a9c';
+      const LOCK_KEY = `bp_day_lock_${NIVEL}`;
+      const $ = s => document.querySelector(s);
+      const $$ = s => Array.from(document.querySelectorAll(s));
+      const todayISO = () => new Date().toISOString().slice(0,10);
+      const LS = {
+        get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
+        set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
+      };
+
+      function setDisabled(disabled){
+        $$('#panel-rastreador input[type="checkbox"][data-habit]').forEach(el=> el.disabled = disabled);
+        const save = $('#btnSaveDay'), clear = $('#btnClearDay');
+        if(save) save.disabled = disabled;
+        if(clear) clear.disabled = disabled;
+        const info = $('#saveInfo');
+        if(info) info.style.display = disabled ? 'block' : 'none';
+      }
+
+      function applyLockState(){
+        const lockedAt = LS.get(LOCK_KEY, null);
+        const isLocked = lockedAt === todayISO();
+        setDisabled(isLocked);
+      }
+
+      function markLockedToday(){
+        LS.set(LOCK_KEY, todayISO());
+        applyLockState();
+      }
+
+      document.addEventListener('DOMContentLoaded', ()=>{
+        applyLockState();
+        const saveBtn = document.getElementById('btnSaveDay');
+        if(saveBtn){
+          saveBtn.addEventListener('click', ()=> setTimeout(markLockedToday, 50));
+        }
+        setInterval(applyLockState, 60_000);
+        document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) applyLockState(); });
+      });
+    })();
+  </script>
+
+  <script src="./habitos.js?v=18" defer></script>
+</body>
+</html>
