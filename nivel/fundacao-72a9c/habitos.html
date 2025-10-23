@@ -187,7 +187,7 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Script adicional: Progresso 20 dias por hábito + reset 3 ausências -->
+  <!-- Script adicional: Progresso 20 dias por hábito + reset 3 ausências (o seu, mantido) -->
   <script defer>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
@@ -246,16 +246,16 @@
 
     function updateGoalProgress(){
       const hist = LS.get(KEY_DAYCOMP, {});
-      const goalWrap = $('#goalCurrentWrap');
+      const goalWrap = document.getElementById('goalCurrentWrap');
       if(!goalWrap) return;
 
-      const goalName = $('#goalCurrentName');
-      const goalProg = $('#goalProgress');
-      const goalTxt  = $('#goalProgressText');
-      const goalNote = $('#goalResetNote');
+      const goalName = document.getElementById('goalCurrentName');
+      const goalProg = document.getElementById('goalProgress');
+      const goalTxt  = document.getElementById('goalProgressText');
+      const goalNote = document.getElementById('goalResetNote');
 
-      const daysTarget = parseInt(($('#goal_days')?.value)||0,10) || 20;
-      const name = ($('#goal_name')?.value)||'Recompensa';
+      const daysTarget = parseInt((document.getElementById('goal_days')?.value)||0,10) || 20;
+      const name = (document.getElementById('goal_name')?.value)||'Recompensa';
 
       const dates = Object.keys(hist).sort();
       let lastResetIdx = -1;
@@ -335,6 +335,113 @@
   })();
   </script>
 
+  <!-- Script do layout/funcionalidades gerais do card (o seu) -->
   <script src="./habitos.js?v=18" defer></script>
+
+  <!-- Script EXTRA: apenas metas (salvar na lista + excluir + restaurar inputs) -->
+  <script defer>
+  (function(){
+    const NIVEL = window.NIVEL || 'fundacao-72a9c';
+    const GOALS_KEY = `bp_goals_${NIVEL}`;
+    const CUR_GOAL_KEY = `bp_goal_current_${NIVEL}`;
+    const $ = s => document.querySelector(s);
+    const LS = {
+      get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
+      set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
+    };
+    const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    function getGoals(){ return LS.get(GOALS_KEY, []); }
+    function setGoals(arr){ LS.set(GOALS_KEY, arr); }
+
+    function renderGoals(){
+      const box = $('#goalsList');
+      if(!box) return;
+      const arr = getGoals();
+      if(!arr.length){ box.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>'; return; }
+      box.innerHTML = arr.map(g=>`
+        <div class="goal-card" data-id="${g.id}">
+          <div class="hdr">
+            <div class="name">${esc(g.name)}</div>
+            <div class="small muted">${g.createdISO||''}</div>
+          </div>
+          <small class="muted">0/${g.days} dias completos</small>
+          <div class="row-actions" style="margin-top:8px">
+            <button class="btn ghost" data-del="${g.id}">Excluir</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setCurrentGoalToInputs(g){
+      const name=$('#goal_name'), days=$('#goal_days');
+      if(name) name.value = g?.name || '';
+      if(days) days.value = g?.days || '';
+    }
+
+    function applyCurrentGoalUI(){
+      // aproveita seu updateGoalProgress() existente
+      if(typeof window.updateGoalProgress === 'function'){
+        window.updateGoalProgress();
+      }else{
+        // fallback: dispara um pequeno atraso para pegar a função IIFE do seu script
+        setTimeout(()=>{ if(typeof window.updateGoalProgress==='function') window.updateGoalProgress(); }, 50);
+      }
+    }
+
+    function saveGoal(){
+      const name = ($('#goal_name')?.value||'').trim();
+      const days = parseInt($('#goal_days')?.value,10) || 20;
+      if(!name) return;
+
+      const goal = { id: Date.now().toString(36), name, days, createdISO: new Date().toISOString().slice(0,10) };
+
+      const arr = getGoals();
+      arr.unshift(goal);
+      setGoals(arr);
+
+      // define como meta atual (mantendo seu modelo que lê dos inputs)
+      LS.set(CUR_GOAL_KEY, goal);
+      setCurrentGoalToInputs(goal);
+      renderGoals();
+      applyCurrentGoalUI();
+    }
+
+    function clearGoalInputs(){
+      if($('#goal_name')) $('#goal_name').value='';
+      if($('#goal_days')) $('#goal_days').value='';
+    }
+
+    function deleteGoal(id){
+      const arr = getGoals().filter(g=>g.id!==id);
+      setGoals(arr);
+      renderGoals();
+
+      // se apagou a meta atual, limpa inputs
+      const cur = LS.get(CUR_GOAL_KEY,null);
+      if(cur && cur.id===id){
+        LS.set(CUR_GOAL_KEY,null);
+        clearGoalInputs();
+        applyCurrentGoalUI();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // restaurar meta atual nos inputs
+      const cur = LS.get(CUR_GOAL_KEY,null);
+      if(cur) setCurrentGoalToInputs(cur);
+
+      renderGoals();
+      applyCurrentGoalUI();
+
+      $('#btnSaveGoal')?.addEventListener('click', saveGoal);
+      $('#btnClearGoal')?.addEventListener('click', clearGoalInputs);
+      $('#goalsList')?.addEventListener('click', e=>{
+        const id = e.target?.dataset?.del;
+        if(id) deleteGoal(id);
+      });
+    });
+  })();
+  </script>
 </body>
 </html>
