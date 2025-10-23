@@ -1,195 +1,200 @@
-// ===== Dica/Tarefa do Dia (drip) =====
-(async function initDica(){
-  const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
-  const DRIP_ID  = 'card1_tarefas';
-  const MAX_DAYS = 60;
+/* tarefas-orientacoes.js (v16) */
 
-  // helpers de storage e datas (fornecidos por drip.js)
-  const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
-  const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
+/* -------------------------------------------
+   Utilidades básicas
+------------------------------------------- */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  async function load(url){
-    try{
-      const r = await fetch(url, {cache:'no-store'});
-      if(!r.ok) throw 0;
-      return await r.json();
-    }catch(_){ return null; }
-  }
+/* -------------------------------------------
+   Dica/Tarefa do dia (Drip) – com proteção
+------------------------------------------- */
+(function initDripSafely() {
+  try {
+    if (!window.Drip) throw new Error('Drip indisponível');
+    const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+    const DRIP_ID  = 'card1_tarefas';
+    const MAX_DAYS = 60;
 
-  const data = await load(window.DATA_DICAS);
+    const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
+    const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
 
-  const $ = s => document.querySelector(s);
-  const meta  = $('#dica-meta');
-  const texto = $('#dica-texto');
-  const prev  = $('#btnPrev');
-  const next  = $('#btnNext');
-
-  const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-  let day = Drip.LS.get(VIEW_KEY, todayIdx);
-
-  function render(){
-    // trava futuro; permite voltar
-    day = Math.max(1, Math.min(day, todayIdx));
-
-    const item = data && data[day-1];
-    if(item){
-      const cat = item.categoria === 'treino' ? 'Treino' : 'Nutrição';
-      meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${cat}`;
-      texto.textContent = item.texto;
-    } else {
-      meta.textContent = `Dia ${day} de ${MAX_DAYS}`;
-      texto.textContent = 'Dica indisponível.';
+    async function loadJSON(url){
+      try{
+        const r = await fetch(url, { cache: 'no-store' });
+        if(!r.ok) throw 0;
+        return await r.json();
+      }catch(_){ return null; }
     }
 
-    prev.disabled = (day <= 1);
-    next.disabled = (day >= todayIdx);
-    Drip.LS.set(VIEW_KEY, day);
-  }
+    (async () => {
+      const data = await loadJSON(window.DATA_DICAS);
+      const meta  = $('#dica-meta');
+      const texto = $('#dica-texto');
+      const prev  = $('#btnPrev');
+      const next  = $('#btnNext');
 
-  prev.addEventListener('click', ()=>{ day--; render(); });
-  next.addEventListener('click', ()=>{ day++; render(); });
-  render();
+      const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
+      let day = (Drip.LS && Drip.LS.get) ? Drip.LS.get(VIEW_KEY, todayIdx) : todayIdx;
+
+      function render(){
+        day = Math.max(1, Math.min(day, todayIdx));
+        const item = data && data[day-1];
+        if(item){
+          const cat = item.categoria === 'treino' ? 'Treino' : 'Nutrição';
+          meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${cat}`;
+          texto.textContent = item.texto || '—';
+        } else {
+          meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
+          texto.textContent = 'Dica indisponível.';
+        }
+        prev.disabled = (day <= 1);
+        next.disabled = (day >= todayIdx);
+        Drip.LS?.set?.(VIEW_KEY, day);
+      }
+
+      prev?.addEventListener('click', ()=>{ day--; render(); });
+      next?.addEventListener('click', ()=>{ day++; render(); });
+      render();
+    })();
+  } catch (err) {
+    // Se o Drip falhar, não quebra o restante da página
+    const meta  = $('#dica-meta');
+    const texto = $('#dica-texto');
+    if (meta)  meta.textContent  = 'Dia —';
+    if (texto) texto.textContent = 'Dica indisponível no momento.';
+  }
 })();
 
-
-// ===== Tabs (Calculadoras) =====
-(function tabs(){
-  const tabs = document.querySelectorAll('.tab');
-  const panels = { karvonen: '#panel-karvonen', tmb: '#panel-tmb' };
-
+/* -------------------------------------------
+   Tabs simples (Calculadoras)
+------------------------------------------- */
+(function initTabs(){
+  const tabs = $$('.tab');
+  const panels = {
+    karvonen: '#panel-karvonen',
+    tmb:      '#panel-tmb'
+  };
   tabs.forEach(tb=>{
     tb.addEventListener('click', ()=>{
       tabs.forEach(x=>x.classList.remove('active'));
       tb.classList.add('active');
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      document.querySelector(panels[tb.dataset.tab]).classList.add('active');
+      $$('.panel').forEach(p=>p.classList.remove('active'));
+      const sel = panels[tb.dataset.tab];
+      if (sel) $(sel)?.classList.add('active');
     });
   });
 })();
 
+/* -------------------------------------------
+   Calculadora Karvonen (com tabela 50–80%)
+------------------------------------------- */
+function calcKarvonenTable(age, fcr){
+  const a = +age;
+  const r = +fcr;
+  if(!(a>0 && r>0)) return null;
+  const fcMax = 220 - a;
+  const result = {
+    fcMax,
+    alvo50_65: [ // faixa sugerida ao nível
+      Math.round(((fcMax - r) * 0.50) + r),
+      Math.round(((fcMax - r) * 0.65) + r)
+    ],
+    linhas: []
+  };
+  for(let pct = 50; pct <= 80; pct += 5){
+    const frac = pct / 100;
+    const alvo = Math.round(((fcMax - r) * frac) + r);
+    result.linhas.push({ pct, bpm: alvo });
+  }
+  return result;
+}
 
-// ===== FC de Reserva (Karvonen) =====
-// Agora: sem campo de intensidade. Calcula e lista as zonas 50–80% (de 5 em 5).
-(function karvonen(){
-  const idade = document.getElementById('k_idade');
-  const fcr   = document.getElementById('k_fcr');   // FC de repouso
-  const out   = document.getElementById('k_out');   // resumo alvo/máx/reserva
-  const table = document.getElementById('k_table'); // tabela de zonas
-  const btn   = document.getElementById('k_calcBtn');
-  const clr   = document.getElementById('k_clearBtn');
+function renderKarvonen(){
+  const idade = $('#k_idade');
+  const fcr   = $('#k_fcr');
+  const out   = $('#k_out');
+  const tbl   = $('#k_table');
 
-  if(!idade || !fcr || !out || !table || !btn) return;
+  const data = calcKarvonenTable(idade?.value, fcr?.value);
 
-  function calcKarvonen(a, r, pct){
-    // FCmax estimada = 220 - idade (método simples, suficiente aqui)
-    const fcMax   = 220 - a;
-    const reserva = fcMax - r;
-    const alvo    = Math.round(reserva * (pct/100) + r);
-    return { fcMax, reserva, alvo };
+  if(!data){
+    if(out) out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
+    if(tbl) tbl.innerHTML   = '';
+    return;
   }
 
-  function renderTabela(a, r){
-    const percentuais = [50,55,60,65,70,75,80];
-    const { fcMax, reserva } = calcKarvonen(a, r, 50); // só para pegar fcMax/reserva
-
-    // header/resumo
-    out.innerHTML = `
-      <strong>FC máx estimada:</strong> ${fcMax} bpm ·
-      <strong>Reserva:</strong> ${reserva} bpm
-    `;
-
-    // tabela de zonas
-    let rows = '';
-    for(const p of percentuais){
-      const { alvo } = calcKarvonen(a, r, p);
-      rows += `
-        <tr>
-          <td>${p}%</td>
-          <td><strong>${alvo} bpm</strong></td>
-        </tr>
-      `;
-    }
-
-    table.innerHTML = `
-      <div class="small muted" style="margin-bottom:6px">
-        Zonas sugeridas para o nível Fundação (faixa leve a moderada: 50%–65%).
-      </div>
-      <table style="width:100%;border-collapse:separate;border-spacing:0 6px">
-        <thead>
-          <tr>
-            <th style="text-align:left;">Intensidade</th>
-            <th style="text-align:left;">FC alvo (Karvonen)</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `;
+  // resumo
+  if(out){
+    out.innerHTML =
+      `FC máx. estimada: <strong>${data.fcMax} bpm</strong><br>` +
+      `<span class="small muted">Faixa sugerida (Fundação): ${data.alvo50_65[0]}–${data.alvo50_65[1]} bpm (50–65%).</span>`;
   }
 
-  function validar(){
-    const a = +idade.value || 0;
-    const r = +fcr.value    || 0;
-    return (a>0 && r>0) ? {a,r} : null;
+  // tabela 50–80%
+  if(tbl){
+    const rows = data.linhas
+      .map(l => `<tr><td>${l.pct}%</td><td><strong>${l.bpm} bpm</strong></td></tr>`)
+      .join('');
+    tbl.innerHTML =
+      `<div class="small muted" style="margin-bottom:6px">Zonas por FC de Reserva</div>
+       <table class="table-compact" style="width:100%">
+         <thead><tr><th style="text-align:left">Intensidade</th><th style="text-align:left">Alvo</th></tr></thead>
+         <tbody>${rows}</tbody>
+       </table>`;
   }
+}
 
-  function calcular(){
-    const v = validar();
-    if(!v){
-      out.textContent = 'Informe idade e FC de repouso.';
-      table.innerHTML = '';
-      return;
-    }
-    renderTabela(v.a, v.r);
+/* -------------------------------------------
+   Calculadora TMB (Mifflin-St Jeor)
+------------------------------------------- */
+function renderTMB(){
+  const peso = $('#t_peso');
+  const alt  = $('#t_altura');
+  const ida  = $('#t_idade');
+  const sex  = $('#t_sexo');
+  const out  = $('#t_out');
+
+  const p = +peso?.value || 0;
+  const h = +alt?.value  || 0;
+  const i = +ida?.value  || 0;
+  const s = sex?.value   || 'f';
+
+  if(!(p>0 && h>0 && i>0)){
+    if(out) out.textContent = 'Preencha peso, altura e idade.';
+    return;
   }
-
-  function limpar(){
-    idade.value = '';
-    fcr.value   = '';
-    out.textContent   = 'Informe os dados e clique em Calcular.';
-    table.innerHTML   = '';
-    idade.focus();
+  const base = (10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5);
+  if(out){
+    out.innerHTML = `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br>` +
+                    `<span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
   }
+}
 
-  btn.addEventListener('click', calcular);
-  clr?.addEventListener('click', limpar);
+/* -------------------------------------------
+   Bind dos botões/inputs ao carregar DOM
+------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  // Karvonen
+  $('#k_calcBtn')?.addEventListener('click', renderKarvonen);
+  $('#k_clearBtn')?.addEventListener('click', () => {
+    $('#k_idade').value = '';
+    $('#k_fcr').value   = '';
+    $('#k_out').textContent = 'Informe os dados e clique em Calcular.';
+    $('#k_table').innerHTML = '';
+    $('#k_idade').focus();
+  });
 
-  // Enter para calcular
-  [idade, fcr].forEach(inp=>{
-    inp.addEventListener('keydown', e=>{
-      if(e.key === 'Enter') calcular();
+  // (Opcional) permitir Enter nos campos disparar cálculo
+  ['k_idade','k_fcr'].forEach(id => {
+    $(`#${id}`)?.addEventListener('keydown', e=>{
+      if(e.key === 'Enter'){ e.preventDefault(); renderKarvonen(); }
     });
   });
-})();
 
-
-// ===== TMB (Mifflin-St Jeor) =====
-(function tmb(){
-  const peso = document.getElementById('t_peso');
-  const alt  = document.getElementById('t_altura');
-  const ida  = document.getElementById('t_idade');
-  const sex  = document.getElementById('t_sexo');
-  const out  = document.getElementById('t_out');
-
-  if(!peso || !alt || !ida || !sex || !out) return;
-
-  function calc(){
-    const p = +peso.value || 0;
-    const h = +alt.value  || 0;
-    const i = +ida.value  || 0;
-    const s = sex.value || 'f';
-    if(p>0 && h>0 && i>0){
-      const base = (10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5);
-      out.innerHTML = `Sua TMB estimada: <strong>${Math.round(base)} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
-    } else {
-      out.textContent = 'Preencha peso, altura e idade.';
-    }
-  }
-
-  ['input','change'].forEach(ev=>{
-    peso.addEventListener(ev, calc);
-    alt.addEventListener(ev, calc);
-    ida.addEventListener(ev, calc);
-    sex.addEventListener(ev, calc);
+  // TMB
+  ['t_peso','t_altura','t_idade','t_sexo'].forEach(id => {
+    $(`#${id}`)?.addEventListener('input', renderTMB);
+    $(`#${id}`)?.addEventListener('change', renderTMB);
   });
-  calc();
-})();
+});
