@@ -202,9 +202,24 @@
       {id:'sol',          label:'Ar livre / Sol'}
     ];
     const $ = s => document.querySelector(s);
-    const iso = d => new Date(d).toISOString().slice(0,10);
-    const today = () => iso(new Date());
-    const addDays = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return iso(x); }
+
+    /* ==== AJUSTE: datas em fuso LOCAL (sem UTC) ==== */
+    const toDate = (val) => (val instanceof Date) ? new Date(val) : new Date(String(val).replace(/T.*$/,'T00:00:00'));
+    const localISO = (val=new Date()) => {
+      const d = toDate(val);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    };
+    const today = () => localISO(new Date());
+    const addDays = (dateISO, n) => {
+      const d = toDate(`${dateISO}T00:00:00`);
+      d.setDate(d.getDate()+n);
+      return localISO(d);
+    };
+    /* =============================================== */
+
     const LS = {
       get:(k,def)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){return def} },
       set:(k,v)=> localStorage.setItem(k, JSON.stringify(v))
@@ -216,7 +231,7 @@
       if(!wrap) return;
       wrap.innerHTML = '';
       const days = [];
-      for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(iso(d)); }
+      for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(localISO(d)); }
       HABITS.forEach(h=>{
         const hist = LS.get(keyHabit(h.id), {});
         const row  = document.createElement('div');
@@ -271,39 +286,34 @@
     }
 
     /* =========================
-       AJUSTE ÚNICO: hookSaveDay com SNAPSHOT
+       hookSaveDay com SNAPSHOT
        ========================= */
     function hookSaveDay(){
       const saveBtn = document.getElementById('btnSaveDay');
       if(!saveBtn) return;
 
       saveBtn.addEventListener('click', ()=>{
-        // Snapshot imediato do estado dos checkboxes, antes do script original limpar a UI
         const snap = {};
         HABITS.forEach(h=>{
           const el = document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`);
           snap[h.id] = !!(el && el.checked);
         });
 
-        // Gravação no storage após o fluxo original concluir
         setTimeout(()=> {
           const todayISO = today();
 
-          // histórico por hábito
           HABITS.forEach(h=>{
             const hist = LS.get(keyHabit(h.id), {});
             hist[todayISO] = snap[h.id] ? 1 : 0;
             LS.set(keyHabit(h.id), hist);
           });
 
-          // dia completo (todos essenciais marcados no snapshot)
           const essentials = ['agua','sono','movimento','alimentacao'];
           const all = essentials.every(id => snap[id]);
           const dcomp = LS.get(KEY_DAYCOMP, {});
           dcomp[todayISO] = all ? 1 : 0;
           LS.set(KEY_DAYCOMP, dcomp);
 
-          // regra: 3 ausências seguidas zeram contagem
           const d1 = todayISO, d0 = addDays(d1, -1), dm1 = addDays(d1, -2);
           if( (dcomp[dm1]===0) && (dcomp[d0]===0) && (dcomp[d1]===0) ){
             LS.set(`bp_progress_reset_at_${NIVEL}`, d1);
@@ -326,7 +336,6 @@
       updateGoalProgress();
       hookSaveDay();
       hookClearDay();
-      // expõe para o script de metas reutilizar
       window.updateGoalProgress = updateGoalProgress;
     });
   })();
@@ -367,7 +376,8 @@
     }
 
     function setCurrent(goal){
-      LS.set(CUR_KEY, goal?{id:goal.id,name:goal.name,days:goal.days}:null);
+      const val = goal?{id:goal.id,name:goal.name,days:goal.days}:null;
+      LS.set(CUR_KEY, val);
       if($('#goal_name')) $('#goal_name').value = goal?.name || '';
       if($('#goal_days')) $('#goal_days').value = goal?.days || '';
       if(typeof window.updateGoalProgress==='function') window.updateGoalProgress();
