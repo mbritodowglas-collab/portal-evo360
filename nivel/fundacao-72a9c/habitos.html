@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação · Hábitos e Recompensas</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    /* Texto justificado (padrão nas páginas internas) */
+    .content p, .content li { text-align: justify; }
+
+    /* Abas e painéis (mesmo padrão dos Cards 1 e 2) */
+    .tabs{display:flex;gap:8px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .note{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+    .muted{color:var(--ink-2)}
+
+    /* Rastreador — lista bonita */
+    .habit-list{display:grid;gap:10px;margin-top:10px}
+    .habit-item{
+      display:flex;align-items:center;justify-content:space-between;
+      background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+    }
+    .habit-item label{display:flex;align-items:center;gap:10px;cursor:pointer}
+    .habit-item input[type="checkbox"]{width:18px;height:18px}
+    .chip{font-size:.85rem;color:var(--ink-2);background:#0e141a;border:1px solid var(--line);padding:4px 8px;border-radius:999px}
+
+    /* Barra de progresso simples */
+    .progress{height:12px;background:#141A20;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+    .progress>span{display:block;height:100%;background:var(--gold-soft);width:0%}
+
+    /* Form linha */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .form-grid{grid-template-columns:1fr} }
+
+    /* Caixas de saída */
+    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
+  </style>
+</head>
+<body class="layout-with-sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
+      <div class="nivel">Nível Fundação</div>
+    </div>
+    <nav class="sb-nav">
+      <a class="sb-item" href="./">Início</a>
+      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item active" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item" href="./suporte.html">Suporte</a>
+    </nav>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+  </aside>
+
+  <main class="content">
+    <!-- Banner (apenas imagem; mesmo padrão) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+
+    <!-- CARD · Hábitos e Recompensas -->
+    <section class="card">
+      <h2>Hábitos e Recompensas</h2>
+      <p class="muted">
+        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong>
+        e acompanhe sua evolução. O objetivo é cultivar constância, celebrar conquistas e manter
+        um ritmo sustentável ao longo do Nível Fundação (60 dias).
+      </p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="rastreador" role="tab">Rastreador diário</button>
+        <button class="tab" data-tab="recompensas" role="tab">Recompensas</button>
+        <button class="tab" data-tab="ferramentas" role="tab">Ferramentas</button>
+      </div>
+
+      <!-- Painel: Rastreador diário -->
+      <div class="panel active" id="panel-rastreador">
+        <div class="muted" id="hab-meta">Hoje —</div>
+
+        <div class="habit-list" id="habit-list">
+          <!-- preenchido via JS com 5 hábitos fixos -->
+        </div>
+
+        <div class="note">
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <div>
+              <strong>Dia completo:</strong> todos os hábitos marcados ✅
+            </div>
+            <span class="chip"><span id="hab-count">0</span> de 5 hoje</span>
+          </div>
+          <div class="progress" style="margin-top:10px"><span id="hab-bar"></span></div>
+          <div class="row-actions">
+            <button class="btn" id="hab-save">Salvar hoje</button>
+            <button class="btn ghost" id="hab-clear">Limpar hoje</button>
+          </div>
+          <small class="muted">Histórico: <strong id="hab-days-complete">0</strong> dias completos.</small>
+        </div>
+      </div>
+
+      <!-- Painel: Recompensas -->
+      <div class="panel" id="panel-recompensas">
+        <p>Defina uma recompensa e o critério (nº de dias completos) para se presentear com propósito.</p>
+
+        <div class="form-grid">
+          <label>Recompensa (ex.: “Spa em casa”, “Filme + pipoca”)<br>
+            <input type="text" id="rec_nome" placeholder="Descreva sua recompensa">
+          </label>
+          <label>Dias completos para merecer<br>
+            <input type="number" id="rec_meta" min="1" max="60" value="12">
+          </label>
+        </div>
+
+        <div class="note">
+          <div><strong>Alvo:</strong> <span id="rec_nome_out">—</span></div>
+          <div style="margin:8px 0" class="progress"><span id="rec_bar"></span></div>
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <span class="muted">Progresso: <strong id="rec_prog_txt">0/12</strong> dias completos</span>
+            <button class="btn" id="rec_salvar">Salvar meta</button>
+          </div>
+        </div>
+
+        <div class="note small">
+          <strong>Dica:</strong> celebre logo após atingir a meta; isso reforça o circuito de recompensa do hábito.
+        </div>
+      </div>
+
+      <!-- Painel: Ferramentas -->
+      <div class="panel" id="panel-ferramentas">
+        <h3>Calculadora de água</h3>
+        <p class="muted">Estimativa simples: <strong>35 ml</strong> por kg de peso corporal/dia.</p>
+        <div class="form-grid">
+          <label>Peso (kg)<br><input type="number" id="agua_peso" step="0.1" placeholder="ex: 68"></label>
+          <div class="calc-out" id="agua_out">Informe seu peso para ver a meta diária.</div>
+        </div>
+
+        <h3 style="margin-top:16px">Contador de copos</h3>
+        <p class="muted">Considere um copo padrão de <strong>250 ml</strong>. Ajuste conforme seu uso.</p>
+        <div class="note">
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <div>Consumido hoje: <strong id="agua_ml">0 ml</strong> (<span id="agua_copos">0</span> copos)</div>
+            <div class="row-actions">
+              <button class="btn" id="agua_add">+ 1 copo</button>
+              <button class="btn ghost" id="agua_reset">Zerar</button>
+            </div>
+          </div>
+          <div class="progress" style="margin-top:10px"><span id="agua_bar"></span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* Config desta página */
+    window.NIVEL = "fundacao-72a9c";
+  </script>
+  <!-- JS desta página -->
+  <script src="./habitos.js?v=18" defer></script>
+</body>
+</html>
