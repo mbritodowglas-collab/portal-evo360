@@ -387,3 +387,115 @@ h1, h2, h3 {
 .tile.pos-top    { background-position: center 20%; }
 .tile.pos-center { background-position: center; }
 .tile.pos-low    { background-position: center 70%; }
+
+/* ============================
+   POLIMENTO VISUAL DOS CARDS
+   (apenas para esta página)
+   ============================ */
+
+/* Card: mais contraste, profundidade e respiro */
+.card{
+  border:1px solid rgba(203,229,255,.14);
+  background:linear-gradient(180deg, rgba(14,18,23,.92), rgba(10,14,19,.92));
+  box-shadow:0 12px 32px rgba(4,8,12,.35);
+  border-radius:20px;
+  padding:20px 18px;
+}
+
+/* Títulos dos cards com hierarquia e respiro */
+.card > h2{
+  font-weight:900;
+  letter-spacing:.2px;
+  margin:2px 0 10px 0;
+  color:var(--serenity-2);
+}
+
+/* Subtítulos/legendas dentro do card */
+.card .muted{ color:var(--silver); opacity:.9 }
+
+/* Divisores suaves quando necessário */
+.card hr{ 
+  border:none; height:1px; 
+  background:linear-gradient(90deg, transparent, rgba(203,229,255,.12), transparent);
+  margin:14px 0;
+}
+
+/* ===== Tabs (pílulas) ===== */
+.tabs{
+  display:flex; gap:10px; align-items:center;
+  padding:6px; border-radius:14px;
+  background:rgba(203,229,255,.06);
+  border:1px solid rgba(203,229,255,.10);
+}
+.tab{
+  padding:8px 14px; border-radius:10px;
+  border:1px solid transparent;
+  background:transparent; color:#dbe6f6; font-weight:700;
+  transform:translateZ(0);
+}
+.tab:hover{ background:rgba(203,229,255,.08) }
+.tab.active{
+  background:linear-gradient(180deg,#1a2430,#151c25);
+  border-color:rgba(203,229,255,.26);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* ===== Grid dos formulários ===== */
+.grid-2{ gap:14px }
+.grid-2 label{ display:flex; flex-direction:column; gap:6px; }
+.grid-2 input, .grid-2 select{
+  height:42px; border-radius:12px;
+  border:1px solid rgba(203,229,255,.16);
+  background:#0f1318; color:#eaf2ff;
+  padding:10px 12px;
+}
+.grid-2 input:focus, .grid-2 select:focus{
+  outline:none;
+  border-color:rgba(116,179,255,.55);
+  box-shadow:0 0 0 3px rgba(116,179,255,.18);
+}
+
+/* ===== Botões de ação das calculadoras ===== */
+.row-actions{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap }
+.row-actions .btn{ height:44px; padding:0 16px; border-radius:12px; font-weight:800 }
+.row-actions .btn.ghost{ background:#10161d; border:1px solid rgba(203,229,255,.18) }
+.row-actions .btn:hover{ transform:translateY(-1px) }
+
+/* ===== Caixas de resultado ===== */
+.calc-out{
+  border-radius:14px;
+  border:1px solid rgba(203,229,255,.14);
+  background:linear-gradient(180deg, rgba(15,19,24,.85), rgba(12,16,21,.85));
+  color:#dfe9fb;
+}
+
+/* ===== Tabela de zonas (Karvonen) ===== */
+#k_table table{
+  width:100%; border-collapse:separate; border-spacing:0;
+}
+#k_table th, #k_table td{
+  padding:10px 12px; text-align:left;
+  border-bottom:1px dashed rgba(203,229,255,.12);
+}
+#k_table tr:last-child td{ border-bottom:none }
+#k_table th{ color:#bcd3ff; font-weight:800; letter-spacing:.2px }
+#k_table td strong{ color:#ffffff }
+
+/* Badges para anotações/legendas opcionais */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 8px; border-radius:999px;
+  background:rgba(116,179,255,.12);
+  border:1px solid rgba(116,179,255,.25);
+  color:#bcd3ff; font-size:.82rem; font-weight:700;
+}
+
+/* ===== Navegação de dica do dia ===== */
+#dica-dia .row{ gap:12px }
+#dica-texto{ font-size:1.02rem; line-height:1.7 }
+
+/* Mobile: um pouco mais de “ar” */
+@media (max-width:780px){
+  .card{ padding:18px 14px }
+  .grid-2{ gap:12px }
+}
