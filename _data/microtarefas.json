@@ -1,0 +1,6 @@
+// /_data/microtarefas.json
+[
+  { "titulo": "Gatilho simples", "texto": "Antes de abrir o celular, faça 3 respirações 4-4-6." },
+  { "titulo": "Microvitórias", "texto": "Anote 3 mini-vitórias do dia, por menor que sejam." }
+  // ... ≥ 20 itens
+]
