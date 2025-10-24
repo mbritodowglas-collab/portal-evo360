@@ -1,0 +1,6 @@
+// /_data/tarefas-semanais.json
+[
+  { "titulo": "Identidade em ação", "texto": "Defina quem você quer ser nessa fase e alinhe 1 hábito com isso." },
+  { "titulo": "Ambiente que ajuda", "texto": "Tire do caminho o que atrapalha e deixe à vista o que ajuda." }
+  // ... até 8
+]
