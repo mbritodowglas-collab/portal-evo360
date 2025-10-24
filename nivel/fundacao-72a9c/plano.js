@@ -97,7 +97,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
       semTit.textContent  = item?.titulo || '—';
-      semTxt.textContent  = item?.texto  || '';
+      // >>> ajuste: preservar quebras de linha e exibir texto completo
+      semTxt.innerHTML    = (item?.texto || '')
+        .replace(/\n{2,}/g, '<br><br>')
+        .replace(/\n/g, '<br>');
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
@@ -133,7 +136,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
       micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
       micTit.textContent  = item?.titulo || '—';
-      micTxt.textContent  = item?.texto  || '';
+      // >>> ajuste: preservar quebras de linha e exibir texto completo
+      micTxt.innerHTML    = (item?.texto || '')
+        .replace(/\n{2,}/g, '<br><br>')
+        .replace(/\n/g, '<br>');
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
