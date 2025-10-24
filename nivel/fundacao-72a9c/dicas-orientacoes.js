@@ -33,7 +33,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     // Aceita _data como array direto OU como { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
-    // Se não houver dados válidos, mostra fallback e sai
     if (!data || data.length === 0) {
       const meta  = $('#dica-meta');
       const texto = $('#dica-texto');
@@ -42,7 +41,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
-    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
     const MAX_DAYS = Math.min(60, data.length);
     const todayIdx = (typeof Drip !== 'undefined')
       ? Drip.getTodayIndex(startISO, MAX_DAYS)
@@ -67,12 +65,21 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       const item = data[day - 1];
 
       if (item) {
-        // tenta título se existir; caso contrário exibe só texto
-        const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
-        meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
-        texto.textContent = item.texto || '';
+        // normaliza rótulo
+        const cat = (item.categoria || '').toString().toLowerCase();
+        const rotulo =
+          cat.includes('treino') ? 'Treino' :
+          cat.includes('nutri')   ? 'Nutrição' :
+          cat.includes('menta') || cat.includes('mind') ? 'Mentalidade' : 'Dica';
+
+        meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}`;
+
+        // >>> ajuste: título + texto completo com quebras de linha
+        const titulo = item.titulo ? `<strong>${item.titulo}</strong><br>` : '';
+        const corpo  = (item.texto || '')
+          .replace(/\n{2,}/g, '<br><br>')
+          .replace(/\n/g, '<br>');
+        texto.innerHTML = `${titulo}${corpo}`;
       } else {
         meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
         texto.textContent = 'Dica indisponível.';
