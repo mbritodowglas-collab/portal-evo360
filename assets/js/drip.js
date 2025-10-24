@@ -1,21 +1,18 @@
+<script>
 // ============================
 // EVO360 · Fundação
 // Módulo: Drip (gotejamento de conteúdo)
 // ============================
 //
-// Objetivo
-// - Marcar o "dia 1" na primeira visita de um stream (ex.: card1_dicas)
-// - Calcular qual item está liberado hoje com base no calendário local do usuário
-//
-// Decisões
-// - Virada diária: **à meia-noite LOCAL** do dispositivo
-// - Armazenamento: apenas a data 'YYYY-MM-DD' (sem hora)
-// - Compatível com chaves já salvas (não muda o formato)
+// - Marca o "dia 1" na primeira visita de um stream
+// - Calcula item liberado com base na data LOCAL do usuário
+// - Virada diária: 00:00 local
+// - Armazena 'YYYY-MM-DD' (sem hora) no localStorage
 //
 
 const Drip = (() => {
-  // ----- Util: datas em FUSO LOCAL -----
-  // Converte Date -> 'YYYY-MM-DD' (local)
+  // ---------- Utils: datas em FUSO LOCAL ----------
+  // Date -> 'YYYY-MM-DD' (local)
   const localISO = (date = new Date()) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -23,26 +20,26 @@ const Drip = (() => {
     return `${y}-${m}-${d}`;
   };
 
-  // Converte 'YYYY-MM-DD' -> Date no **meio-dia local** para evitar DST edge cases
-  // (usar 12:00 reduz risco de cair em hora "inexistente" em mudanças de fuso/horário de verão)
+  // 'YYYY-MM-DD' -> Date em 12:00 local (evita edge cases de DST)
   const parseISO = (s) => new Date(`${s}T12:00:00`);
 
   const todayISO = () => localISO(new Date());
 
+  // diferença inteira de dias entre duas datas ISO locais
   const daysBetween = (aISO, bISO) => {
     const A = parseISO(aISO);
     const B = parseISO(bISO);
-    // 86_400_000 ms = 1 dia; floor garante inteiro não-negativo
-    return Math.floor((B - A) / 86_400_000);
+    return Math.floor((B - A) / 86_400_000); // 86.400.000 ms
   };
 
-  // ----- localStorage com fallback seguro -----
+  // valida string 'YYYY-MM-DD'
+  const isISO = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+
+  // ---------- localStorage seguro ----------
   const LS = {
     get: (k, def = null) => {
-      try {
-        const v = localStorage.getItem(k);
-        return v ? JSON.parse(v) : def;
-      } catch (_) { return def; }
+      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }
+      catch (_) { return def; }
     },
     set: (k, v) => {
       try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {}
@@ -52,32 +49,37 @@ const Drip = (() => {
     }
   };
 
-  // ----- Marca o "dia 1" na primeira visita ao stream -----
+  // ---------- Inicia (marca) o drip ----------
   function ensureStart(levelId, streamId) {
     const KEY = `drip_start_${levelId}_${streamId}`;
     let start = LS.get(KEY, null);
-    if (!start) {
-      start = todayISO(); // data local de hoje
+    if (!isISO(start)) {
+      start = todayISO(); // dia local de hoje
       LS.set(KEY, start);
     }
     return start; // 'YYYY-MM-DD'
   }
 
-  // ----- Retorna o índice de hoje dentro do gotejamento (1..maxDays) -----
+  // ---------- Índice liberado hoje ----------
+  // Retorna 1..maxDays (clamp)
   function getTodayIndex(startISO, maxDays = 60) {
-    // Ex.: se hoje == startISO => idx = 1
+    if (!isISO(startISO)) startISO = todayISO();
     const delta = daysBetween(startISO, todayISO());
     const idx = Math.min(maxDays, delta + 1);
     return Math.max(1, idx);
   }
 
-  // ----- (Opcional) Resetar o drip de um stream -----
-  // Útil para testes: recomeça o contador no próximo acesso a ensureStart
+  // ---------- Reset (útil para testes) ----------
   function reset(levelId, streamId) {
     const KEY = `drip_start_${levelId}_${streamId}`;
     LS.del(KEY);
   }
 
+  // ---------- Helpers de debug (opcional) ----------
+  function getTodayISO() { return todayISO(); }
+  function diffFrom(startISO) { return daysBetween(startISO, todayISO()); }
+
   // API pública
-  return { ensureStart, getTodayIndex, reset, LS };
+  return { ensureStart, getTodayIndex, reset, LS, getTodayISO, diffFrom };
 })();
+</script>
