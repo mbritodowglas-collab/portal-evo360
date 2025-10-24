@@ -108,65 +108,8 @@
     window.DATA_DICAS = "../../_data/fundacao.json";
   </script>
 
-  <!-- ADIÇÃO: 60 dicas intercaladas + intercepta fetch PARA fundacao.json -->
-  <script defer>
-    (function(){
-      const NIVEL = window.NIVEL || 'fundacao-72a9c';
-      const SEQ_KEY = `bp_dicas_seq_${NIVEL}`;
-
-      const dicasTreino = [/* ... (mantive sua lista) ... */];
-      const dicasNutricao = [/* ... (mantive sua lista) ... */];
-      const dicasMindset = [/* ... (mantive sua lista) ... */];
-
-      function seededShuffle(arr, seed){
-        const a = arr.slice(); let s = seed>>>0;
-        function rand(){ s = (s*1664525+1013904223)>>>0; return s/0x100000000; }
-        for (let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-        return a;
-      }
-      function buildSequence(){
-        let seed = Number(localStorage.getItem(SEQ_KEY+'_seed'));
-        if(!seed){ seed = (Date.now() ^ (NIVEL.length*2654435761))>>>0; localStorage.setItem(SEQ_KEY+'_seed', String(seed)); }
-        const T = seededShuffle(dicasTreino,   seed ^ 0xA5A5);
-        const N = seededShuffle(dicasNutricao, seed ^ 0x5A5A);
-        const M = seededShuffle(dicasMindset,  seed ^ 0x1F3D);
-        const out=[]; let iT=0,iN=0,iM=0;
-        while(out.length<60 && (iT<T.length||iN<N.length||iM<M.length)){
-          if(iT<T.length) out.push(T[iT++]); if(out.length>=60) break;
-          if(iN<N.length) out.push(N[iN++]); if(out.length>=60) break;
-          if(iM<M.length) out.push(M[iM++]);
-        }
-        const rest=T.slice(iT).concat(N.slice(iN)).concat(M.slice(iM));
-        for(let i=0; out.length<60 && i<rest.length; i++) out.push(rest[i]);
-        return out.slice(0,60);
-      }
-
-      let seq = JSON.parse(localStorage.getItem(SEQ_KEY) || 'null');
-      if(!Array.isArray(seq) || seq.length!==60){
-        seq = buildSequence();
-        localStorage.setItem(SEQ_KEY, JSON.stringify(seq));
-      }
-      window.__DICAS_FUNDACAO = seq;
-
-      const origFetch = window.fetch ? window.fetch.bind(window) : null;
-      if(origFetch){
-        window.fetch = function(input, init){
-          try{
-            const url = (typeof input === 'string') ? input : (input && input.url) || '';
-            if (/_data\/fundacao\.json(\?.*)?$/i.test(url)) {
-              const blob = new Blob([JSON.stringify(window.__DICAS_FUNDACAO)], { type: 'application/json' });
-              const res  = new Response(blob, { status: 200, headers: { 'Content-Type': 'application/json' } });
-              return Promise.resolve(res);
-            }
-          }catch(e){}
-          return origFetch(input, init);
-        };
-      }
-    })();
-  </script>
-
-  <!-- Drip + JS da página -->
-  <script src="../../assets/js/drip.js?v=14" defer></script>
+  <!-- Drip + JS da página (ordem: drip antes) -->
+  <script src="../../assets/js/drip.js?v=18" defer></script>
   <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
 </html>
