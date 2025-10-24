@@ -19,6 +19,16 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
 })();
 
+// Pequeno util pra escapar HTML (evitar quebrar o layout se vierem sinais/aspas no JSON)
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
 // ---------- Gotejamento ----------
 (async function dripPlano() {
   try {
@@ -86,21 +96,42 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       if (!Array.isArray(semanais) || semanais.length === 0) {
         semMeta && (semMeta.textContent = 'Semana —');
         semTit  && (semTit.textContent  = 'Conteúdo indisponível');
-        semTxt  && (semTxt.textContent  = '—');
+        if (semTxt) {
+          semTxt.textContent = '—';
+        }
         if (semPrev) semPrev.disabled = true;
         if (semNext) semNext.disabled = true;
         return;
       }
       const cap = semIdx;
       semDay = Math.max(1, Math.min(semDay, cap));
-      const item = semanais[semDay - 1];
+      const item = semanais[semDay - 1] || {};
 
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
-      semTit.textContent  = item?.titulo || '—';
-      // >>> ajuste: preservar quebras de linha e exibir texto completo
-      semTxt.innerHTML    = (item?.texto || '')
-        .replace(/\n{2,}/g, '<br><br>')
-        .replace(/\n/g, '<br>');
+      semTit.textContent  = item.titulo ? String(item.titulo) : '—';
+
+      // Compatível com seu JSON: {conceito, orientacao, tarefas[]} ou {texto}
+      let bloco = '';
+      if (item.conceito) {
+        bloco += `<strong>Conceito:</strong> ${esc(item.conceito)}`;
+      }
+      if (item.orientacao) {
+        bloco += (bloco ? '<br><br>' : '') + `<strong>Orientação:</strong> ${esc(item.orientacao)}`;
+      }
+      if (Array.isArray(item.tarefas) && item.tarefas.length) {
+        bloco += (bloco ? '<br><br>' : '') + `<strong>Tarefas da semana:</strong><br>` +
+                 item.tarefas.map(t => `• ${esc(t)}`).join('<br>');
+      }
+      if (!bloco && item.texto) {
+        // fallback caso venha um "texto" único
+        bloco = esc(item.texto);
+      }
+      if (!bloco) {
+        bloco = '—';
+      }
+
+      // #sem-texto é um <p>; usamos innerHTML com <br> e bullets simples (sem alterar o HTML)
+      semTxt.innerHTML = bloco;
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
@@ -125,21 +156,20 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       if (!Array.isArray(micros) || micros.length === 0) {
         micMeta && (micMeta.textContent = 'Bloco —');
         micTit  && (micTit.textContent  = 'Conteúdo indisponível');
-        micTxt  && (micTxt.textContent  = '—');
+        if (micTxt) {
+          micTxt.textContent = '—';
+        }
         if (micPrev) micPrev.disabled = true;
         if (micNext) micNext.disabled = true;
         return;
       }
       const cap = micIdx;
       micDay = Math.max(1, Math.min(micDay, cap));
-      const item = micros[micDay - 1];
+      const item = micros[micDay - 1] || {};
 
       micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
-      micTit.textContent  = item?.titulo || '—';
-      // >>> ajuste: preservar quebras de linha e exibir texto completo
-      micTxt.innerHTML    = (item?.texto || '')
-        .replace(/\n{2,}/g, '<br><br>')
-        .replace(/\n/g, '<br>');
+      micTit.textContent  = item.titulo ? String(item.titulo) : '—';
+      micTxt.textContent  = item.texto  ? String(item.texto)  : '—';
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
