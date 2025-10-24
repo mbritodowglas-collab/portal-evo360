@@ -24,6 +24,24 @@
 
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+
+    /* --- AJUSTE: garantir quebra e altura automática nos textos --- */
+    #sem-titulo, #mic-titulo{
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.35;
+    }
+    #sem-texto, #mic-texto{
+      white-space:pre-wrap;     /* preserva \n do conteúdo */
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.55;
+    }
+    .panel p, .panel .note{      /* guarda-chuva de segurança */
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
   </style>
 </head>
 <body class="layout-with-sidebar">
