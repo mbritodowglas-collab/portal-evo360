@@ -1,8 +1,9 @@
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações
+// Página: Dicas e Orientações (JS completo)
 // ============================
 
+// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -33,6 +34,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     // Aceita _data como array direto OU como { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
+    // Se não houver dados válidos, mostra fallback e sai
     if (!data || data.length === 0) {
       const meta  = $('#dica-meta');
       const texto = $('#dica-texto');
@@ -41,6 +43,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
+    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
     const MAX_DAYS = Math.min(60, data.length);
     const todayIdx = (typeof Drip !== 'undefined')
       ? Drip.getTodayIndex(startISO, MAX_DAYS)
@@ -50,6 +53,15 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
+
+    // garante que textos longos quebrem dentro do card
+    if (texto) {
+      texto.style.whiteSpace   = 'normal';
+      texto.style.overflowWrap = 'anywhere';
+      texto.style.wordBreak    = 'break-word';
+      texto.style.lineHeight   = '1.6';
+      texto.style.marginTop    = '6px';
+    }
 
     const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
     const LS = {
@@ -65,21 +77,24 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       const item = data[day - 1];
 
       if (item) {
-        // normaliza rótulo
-        const cat = (item.categoria || '').toString().toLowerCase();
-        const rotulo =
-          cat.includes('treino') ? 'Treino' :
-          cat.includes('nutri')   ? 'Nutrição' :
-          cat.includes('menta') || cat.includes('mind') ? 'Mentalidade' : 'Dica';
+        const rotulo = item.categoria === 'treino' ? 'Treino'
+                     : (item.categoria === 'nutricao' ? 'Nutrição'
+                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
 
-        meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}`;
+        // título no meta (mantendo padrão anterior)
+        meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
 
-        // >>> ajuste: título + texto completo com quebras de linha
-        const titulo = item.titulo ? `<strong>${item.titulo}</strong><br>` : '';
-        const corpo  = (item.texto || '')
-          .replace(/\n{2,}/g, '<br><br>')
-          .replace(/\n/g, '<br>');
-        texto.innerHTML = `${titulo}${corpo}`;
+        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
+        const blocoHTML = (item.conceito || item.orientacao)
+          ? `
+            <div class="dica-bloco">
+              ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
+              ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
+            </div>
+            `
+          : `<p style="margin:0">${item.texto || ''}</p>`;
+
+        texto.innerHTML = blocoHTML;
       } else {
         meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
         texto.textContent = 'Dica indisponível.';
