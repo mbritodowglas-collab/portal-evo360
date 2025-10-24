@@ -1,73 +1,137 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação · Tarefas e Neuro-Hábito</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    /* Texto justificado nesta página */
+    .content p, .content li { text-align: justify; }
 
-  <title>EVO360 — Fundação | Plano</title>
-  <meta name="description" content="EVO360 • Fundação: Plano estruturado por semanas, com desbloqueio automático.">
-  <meta property="og:title" content="EVO360 — Fundação: Plano">
-  <meta property="og:description" content="Plano por semanas com gotejamento controlado. Quando liberar, você executa com segurança e foco.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://mbritodowglas-collab.github.io/portal-evo360/">
-  <meta property="og:image" content="/portal-evo360/assets/og/fundacao-cover.png">
-  <meta name="theme-color" content="#0b0d0d">
+    /* Abas e painéis (mesmo padrão do Card 1) */
+    .tabs{display:flex;gap:8px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}
+    .panel.active{display:block}
 
-  <link rel="manifest" href="/portal-evo360/manifest-fundacao.webmanifest">
-  <link rel="apple-touch-icon" href="/portal-evo360/assets/icons/icon-192.png">
-  <link rel="stylesheet" href="/portal-evo360/assets/css/style.css" />
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .meta{color:var(--ink-2);font-size:.95rem;margin-bottom:6px}
+    .note{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+  </style>
 </head>
-<body>
-  <header class="evo-header">
-    <div class="wrap">
-      <img src="/portal-evo360/assets/brand/fundacao-logo.svg" alt="EVO360 Fundação" height="36">
-      <nav>
-        <a href="/portal-evo360/nivel/fundacao-72a9c/index.html">Início</a>
-        <a href="/portal-evo360/nivel/fundacao-72a9c/plano.html" aria-current="page">Plano</a>
-        <a href="/portal-evo360/nivel/fundacao-72a9c/praticas.html">Práticas</a>
-        <a href="/portal-evo360/nivel/fundacao-72a9c/habitos.html">Hábitos</a>
-        <a href="/portal-evo360/nivel/fundacao-72a9c/dicas-orientacoes.html">Dicas</a>
-      </nav>
+<body class="layout-with-sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
+      <div class="nivel">Nível Fundação</div>
     </div>
-  </header>
+    <nav class="sb-nav">
+      <a class="sb-item" href="./">Início</a>
+      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item active" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item" href="./suporte.html">Suporte</a>
+    </nav>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+  </aside>
 
-  <!-- Começa bloqueado: data-locked -->
-  <main id="card2" class="container" data-locked>
+  <main class="content">
+    <!-- Banner (apenas imagem, mesmo padrão) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+
+    <!-- CARD · Tarefas & Neuro-hábito -->
     <section class="card">
-      <h1>Plano — Fundação (Semanas 1 a 8)</h1>
+      <h2>Tarefas & Neuro-Hábito</h2>
+      <p class="muted">
+        Aqui você recebe <strong>tarefas semanais de mindset</strong> e <strong>microtarefas a cada 3 dias</strong>
+        para aplicar na rotina. O gotejamento começa quando você abre esta página pela primeira vez. Você pode
+        ver conteúdos anteriores, mas os próximos ficam bloqueados até a data ficar disponível.
+      </p>
 
-      <article data-bloco="semana1">
-        <h2>Semana 1</h2>
-        <p>Foco em técnica, amplitude segura e ritmo respiratório. 60–70% de esforço.</p>
-      </article>
+      <div class="note">
+        <strong>Diário recomendado:</strong> mantenha um caderno (ou notas do celular) para registrar
+        reflexões, emoções e pequenas vitórias. A escrita consolida o aprendizado e fortalece o hábito.
+      </div>
 
-      <article data-bloco="semana2">
-        <h2>Semana 2</h2>
-        <p>Progride carga ou repetições. Mantém execução limpa. Sono e hidratação em dia.</p>
-      </article>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="semanais" role="tab">Tarefas semanais (mindset)</button>
+        <button class="tab" data-tab="micro" role="tab">Microtarefas · a cada 3 dias</button>
+        <button class="tab" data-tab="guia" role="tab">Como usar / Diário</button>
+      </div>
 
-      <!-- … mantenha as semanas 3–8 como já estiverem no seu plano … -->
+      <!-- Painel: Tarefas semanais -->
+      <div class="panel active" id="panel-semanais">
+        <div class="meta" id="sem-meta">Semana —</div>
+        <h3 id="sem-titulo">Carregando…</h3>
+        <p id="sem-texto" style="margin-top:6px">—</p>
+
+        <div class="row-actions">
+          <button class="btn ghost" id="semPrev">Anterior</button>
+          <button class="btn" id="semNext">Próxima</button>
+        </div>
+
+        <div class="note small" style="margin-top:12px">
+          <strong>Dica:</strong> ao final da semana, escreva 3 aprendizados e 1 ajuste para a próxima.
+        </div>
+      </div>
+
+      <!-- Painel: Microtarefas (3 em 3 dias) -->
+      <div class="panel" id="panel-micro">
+        <div class="meta" id="mic-meta">Bloco —</div>
+        <h3 id="mic-titulo">Carregando…</h3>
+        <p id="mic-texto" style="margin-top:6px">—</p>
+
+        <div class="row-actions">
+          <button class="btn ghost" id="micPrev">Anterior</button>
+          <button class="btn" id="micNext">Próxima</button>
+        </div>
+
+        <div class="note small" style="margin-top:12px">
+          <strong>Aplicação:</strong> pratique por 3 dias e anote: gatilhos, facilidade/dificuldade e
+          como adaptar para o seu contexto.
+        </div>
+      </div>
+
+      <!-- Painel: Guia / Diário -->
+      <div class="panel" id="panel-guia">
+        <h3>Como usar este módulo</h3>
+        <ul>
+          <li><strong>Ritmo sustentável:</strong> 1 tarefa de mindset por semana e 1 microtarefa a cada 3 dias.</li>
+          <li><strong>Registro:</strong> use um diário para consolidar o que sentiu, aprendeu e aplicou.</li>
+          <li><strong>Sem pressa:</strong> volte conteúdos anteriores quando quiser; os futuros abrem no tempo certo.</li>
+        </ul>
+        <div class="note">
+          <strong>Modelo simples de entrada no diário:</strong><br>
+          • Intenção do dia · • Gatilho observado · • Recompensa percebida · • Ajuste para amanhã
+        </div>
+      </div>
     </section>
   </main>
 
-  <script src="/portal-evo360/assets/js/dicas-orientacoes.js"></script>
   <script>
-    // Inicia drip — ajustável (48h padrão)
-    EVO360_FUNDACAO.init({ cadenceHours: 48 });
+    /* Configs desta página */
+    window.NIVEL = "fundacao-72a9c";
 
-    // Gate do Card 2
-    EVO360_FUNDACAO.gate('#card2', {
-      card: 'card2',
-      onUnlock: () => {
-        console.log('Card 2 liberado ✓');
-        // Opcional: exibir badge/alert
-      }
-    });
+    /* Caminhos dos JSONs (ajustado) */
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, texto}]
+    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, texto}]
 
-    // SW
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/portal-evo360/service-worker.js').catch(console.error);
-    }
+    /* Aliases para compatibilidade com scripts que usam nomes anteriores */
+    window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
+    window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
+  <!-- motor de gotejamento (já usado no card 1) -->
+  <script src="../../assets/js/drip.js?v=18" defer></script>
+  <!-- JS desta página -->
+  <script src="./plano.js?v=18" defer></script>
 </body>
 </html>
