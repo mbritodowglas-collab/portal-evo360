@@ -3,7 +3,6 @@
 // Página: Dicas e Orientações
 // ============================
 
-// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -18,17 +17,21 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
       : (new Date()).toISOString().slice(0,10);
 
-    const load = async (url) => {
-      try { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw 0; return await r.json(); }
-      catch { return null; }
-    };
+    async function load(url) {
+      try {
+        if (!url) return null;
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) throw 0;
+        return await r.json();
+      } catch {
+        return null;
+      }
+    }
+
     const raw = await load(window.DATA_DICAS);
 
     // Aceita _data como array direto OU como { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-    // Limite real de dias (até 60)
-    let MAX_DAYS = Math.min(60, data.length || 60);
 
     // Se não houver dados válidos, mostra fallback e sai
     if (!data || data.length === 0) {
@@ -39,7 +42,8 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
-    // Índice do dia calculado APÓS saber o max de dias
+    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
+    const MAX_DAYS = Math.min(60, data.length);
     const todayIdx = (typeof Drip !== 'undefined')
       ? Drip.getTodayIndex(startISO, MAX_DAYS)
       : 1;
@@ -60,12 +64,15 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     function render() {
       const cap = Math.max(1, todayIdx);
       day = Math.max(1, Math.min(day, cap));
-      const item = data && data[day - 1];
+      const item = data[day - 1];
 
       if (item) {
-        const rotulo = item.categoria === 'treino' ? 'Treino' : (item.categoria === 'nutricao' ? 'Nutrição' : 'Dica');
-        meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}`;
-        texto.textContent = item.texto;
+        // tenta título se existir; caso contrário exibe só texto
+        const rotulo = item.categoria === 'treino' ? 'Treino'
+                     : (item.categoria === 'nutricao' ? 'Nutrição'
+                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+        meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        texto.textContent = item.texto || '';
       } else {
         meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
         texto.textContent = 'Dica indisponível.';
