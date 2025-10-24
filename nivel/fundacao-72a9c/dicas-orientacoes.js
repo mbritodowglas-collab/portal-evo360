@@ -12,22 +12,37 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   try {
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
     const DRIP_ID  = 'card1_dicas_orientacoes';
-    const MAX_DAYS = 60;
 
     // pode não existir se drip.js não carregar, por isso o try/catch
     const startISO = (typeof Drip !== 'undefined')
       ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
       : (new Date()).toISOString().slice(0,10);
 
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
-
     const load = async (url) => {
       try { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw 0; return await r.json(); }
       catch { return null; }
     };
-    const data = await load(window.DATA_DICAS);
+    const raw = await load(window.DATA_DICAS);
+
+    // Aceita _data como array direto OU como { dicas: [...] }
+    const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
+
+    // Limite real de dias (até 60)
+    let MAX_DAYS = Math.min(60, data.length || 60);
+
+    // Se não houver dados válidos, mostra fallback e sai
+    if (!data || data.length === 0) {
+      const meta  = $('#dica-meta');
+      const texto = $('#dica-texto');
+      if (meta)  meta.textContent  = 'Dia —';
+      if (texto) texto.textContent = 'Dica indisponível.';
+      return;
+    }
+
+    // Índice do dia calculado APÓS saber o max de dias
+    const todayIdx = (typeof Drip !== 'undefined')
+      ? Drip.getTodayIndex(startISO, MAX_DAYS)
+      : 1;
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
