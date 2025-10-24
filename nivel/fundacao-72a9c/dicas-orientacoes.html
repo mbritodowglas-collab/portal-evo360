@@ -1,267 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Dicas e Orientações</title>
-  <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
-  <meta name="theme-color" content="#0b0d10">
-  <style>
-    /* texto justificado nesta página */
-    .content p, .content li { text-align: justify; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    /* abas e painéis */
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
-    .panel{display:none}
-    .panel.active{display:block}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  </style>
+  <title>EVO360 — Fundação | Dicas & Orientações</title>
+  <meta name="description" content="EVO360 • Fundação: Dicas & Orientações essenciais para iniciar com clareza e consistência.">
+  <meta property="og:title" content="EVO360 — Fundação: Dicas & Orientações">
+  <meta property="og:description" content="Começo é para aprender. Aqui você desbloqueia as diretrizes certas para ganhar tração de forma sustentável.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mbritodowglas-collab.github.io/portal-evo360/">
+  <meta property="og:image" content="/portal-evo360/assets/og/fundacao-cover.png">
+  <meta name="theme-color" content="#0b0d0d">
+
+  <link rel="manifest" href="/portal-evo360/manifest-fundacao.webmanifest">
+  <link rel="apple-touch-icon" href="/portal-evo360/assets/icons/icon-192.png">
+  <link rel="stylesheet" href="/portal-evo360/assets/css/style.css" />
 </head>
-<body class="layout-with-sidebar">
-  <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
-    <div class="sb-header">
-      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Fundação</div>
+<body>
+  <header class="evo-header">
+    <div class="wrap">
+      <img src="/portal-evo360/assets/brand/fundacao-logo.svg" alt="EVO360 Fundação" height="36">
+      <nav>
+        <a href="/portal-evo360/nivel/fundacao-72a9c/index.html">Início</a>
+        <a href="/portal-evo360/nivel/fundacao-72a9c/plano.html">Plano</a>
+        <a href="/portal-evo360/nivel/fundacao-72a9c/praticas.html">Práticas</a>
+        <a href="/portal-evo360/nivel/fundacao-72a9c/habitos.html">Hábitos</a>
+        <a href="/portal-evo360/nivel/fundacao-72a9c/dicas-orientacoes.html" aria-current="page">Dicas</a>
+      </nav>
     </div>
-    <nav class="sb-nav">
-      <a class="sb-item" href="./">Início</a>
-      <a class="sb-item active" href="./dicas-orientacoes.html">Dicas e Orientações</a>
-      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
-      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
-      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
-      <a class="sb-item" href="./suporte.html">Suporte</a>
-    </nav>
-    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
-  </aside>
+  </header>
 
-  <main class="content">
-    <!-- Banner (apenas imagem) -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
-
-    <!-- Dica do dia (gotejamento) -->
-    <section class="card" id="dica-dia">
-      <h2>Dica & orientação do dia</h2>
-      <div class="muted" id="dica-meta">Dia —</div>
-      <p id="dica-texto">Carregando…</p>
-      <div class="row" style="margin-top:12px">
-        <button class="btn ghost" id="btnPrev">Anterior</button>
-        <button class="btn" id="btnNext">Próxima</button>
-      </div>
-      <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
-    </section>
-
-    <!-- Calculadoras -->
+  <main id="card1" class="container">
     <section class="card">
-      <h2>Calculadoras</h2>
-      <div class="tabs">
-        <button class="tab active" data-tab="karvonen">FC de Reserva (Karvonen)</button>
-        <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
-      </div>
+      <h1>Dicas & Orientações — Fundação</h1>
+      <p>Começo é para aprender, não para ser perfeito. Priorize ritmo, segurança técnica e constância.</p>
 
-      <!-- Karvonen (lista 50% a 80% por 5%) -->
-      <div class="panel active" id="panel-karvonen">
-        <div class="grid-2">
-          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
-          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
-          <div class="small muted" style="align-self:end">Sugestão Fundação: 50–65% (cardio leve/moderado)</div>
-        </div>
+      <ul class="checklist">
+        <li>Treino = compromisso curto e frequente. Foque em terminar, não em esgotar.</li>
+        <li>Nutrição = consistência calórica inteligente. 80% básico, 20% flexível.</li>
+        <li>Sono = alavanca de resultado. Proteja 7–8h/dia.</li>
+        <li>Estresse = gerencie com respiração, caminhada, luz solar.</li>
+      </ul>
 
-        <!-- Resumo -->
-        <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-
-        <!-- Ações -->
-        <div class="row-actions">
-          <button class="btn" id="k_calcBtn">Calcular</button>
-          <button class="btn ghost" id="k_clearBtn">Limpar</button>
-        </div>
-
-        <!-- Tabela de zonas (50% a 80% por 5%) -->
-        <div class="calc-out" id="k_table" aria-live="polite"></div>
-      </div>
-
-      <!-- TMB -->
-      <div class="panel" id="panel-tmb">
-        <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
-          <label>Sexo<br>
-            <select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select>
-          </label>
-        </div>
-        <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
-        <small class="muted">A TMB é o gasto energético em repouso — autoconhecimento, não plano alimentar.</small>
+      <div class="cta-row">
+        <button class="evo-btn" onclick="EVO360_FUNDACAO.markDone('card1')">Marcar Card 1 como concluído</button>
       </div>
     </section>
   </main>
 
+  <script src="/portal-evo360/assets/js/dicas-orientacoes.js"></script>
   <script>
-    window.NIVEL = "fundacao-72a9c";
-    window.DATA_DICAS = "../../_data/dicas-fundacao.json";
+    // Inicia drip e registra t0
+    EVO360_FUNDACAO.init({ cadenceHours: 48 });
+
+    // SW
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/portal-evo360/service-worker.js').catch(console.error);
+    }
   </script>
-
-  <!-- ADIÇÃO: 60 dicas aleatórias intercaladas (treino/nutrição/mindset) + interceptador do fetch -->
-  <script defer>
-    (function(){
-      const NIVEL = window.NIVEL || 'fundacao-72a9c';
-      const SEQ_KEY = `bp_dicas_seq_${NIVEL}`;
-
-      // ======== CATEGORIZADAS ========
-      const dicasTreino = [
-        "Comece com cargas que você domina. Técnica primeiro, carga depois.",
-        "Treino de força para mulheres não ‘engrossa’ do dia para a noite: ele define e protege articulações.",
-        "Progrida aos poucos: +1–2 repetições ou +1–2 kg por semana já é ótimo.",
-        "Registre 3 exercícios principais por treino e anote série/reps para enxergar evolução.",
-        "Cardio leve a moderado melhora recuperação e energia do dia — 20–30min é suficiente.",
-        "Pausa entre séries importa: 60–90s em exercícios de força ajudam a manter qualidade.",
-        "Cuide da postura: coluna neutra, costelas ‘para baixo’ e pés firmes no chão.",
-        "Dores articulares? Reduza amplitude/carga e priorize técnica; dor não é métrica de qualidade.",
-        "Exercícios compostos (agachamento, remada, supino) entregam mais resultado por minuto.",
-        "Treino confiável > treino perfeito: 3x/semana com constância supera picos aleatórios.",
-        "Ciclo menstrual: na fase folicular muitas se sentem mais fortes; ajuste esforço quando necessário.",
-        "Aquecer = 5–8 min de mobilidade + 1–2 séries leves do primeiro exercício.",
-        "Falha muscular não precisa vir em toda série; deixe-a para a última série de 1–2 exercícios.",
-        "Treino não compensa noite mal dormida; adapte volume em dias de baixa energia.",
-        "Progresso se mede em força, forma, energia e consistência — não só na balança."
-      ];
-
-      const dicasNutricao = [
-        "Monte o prato base: proteína magra + vegetal fibroso + carbo do seu contexto + gordura boa.",
-        "Proteína em cada refeição ajuda saciedade, manutenção de massa magra e controle de apetite.",
-        "Fibras (verduras, frutas, leguminosas) modulam fome e intestino: inclua diariamente.",
-        "Carboidrato não é inimigo — a dose e o contexto importam (pré/pós-treino ajudam desempenho).",
-        "Beba água antes do café da manhã para iniciar hidratação do dia.",
-        "Planejar 2–3 lanches ‘âncora’ evita improviso: iogurte + fruta; ovos + legume; castanhas + fruta.",
-        "Coma devagar: 15–20 min por refeição melhoram saciedade e digestão.",
-        "Evite ‘tudo ou nada’: se sair do plano em 1 refeição, volte na próxima — sem culpa.",
-        "Reaproveite preparos: cozinhe proteína/legumes para 2–3 dias e reduza esforço diário.",
-        "Inclua fontes de ferro e vitamina C em conjunto (ex.: feijão + pimentão) para melhorar absorção.",
-        "Priorize comida de verdade 80% do tempo e deixe 20% flexível dentro das porções.",
-        "Não pule refeições por ‘pena’ de calorias — respeite sinais de fome e saciedade.",
-        "Proteínas magras: peixes, ovos, frango, cortes magros, tofu, iogurte grego.",
-        "Gorduras boas: azeite, abacate, castanhas — pequenas porções bastam.",
-        "Suplementos são coadjuvantes; base é prato consistente e sono em dia."
-      ];
-
-      // Mindset = sono, hidratação, mitos e rotina
-      const dicasMindset = [
-        // Sono & hidratação
-        "Meta prática de água: 30–35 ml/kg/dia. Ajuste com clima, treino e sede.",
-        "Leve sua garrafa: visibilidade = lembrança. Deixe à vista em casa e no trabalho.",
-        "Cafeína tarde da noite? Pode afetar sono. Experimente limitar após 15–16h.",
-        "Ritual noturno: luz baixa, tela longe, banho morno, respiração 4–4–6 por 2–5 min.",
-        "Acorde em horário parecido nos dias úteis e finais de semana: ritmo circadiano agradece.",
-        "Sono de qualidade potencializa perda de gordura e ganho de performance.",
-        "Álcool atrapalha sono profundo; se consumir, reduza a dose e hidrate.",
-        "Se acordar cansada, reduza volume do treino e mantenha o hábito com leveza.",
-        "Exposição à luz natural pela manhã ajuda o corpo a regular energia.",
-        "Faça um ‘check-out’ do dia: 3 linhas do que foi bem e 1 ajuste para amanhã.",
-        // Mitos & verdades
-        "Suor não é medida de emagrecimento — é termorregulação. Foque em consistência.",
-        "Treinar em jejum não é obrigatório nem superior; depende de preferência e resposta individual.",
-        "Mulheres podem (e devem) treinar força pesando na técnica — não existe ‘peso de mulher’.",
-        "Pular carbo sempre não é solução: energia baixa prejudica treino e humor.",
-        "Spot reduction (perder gordura só de uma região) não existe — o corpo decide a ordem.",
-        "Termogênicos não substituem calorias bem distribuídas e treino consistente.",
-        "Mais treino não é sempre mais resultado; descanso é parte do progresso.",
-        "‘Dor boa’ pós-treino não é parâmetro de eficiência; prefira desempenho crescente.",
-        "Balança oscila por água, glicogênio e ciclo; acompanhe medidas, fotos e como a roupa veste.",
-        "Comer tarde não engorda por si só — o total do dia e qualidade mandam mais.",
-        // Rotina & comportamento
-        "Comece pequeno: 30 min de treino marcado no calendário valem ouro.",
-        "Deixe roupa/garrafa prontas à noite. Facilite a decisão da manhã.",
-        "Evite treinar todos os dias na semana 1; construa 2–3 treinos e evolua.",
-        "2 min de respiração antes do treino melhoram foco e execução.",
-        "Defina a ‘vitória mínima’ do dia (ex.: caminhar 10–15 min).",
-        "Comemore progresso não físico: mais disposição, melhor humor, regularidade.",
-        "Crie um gatilho: treino logo após o café da manhã ou ao voltar do trabalho.",
-        "Se perdeu um dia, não tente ‘pagar’ no outro com exagero. Apenas retome.",
-        "Tenha um plano B de treino curto (15–20 min) para dias corridos.",
-        "Lembre: constância constrói o corpo que você quer habitar."
-      ];
-
-      // ======== shuffle determinístico com seed ========
-      function seededShuffle(arr, seed){
-        const a = arr.slice();
-        let s = seed>>>0;
-        function rand(){ // LCG simples
-          s = (s * 1664525 + 1013904223) >>> 0;
-          return s / 0x100000000;
-        }
-        for (let i=a.length-1;i>0;i--){
-          const j = Math.floor(rand()*(i+1));
-          [a[i],a[j]] = [a[j],a[i]];
-        }
-        return a;
-      }
-
-      function buildSequence(){
-        // Seed fixa por usuário/nível (gera uma vez e reaproveita)
-        let seed = Number(localStorage.getItem(SEQ_KEY+'_seed'));
-        if(!seed){ seed = (Date.now() ^ (NIVEL.length*2654435761))>>>0; localStorage.setItem(SEQ_KEY+'_seed', String(seed)); }
-
-        const T = seededShuffle(dicasTreino, seed ^ 0xA5A5);
-        const N = seededShuffle(dicasNutricao, seed ^ 0x5A5A);
-        const M = seededShuffle(dicasMindset, seed ^ 0x1F3D);
-
-        const out = [];
-        let iT=0, iN=0, iM=0;
-        // Intercala T → N → M até completar 60
-        while (out.length < 60 && (iT<T.length || iN<N.length || iM<M.length)){
-          if(iT<T.length) out.push(T[iT++]);
-          if(out.length>=60) break;
-          if(iN<N.length) out.push(N[iN++]);
-          if(out.length>=60) break;
-          if(iM<M.length) out.push(M[iM++]);
-        }
-        // Se ainda faltar (por algum motivo), completa com o que sobrar
-        const rest = T.slice(iT).concat(N.slice(iN)).concat(M.slice(iM));
-        for (let i=0; out.length<60 && i<rest.length; i++) out.push(rest[i]);
-
-        return out.slice(0,60);
-      }
-
-      // Usa sequência persistida ou gera a primeira vez
-      let seq = JSON.parse(localStorage.getItem(SEQ_KEY) || 'null');
-      if(!Array.isArray(seq) || seq.length!==60){
-        seq = buildSequence();
-        localStorage.setItem(SEQ_KEY, JSON.stringify(seq));
-      }
-      window.__DICAS_FUNDACAO = seq;
-
-      // ======== Intercepta fetch do JSON ========
-      const origFetch = window.fetch ? window.fetch.bind(window) : null;
-      if(origFetch){
-        window.fetch = function(input, init){
-          try{
-            const url = (typeof input === 'string') ? input : (input && input.url) || '';
-            if (/_data\/dicas-fundacao\.json(\?.*)?$/i.test(url)) {
-              const blob = new Blob([JSON.stringify(window.__DICAS_FUNDACAO)], { type: 'application/json' });
-              const res  = new Response(blob, { status: 200, headers: { 'Content-Type': 'application/json' } });
-              return Promise.resolve(res);
-            }
-          }catch(e){}
-          return origFetch(input, init);
-        };
-      }
-    })();
-  </script>
-
-  <!-- Drip (necessário para as dicas do dia) -->
-  <script src="../../assets/js/drip.js?v=14" defer></script>
-  <!-- JS desta página (nome consistente com o arquivo físico!) -->
-  <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
 </html>
-
-<script>
-  window.NIVEL = "fundacao-72a9c";
-  window.DATA_DICAS = "../../_data/fundacao.json";
-</script>
