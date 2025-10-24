@@ -1,6 +1,83 @@
 // /_data/tarefas-semanais.json
 [
-  { "titulo": "Identidade em ação", "texto": "Defina quem você quer ser nessa fase e alinhe 1 hábito com isso." },
-  { "titulo": "Ambiente que ajuda", "texto": "Tire do caminho o que atrapalha e deixe à vista o que ajuda." }
-  // ... até 8
+  {
+    "titulo": "Semana 1 · O Início é Identidade",
+    "conceito": "Toda mudança começa quando você decide quem quer ser. O cérebro não obedece metas, ele obedece identidades. Quando você se vê como uma mulher que se cuida, o corpo e a mente começam a agir pra confirmar isso. É neurociência pura: seu sistema busca coerência entre quem você acredita ser e o que você faz. Então, antes de querer resultados, escolha a versão de você que vai sustentá-los.",
+    "orientacao": "Sabe aquele papo de 'um dia eu começo'? Esquece isso. O dia é hoje. E não precisa fazer tudo perfeito — precisa só se movimentar na direção certa. O teu cérebro aprende com o que você faz, não com o que você planeja. Então, essa semana, foca em se ver diferente. Fala pra você mesma: 'tô virando uma mulher que se escolhe'. E começa a provar isso, mesmo nas coisinhas pequenas.",
+    "tarefas": [
+      "Antes do próximo treino ou atividade, para um minutinho e escreve: 'quem eu tô me tornando agora?'.",
+      "Repete essa frase pra você em voz alta todo dia — é tipo um lembrete pro cérebro.",
+      "Anota uma coisa simples que vai fazer essa semana pra provar essa nova versão em ação."
+    ]
+  },
+  {
+    "titulo": "Semana 2 · Como os Hábitos Funcionam",
+    "conceito": "Os hábitos são automáticos porque o cérebro ama economizar energia. Ele repete o que já conhece — mesmo que não funcione mais. Mas quando você percebe o gatilho que começa o comportamento, você ganha poder pra mudar. Trocar o padrão é tipo atualizar o software da mente: você ensina o sistema a rodar outro comando, com mais consciência.",
+    "orientacao": "Essa semana não é pra se cobrar, é pra se observar. Percebe os momentos em que você faz algo no automático — tipo abrir a geladeira sem fome, pular o treino, ou rolar o celular pra fugir de um desconforto. Não é pra se culpar, é pra entender o que tá por trás. Quando você percebe o gatilho, o cérebro perde o controle sobre você. E aí, pela primeira vez, quem decide é você.",
+    "tarefas": [
+      "Antes da próxima atividade, pensa num hábito que quer entender melhor. Pode ser qualquer um.",
+      "Anota o que acontece antes de ele aparecer — o gatilho — e o que você sente depois.",
+      "Escolhe uma ação nova pra tentar quando o gatilho aparecer de novo. Tipo um novo caminho pro cérebro seguir."
+    ]
+  },
+  {
+    "titulo": "Semana 3 · Crenças que Moldam Comportamentos",
+    "conceito": "O que você acredita sobre si mesma constrói o limite da sua vida. Se acredita que não é capaz, o cérebro trabalha pra confirmar isso. Mas se acredita que está aprendendo, o cérebro cria novas conexões pra provar que é verdade. É o que Carol Dweck chama de 'mindset de crescimento': a ideia de que nada é fixo, tudo é treinável — até a disciplina.",
+    "orientacao": "Olha, às vezes o problema não é o corpo, é o que você pensa sobre ele. Ou sobre você. Sabe aquela voz que diz 'não adianta tentar'? Essa voz não é verdade — é um eco do passado. E sabe o que é incrível? Você pode calar ela com uma nova história. Essa semana, o desafio é esse: muda o jeito de conversar contigo. Fala com carinho, mesmo nos dias ruins. O cérebro aprende mais com amor do que com cobrança.",
+    "tarefas": [
+      "Antes da próxima atividade, escreve três frases que você vive repetindo pra te diminuir.",
+      "Agora, reformula cada uma como se estivesse falando com uma amiga que você ama.",
+      "Deixa essas novas frases anotadas e lê uma delas toda vez que o desânimo bater."
+    ]
+  },
+  {
+    "titulo": "Semana 4 · O Poder do Ambiente",
+    "conceito": "O ambiente é o molde invisível do comportamento. O cérebro reage mais ao que vê do que ao que planeja. Se o ambiente te lembra de agir, você age. Se o ambiente te convida a desistir, você repete o padrão. Por isso, mudar o cenário é mais poderoso do que forçar a vontade. É neurociência aplicada à rotina.",
+    "orientacao": "Sabe quando o treino tá difícil e o sofá parece te chamar? Então, muda o cenário. Deixa o tênis perto, a garrafinha cheia, o caderno à vista. O cérebro é preguiçoso, ele vai pro que tá fácil. Faz o certo ficar fácil. Não é sobre motivação, é sobre estratégia. Essa semana, o foco é preparar o teu ambiente pra te puxar pra frente — e não pra trás.",
+    "tarefas": [
+      "Antes do próximo treino, organiza teu cantinho de ação. Deixa tudo à mão.",
+      "Esconde o que te distrai (celular, comida fácil, bagunça visual).",
+      "Coloca algo visível que te lembre o motivo de estar nessa — uma frase, uma foto, um símbolo."
+    ]
+  },
+  {
+    "titulo": "Semana 5 · Neuroplasticidade e Consistência",
+    "conceito": "O cérebro é como um músculo: se você repete, ele fortalece. A constância cria caminhos automáticos — e é assim que um comportamento vira identidade. Não existe mágica, existe repetição. E quando a repetição acontece com emoção positiva, a mudança se fixa de verdade. É neuroplasticidade em ação.",
+    "orientacao": "Não tenta fazer tudo de uma vez. Faz pouco, mas faz sempre. O teu cérebro precisa entender que você é constante — não perfeita. Quando você cumpre o que promete pra si, o cérebro registra: 'ela é confiável'. E confia mais em você. Essa semana é sobre isso: provar pra si que você consegue manter algo simples e real.",
+    "tarefas": [
+      "Antes do próximo treino, escolhe um hábito pequeno pra repetir todos os dias (beber água, alongar, respirar).",
+      "Marca cada dia que fizer, nem que seja num papel ou no celular.",
+      "Quando completar 7 dias, se dá uma recompensa simbólica — tipo um momento pra si, sem culpa."
+    ]
+  },
+  {
+    "titulo": "Semana 6 · Reforço Positivo e Autocompaixão",
+    "conceito": "A mente aprende com reforço, não com culpa. Quando você se critica, o cérebro ativa o sistema de ameaça. Quando se acolhe, ativa o sistema de aprendizado. A autocompaixão é uma ferramenta neurológica poderosa: ela ensina o cérebro que errar faz parte do processo, e não é o fim dele.",
+    "orientacao": "Ei, se perdoa um pouco. Ninguém muda da noite pro dia. Quando você erra e se trata mal, o cérebro entende que mudar dói — e foge. Mas quando você erra e se trata com respeito, ele entende que é seguro continuar tentando. Essa semana é pra isso: aprender a ser gentil com você, mesmo quando as coisas não saem do jeito que queria.",
+    "tarefas": [
+      "Antes da próxima atividade, pensa em uma coisa boa que você fez essa semana, mesmo que pequena.",
+      "Anota e fala pra si: 'Tô orgulhosa de mim por isso'.",
+      "Quando errar, escreve: 'tô aprendendo' em vez de 'fracassei'. É um treino pro cérebro entender o novo caminho."
+    ]
+  },
+  {
+    "titulo": "Semana 7 · Energia, Emoção e Movimento",
+    "conceito": "Emoção é energia em movimento. Quando o corpo trava, a mente acumula. O exercício é a forma mais rápida de limpar o sistema nervoso e regular o humor. O movimento ativa neurotransmissores como serotonina e dopamina — os mesmos que trazem bem-estar e clareza mental.",
+    "orientacao": "Às vezes você não tá sem força — tá cheia de emoção parada. Por isso, antes de querer resolver tudo na cabeça, vai pro corpo. Caminha, respira, se mexe. O corpo entende o que o pensamento não resolve. Essa semana é sobre usar o movimento como terapia. Mexe o corpo pra liberar a mente.",
+    "tarefas": [
+      "Antes da próxima atividade, faz 10 minutos de movimento leve — dança, caminhada, alongamento.",
+      "Anota como se sentiu antes e depois. Sério, escreve.",
+      "Toda vez que o estresse vier, lembra: corpo parado é mente pesada."
+    ]
+  },
+  {
+    "titulo": "Semana 8 · Propósito e Sustentação",
+    "conceito": "O propósito é o elo entre o que você faz e o que te move. Quando algo tem sentido, o cérebro ativa os centros de recompensa de longo prazo, criando motivação sustentada. Não é sobre se forçar — é sobre se lembrar do porquê. Propósito é o que mantém o foco quando a emoção falha.",
+    "orientacao": "Você chegou até aqui, e isso já diz muito sobre quem você tá se tornando. Agora é hora de colocar o coração no processo. Lembra por que começou. Não por estética, mas por saúde mental, por amor próprio, por paz. O treino, a alimentação, o descanso — tudo isso é só ferramenta pra te conectar com a tua melhor versão.",
+    "tarefas": [
+      "Antes da próxima semana, escreve o teu 'porquê' real — o motivo que faz tudo valer a pena.",
+      "Deixa ele à vista. Cola na parede, bota no espelho, salva no celular.",
+      "Toda vez que pensar em desistir, lê e respira. Você não tá voltando do zero — tá subindo de nível."
+    ]
+  }
 ]
