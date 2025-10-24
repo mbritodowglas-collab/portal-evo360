@@ -1,148 +1,130 @@
-// EVO360 · Fundação · Card 2 (Tarefas e Neuro-Hábito)
-// Mantém o mesmo padrão do Card 1: tabs + gotejamento + navegação retroativa
+// ============================
+// EVO360 · Fundação
+// Página: Tarefas e Neuro-Hábito
+// ============================
 
-// ---------- Helpers ----------
-const $$ = (sel) => document.querySelector(sel);
-const $on = (el, ev, fn) => el && el.addEventListener(ev, fn);
-const fmt = (n) => String(n).padStart(2, "0");
-
-// dias decorridos (inteiro)
-function daysBetweenISO(aISO, bISO) {
-  const a = new Date(aISO + "T00:00:00");
-  const b = new Date(bISO + "T00:00:00");
-  return Math.floor((b - a) / 86400000);
-}
-function todayISO() { return new Date().toISOString().slice(0,10); }
-
-// carrega JSON com tolerância
-async function loadJSON(url) {
-  if (!url) return null;
-  try {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw 0;
-    return await r.json();
-  } catch {
-    return null;
-  }
-}
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 // ---------- Tabs ----------
-(function tabs(){
-  const tabs = document.querySelectorAll(".tab");
-  const panels = {
-    semanais: "#panel-semanais",
-    micro:    "#panel-micro",
-    guia:     "#panel-guia",
-  };
+(function tabs() {
+  const tabs = $$('.tab');
   tabs.forEach(tb => {
-    $on(tb, "click", () => {
-      tabs.forEach(x => x.classList.remove("active"));
-      tb.classList.add("active");
-      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      const sel = panels[tb.dataset.tab];
-      if (sel) $$(sel).classList.add("active");
+    tb.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      tb.classList.add('active');
+      $$('.panel').forEach(p => p.classList.remove('active'));
+      $('#panel-' + tb.dataset.tab)?.classList.add('active');
     });
   });
 })();
 
-// ---------- Drip engines ----------
-(async function initCard2(){
-  const LEVEL_ID = window.NIVEL || "fundacao-72a9c";
+// ---------- Gotejamento ----------
+(async function dripPlano() {
+  try {
+    const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
 
-  // Streams distintos para semanais e microtarefas
-  const STREAM_SEM = "card2_semanais";
-  const STREAM_MIC = "card2_micro";
+    const SEM_ID = 'card2_tarefas_semanais';
+    const MIC_ID = 'card2_microtarefas';
+    const SEM_MAX = 8;
+    const MIC_MAX = 20;
 
-  // Inícios independentes (persistidos por localStorage)
-  const startSem = Drip.ensureStart(LEVEL_ID, STREAM_SEM);
-  const startMic = Drip.ensureStart(LEVEL_ID, STREAM_MIC);
+    // garante data inicial
+    const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
+    const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
-  // Diferença de dias desde os inícios
-  const diffDaysSem = daysBetweenISO(startSem, todayISO());
-  const diffDaysMic = daysBetweenISO(startMic, todayISO());
+    // calcula índices (semanais = 7 dias; micro = 3 dias)
+    const semIdx = Math.min(
+      SEM_MAX,
+      Math.floor(Drip.getTodayIndex(semStart, SEM_MAX * 7) / 7)
+    ) || 1;
 
-  // Índice máximo liberado (1-based)
-  // Semanais: 1 semana a cada 7 dias; limite 8 semanas (≈ 56 dias dentro dos 60)
-  const MAX_WEEKS = 8;
-  const weekIdxToday = Math.max(1, Math.min(MAX_WEEKS, Math.floor(diffDaysSem / 7) + 1));
+    const micIdx = Math.min(
+      MIC_MAX,
+      Math.floor(Drip.getTodayIndex(micStart, MIC_MAX * 3) / 3)
+    ) || 1;
 
-  // Microtarefas: 1 bloco a cada 3 dias; até 20 blocos (60/3)
-  const MAX_BLOCKS = 20;
-  const blockIdxToday = Math.max(1, Math.min(MAX_BLOCKS, Math.floor(diffDaysMic / 3) + 1));
-
-  // Estados de visualização (persistem seleção do usuário, sem liberar futuro)
-  const VIEW_SEM_KEY = `drip_view_${LEVEL_ID}_${STREAM_SEM}`;
-  const VIEW_MIC_KEY = `drip_view_${LEVEL_ID}_${STREAM_MIC}`;
-
-  let weekView = Math.max(1, Math.min(Drip.LS.get(VIEW_SEM_KEY, weekIdxToday), weekIdxToday));
-  let blockView = Math.max(1, Math.min(Drip.LS.get(VIEW_MIC_KEY, blockIdxToday), blockIdxToday));
-
-  // Data
-  const DATA_SEMANAIS_URL = window.DATA_TAREFAS_SEMANAIS;
-  const DATA_MICRO_URL    = window.DATA_MICRO_TAREFAS;
-
-  const semData = await loadJSON(DATA_SEMANAIS_URL); // [{titulo, texto}]
-  const micData = await loadJSON(DATA_MICRO_URL);    // [{titulo, texto}]
-
-  // ---------- Renderizadores ----------
-  function renderSemanais(){
-    // clamp
-    weekView = Math.max(1, Math.min(weekView, weekIdxToday));
-
-    const meta = $$("#sem-meta");
-    const h3   = $$("#sem-titulo");
-    const p    = $$("#sem-texto");
-
-    const item = Array.isArray(semData) ? semData[weekView - 1] : null;
-    meta.textContent = `Semana ${weekView} de ${MAX_WEEKS}`;
-
-    if (item && (item.titulo || item.texto)) {
-      h3.textContent = item.titulo || `Tarefa semanal ${fmt(weekView)}`;
-      p.textContent  = item.texto  || "Conteúdo disponível.";
-    } else {
-      h3.textContent = `Tarefa semanal ${fmt(weekView)}`;
-      p.textContent  = "Conteúdo indisponível no momento.";
+    async function load(url) {
+      try {
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) throw 0;
+        return await r.json();
+      } catch {
+        return null;
+      }
     }
 
-    // controles
-    $$("#semPrev").disabled = (weekView <= 1);
-    $$("#semNext").disabled = (weekView >= weekIdxToday);
+    const semanais = await load(window.DATA_TAREFAS_SEMANAIS);
+    const micros = await load(window.DATA_MICRO_TAREFAS);
 
-    Drip.LS.set(VIEW_SEM_KEY, weekView);
-  }
+    // ---------- Semanais ----------
+    const semMeta = $('#sem-meta');
+    const semTit  = $('#sem-titulo');
+    const semTxt  = $('#sem-texto');
+    const semPrev = $('#semPrev');
+    const semNext = $('#semNext');
+    const SEM_VIEW_KEY = `drip_view_${LEVEL_ID}_${SEM_ID}`;
+    const LS = {
+      get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},
+      set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+    };
 
-  function renderMicro(){
-    blockView = Math.max(1, Math.min(blockView, blockIdxToday));
+    let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
-    const meta = $$("#mic-meta");
-    const h3   = $$("#mic-titulo");
-    const p    = $$("#mic-texto");
-
-    const item = Array.isArray(micData) ? micData[blockView - 1] : null;
-    meta.textContent = `Bloco ${blockView} de ${MAX_BLOCKS} (3 dias)`;
-
-    if (item && (item.titulo || item.texto)) {
-      h3.textContent = item.titulo || `Microtarefa ${fmt(blockView)}`;
-      p.textContent  = item.texto  || "Conteúdo disponível.";
-    } else {
-      h3.textContent = `Microtarefa ${fmt(blockView)}`;
-      p.textContent  = "Conteúdo indisponível no momento.";
+    function renderSem() {
+      const cap = semIdx;
+      semDay = Math.max(1, Math.min(semDay, cap));
+      const item = semanais && semanais[semDay - 1];
+      if (item) {
+        semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
+        semTit.textContent  = item.titulo || '—';
+        semTxt.textContent  = item.texto || '';
+      } else {
+        semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
+        semTit.textContent  = 'Conteúdo indisponível';
+        semTxt.textContent  = '—';
+      }
+      semPrev.disabled = (semDay <= 1);
+      semNext.disabled = (semDay >= cap);
+      LS.set(SEM_VIEW_KEY, semDay);
     }
 
-    $$("#micPrev").disabled = (blockView <= 1);
-    $$("#micNext").disabled = (blockView >= blockIdxToday);
+    semPrev?.addEventListener('click', ()=>{ semDay--; renderSem(); });
+    semNext?.addEventListener('click', ()=>{ semDay++; renderSem(); });
+    renderSem();
 
-    Drip.LS.set(VIEW_MIC_KEY, blockView);
+    // ---------- Microtarefas ----------
+    const micMeta = $('#mic-meta');
+    const micTit  = $('#mic-titulo');
+    const micTxt  = $('#mic-texto');
+    const micPrev = $('#micPrev');
+    const micNext = $('#micNext');
+    const MIC_VIEW_KEY = `drip_view_${LEVEL_ID}_${MIC_ID}`;
+
+    let micDay = LS.get(MIC_VIEW_KEY, micIdx);
+
+    function renderMic() {
+      const cap = micIdx;
+      micDay = Math.max(1, Math.min(micDay, cap));
+      const item = micros && micros[micDay - 1];
+      if (item) {
+        micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
+        micTit.textContent  = item.titulo || '—';
+        micTxt.textContent  = item.texto || '';
+      } else {
+        micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
+        micTit.textContent  = 'Conteúdo indisponível';
+        micTxt.textContent  = '—';
+      }
+      micPrev.disabled = (micDay <= 1);
+      micNext.disabled = (micDay >= cap);
+      LS.set(MIC_VIEW_KEY, micDay);
+    }
+
+    micPrev?.addEventListener('click', ()=>{ micDay--; renderMic(); });
+    micNext?.addEventListener('click', ()=>{ micDay++; renderMic(); });
+    renderMic();
+  } catch (e) {
+    console.warn('dripPlano falhou:', e);
   }
-
-  // ---------- Navegação ----------
-  $on($$("#semPrev"), "click", () => { weekView--; renderSemanais(); });
-  $on($$("#semNext"), "click", () => { weekView++; renderSemanais(); });
-
-  $on($$("#micPrev"), "click", () => { blockView--; renderMicro(); });
-  $on($$("#micNext"), "click", () => { blockView++; renderMicro(); });
-
-  // Inicializa
-  renderSemanais();
-  renderMicro();
 })();
