@@ -121,9 +121,13 @@
     /* Configs desta página */
     window.NIVEL = "fundacao-72a9c";
 
-    /* JSONs sugeridos (crie quando quiser; o JS lida com ausência e mostra placeholders) */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/semanais-fundacao.json";  // array de 8 itens [{titulo, texto}]
-    window.DATA_MICRO_TAREFAS   = "../../_data/micro-fundacao.json";      // array de ~20 itens (um por bloco de 3 dias) [{titulo, texto}]
+    /* Caminhos dos JSONs (ajustado) */
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, texto}]
+    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, texto}]
+
+    /* Aliases para compatibilidade com scripts que usam nomes anteriores */
+    window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
+    window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
   <!-- motor de gotejamento (já usado no card 1) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
