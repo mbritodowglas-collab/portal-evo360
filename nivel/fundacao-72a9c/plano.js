@@ -19,7 +19,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
 })();
 
-// Pequeno util pra escapar HTML (evitar quebrar o layout se vierem sinais/aspas no JSON)
+// Escapar HTML básico
 function esc(s) {
   return String(s ?? '')
     .replace(/&/g,'&amp;')
@@ -39,20 +39,27 @@ function esc(s) {
     const SEM_MAX = 8;
     const MIC_MAX = 20;
 
-    // garante data inicial
+    // Marca início
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
     const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
-    // índices 1-based (semanais a cada 7 dias; micro a cada 3 dias)
+    // Índices (1-based)
     const semIdx = Math.max(1, Math.min(
       SEM_MAX,
       Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
     ));
-
     const micIdx = Math.max(1, Math.min(
       MIC_MAX,
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
+
+    // === Ajuste: fallback de caminho para GitHub Pages (repo base) ===
+    // Se o site está em /<repo>/..., precisamos prefixar os JSONs com /<repo>
+    const repoBase = (() => {
+      const parts = location.pathname.split('/').filter(Boolean);
+      // ex.: /portal-evo360/nivel/fundacao/plano.html -> '/portal-evo360'
+      return parts.length ? '/' + parts[0] : '';
+    })();
 
     async function loadAny(urls) {
       for (const url of urls) {
@@ -65,16 +72,21 @@ function esc(s) {
       return null;
     }
 
-    // tenta primeiro os caminhos configurados no HTML, depois fallbacks comuns
     const semanais = await loadAny([
+      // caminho que vem do HTML
       window.DATA_TAREFAS_SEMANAIS,
-      "../../_data/tarefas-semanais.json"
+      // relativos usuais
+      "../../_data/tarefas-semanais.json",
+      // fallback com base do repositório (GitHub Pages)
+      `${repoBase}/_data/tarefas-semanais.json`
     ]);
 
     const micros = await loadAny([
       window.DATA_MICRO_TAREFAS,
       "../../_data/microtarefas.json",
-      "../../_data/micro-tarefas.json" // fallback com hífen
+      "../../_data/micro-tarefas.json",
+      `${repoBase}/_data/microtarefas.json`,
+      `${repoBase}/_data/micro-tarefas.json`
     ]);
 
     // ---------- Semanais ----------
@@ -96,9 +108,7 @@ function esc(s) {
       if (!Array.isArray(semanais) || semanais.length === 0) {
         semMeta && (semMeta.textContent = 'Semana —');
         semTit  && (semTit.textContent  = 'Conteúdo indisponível');
-        if (semTxt) {
-          semTxt.textContent = '—';
-        }
+        semTxt  && (semTxt.textContent  = '—');
         if (semPrev) semPrev.disabled = true;
         if (semNext) semNext.disabled = true;
         return;
@@ -110,7 +120,7 @@ function esc(s) {
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
       semTit.textContent  = item.titulo ? String(item.titulo) : '—';
 
-      // Compatível com seu JSON: {conceito, orientacao, tarefas[]} ou {texto}
+      // Monta a partir de {conceito, orientacao, tarefas[]} (ou fallback "texto")
       let bloco = '';
       if (item.conceito) {
         bloco += `<strong>Conceito:</strong> ${esc(item.conceito)}`;
@@ -122,15 +132,9 @@ function esc(s) {
         bloco += (bloco ? '<br><br>' : '') + `<strong>Tarefas da semana:</strong><br>` +
                  item.tarefas.map(t => `• ${esc(t)}`).join('<br>');
       }
-      if (!bloco && item.texto) {
-        // fallback caso venha um "texto" único
-        bloco = esc(item.texto);
-      }
-      if (!bloco) {
-        bloco = '—';
-      }
+      if (!bloco && item.texto) bloco = esc(item.texto);
+      if (!bloco) bloco = '—';
 
-      // #sem-texto é um <p>; usamos innerHTML com <br> e bullets simples (sem alterar o HTML)
       semTxt.innerHTML = bloco;
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
@@ -156,9 +160,7 @@ function esc(s) {
       if (!Array.isArray(micros) || micros.length === 0) {
         micMeta && (micMeta.textContent = 'Bloco —');
         micTit  && (micTit.textContent  = 'Conteúdo indisponível');
-        if (micTxt) {
-          micTxt.textContent = '—';
-        }
+        micTxt  && (micTxt.textContent  = '—');
         if (micPrev) micPrev.disabled = true;
         if (micNext) micNext.disabled = true;
         return;
