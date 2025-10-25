@@ -1,6 +1,5 @@
 <script>
 (function(){
-  // usa as mesmas helpers/LEVEL já existentes no seu arquivo
   const LEVEL = window.NIVEL || "fundacao-72a9c";
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -10,16 +9,13 @@
     del:(k)=>localStorage.removeItem(k)
   };
 
-  // chaves do rastreador já existentes no seu app
   const K = {
-    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,     // { agua:true, ... }
-    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,   // true/false
+    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
+    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
   };
 
-  // chave nova só para a lista de metas (não conflita com nada seu)
   const GOALS_KEY = `hab_${LEVEL}_goals_list`;
 
-  // util: ISO local (yyyy-mm-dd)
   const iso = (d=new Date())=>{
     const x = new Date(d);
     const y = x.getFullYear(), m = String(x.getMonth()+1).padStart(2,'0'), dd = String(x.getDate()).padStart(2,'0');
@@ -27,21 +23,15 @@
   };
   const addDays = (dateISO, n)=>{ const d=new Date(dateISO+'T00:00:00'); d.setDate(d.getDate()+n); return iso(d); };
 
-  // ---------------- Metas: CRUD + progresso ----------------
-
   function readGoals(){ return LS.get(GOALS_KEY, []); }
   function saveGoals(arr){ LS.set(GOALS_KEY, arr); }
 
   function getSelectedEssentials(){
     const vals = $$('.goal-essential:checked').map(i=>i.value);
-    // fallback: sempre exigir pelo menos 1
     return vals.length ? vals : ['agua'];
   }
 
   function computeProgress(goal){
-    // Conta dias completos ENTRE goal.startedISO e hoje,
-    // considerando somente dias realmente SALVOS no rastreador
-    // e exigindo todos os hábitos essenciais da meta.
     if(!goal || !goal.startedISO) return {done:0, resetAt:null};
 
     let done = 0;
@@ -49,25 +39,23 @@
     let streakZeros = 0;
 
     const today = iso(new Date());
-    // percorre no máximo 120 dias para não pesar
     for(let d = goal.startedISO; d <= today; d = addDays(d, 1)){
       const saved = !!LS.get(K.daySaved(d), false);
-      if(!saved){ continue; } // só conta se o dia foi salvo
+      if(!saved){ continue; }
 
       const log = LS.get(K.dayLog(d), {});
       const ok = (goal.essentials||[]).every(id => !!log[id]);
 
       if(ok){
-        if(resetAt) { /* depois de reset continua somando */ }
+        if(resetAt) { /* continua após reset */ }
         done += 1;
         streakZeros = 0;
       }else{
         streakZeros += 1;
         if(streakZeros >= 3){
-          // zera a contagem a partir do 4º dia (ou seja, no próximo ok volta do zero)
           resetAt = d;
           done = 0;
-          streakZeros = 3; // mantém saturado
+          streakZeros = 3;
         }
       }
     }
@@ -108,8 +96,7 @@
 
   function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 
-  // ---------------- Handlers do formulário ----------------
-
+  // Formulário
   $('#btnSaveGoal')?.addEventListener('click', ()=>{
     const name = $('#goal_name')?.value.trim();
     const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
@@ -121,12 +108,11 @@
       id: Date.now().toString(36),
       name,
       target,
-      essentials,              // << configuração de essenciais da meta
+      essentials,
       startedISO: iso(new Date())
     });
     saveGoals(arr);
 
-    // limpa inputs (não há “contador” no formulário)
     if($('#goal_name')) $('#goal_name').value = '';
     if($('#goal_days')) $('#goal_days').value = '';
     $$('.goal-essential').forEach(cb => { cb.checked = ['agua','sono','movimento','alimentacao'].includes(cb.value); });
@@ -137,10 +123,9 @@
   $('#btnClearGoal')?.addEventListener('click', ()=>{
     if($('#goal_name')) $('#goal_name').value = '';
     if($('#goal_days')) $('#goal_days').value = '';
-    // não mexe nas metas salvas
   });
 
-  // Excluir meta (sempre disponível)
+  // Excluir meta
   $('#goalsList')?.addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-del]');
     if(!btn) return;
@@ -153,14 +138,21 @@
     }
   });
 
-  // Quando o usuário “Salvar dia” no rastreador, atualizamos o progresso das metas.
-  // (sem interferir no handler original)
+  // Atualiza metas após salvar dia
   document.getElementById('btnSaveDay')?.addEventListener('click', ()=>{
-    // re-render após o rastreador persistir o dia
     setTimeout(renderGoals, 0);
   });
 
-  // inicial
   document.addEventListener('DOMContentLoaded', renderGoals);
 })();
+
+// força rótulos das abas (se algum cache/JS antigo sobrescrever)
+document.addEventListener('DOMContentLoaded', () => {
+  const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
+  const tabRec = document.querySelector('.tabs .tab[data-tab="recompensas"]');
+  const tabFer = document.querySelector('.tabs .tab[data-tab="ferramentas"]');
+  if (tabHab) tabHab.textContent = 'Hábitos';
+  if (tabRec) tabRec.textContent = 'Recompensas';
+  if (tabFer) tabFer.textContent = 'Ferramentas';
+});
 </script>
