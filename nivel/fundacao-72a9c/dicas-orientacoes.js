@@ -1,29 +1,11 @@
-<script>
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (JS completo revisado e testado)
+// Página: Dicas e Orientações (JS completo)
 // ============================
 
+// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-
-// ---------- Helpers de fetch ----------
-function cacheBust(url){
-  if(!url) return url;
-  const u = new URL(url, location.href);
-  u.searchParams.set('cb', String(Date.now()));
-  return u.href;
-}
-async function tryLoad(urls){
-  for (const u of urls){
-    try{
-      if(!u) continue;
-      const r = await fetch(cacheBust(u), { cache: 'no-store' });
-      if (r.ok) return await r.json();
-    }catch(_){}
-  }
-  return null;
-}
 
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
@@ -31,55 +13,59 @@ async function tryLoad(urls){
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
-    let startISO = (typeof Drip !== 'undefined')
+    // pode não existir se drip.js não carregar, por isso o try/catch
+    const startISO = (typeof Drip !== 'undefined')
       ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
       : (new Date()).toISOString().slice(0,10);
 
-    if (typeof Drip !== 'undefined') {
-      const diff = Drip.diffFrom(startISO);
-      if (diff < 0) {
-        Drip.reset(LEVEL_ID, DRIP_ID);
-        startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
+    async function load(url) {
+      try {
+        if (!url) return null;
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) throw 0;
+        return await r.json();
+      } catch {
+        return null;
       }
     }
 
-    const raw = await tryLoad([
-      window.DATA_DICAS,
-      '/portal-evo360/data/fundacao.json',
-      '/data/fundacao.json'
-    ]);
+    const raw = await load(window.DATA_DICAS);
+
+    // Aceita _data como array direto OU como { dicas: [...] }
+    const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
+
+    // Se não houver dados válidos, mostra fallback e sai
+    if (!data || data.length === 0) {
+      const meta  = $('#dica-meta');
+      const texto = $('#dica-texto');
+      if (meta)  meta.textContent  = 'Dia —';
+      if (texto) texto.textContent = 'Dica indisponível.';
+      return;
+    }
+
+    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
+    const MAX_DAYS = Math.min(60, data.length);
+    const todayIdx = (typeof Drip !== 'undefined')
+      ? Drip.getTodayIndex(startISO, MAX_DAYS)
+      : 1;
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
 
-    const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-    if (!data || data.length === 0) {
-      meta  && (meta.textContent = 'Dia —');
-      texto && (texto.textContent = 'Dica indisponível.');
-      if (prev) prev.disabled = true;
-      if (next) next.disabled = true;
-      return;
-    }
-
-    const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined') ? Drip.getTodayIndex(startISO, MAX_DAYS) : 1;
-
+    // garante que textos longos quebrem dentro do card
     if (texto) {
-      Object.assign(texto.style, {
-        whiteSpace: 'normal',
-        overflowWrap: 'anywhere',
-        wordBreak: 'break-word',
-        lineHeight: '1.6',
-        marginTop: '6px'
-      });
+      texto.style.whiteSpace   = 'normal';
+      texto.style.overflowWrap = 'anywhere';
+      texto.style.wordBreak    = 'break-word';
+      texto.style.lineHeight   = '1.6';
+      texto.style.marginTop    = '6px';
     }
 
     const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
     const LS = {
-      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
@@ -92,16 +78,23 @@ async function tryLoad(urls){
 
       if (item) {
         const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : item.categoria === 'nutricao' ? 'Nutrição'
-                     : item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica';
+                     : (item.categoria === 'nutricao' ? 'Nutrição'
+                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+
+        // título no meta (mantendo padrão anterior)
         meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
-        texto.innerHTML = (item.conceito || item.orientacao)
+
+        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
+        const blocoHTML = (item.conceito || item.orientacao)
           ? `
             <div class="dica-bloco">
               ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
               ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
-            </div>`
+            </div>
+            `
           : `<p style="margin:0">${item.texto || ''}</p>`;
+
+        texto.innerHTML = blocoHTML;
       } else {
         meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
         texto.textContent = 'Dica indisponível.';
@@ -112,12 +105,11 @@ async function tryLoad(urls){
       LS.set(VIEW_KEY, day);
     }
 
-    prev?.addEventListener('click', ()=>{ day--; render(); });
-    next?.addEventListener('click', ()=>{ day++; render(); });
+    prev?.addEventListener('click', () => { day--; render(); });
+    next?.addEventListener('click', () => { day++; render(); });
     render();
-
   } catch (e) {
-    console.warn('dicaDrip falhou:', e);
+    console.warn('drip init falhou:', e);
   }
 })();
 
@@ -175,7 +167,7 @@ async function tryLoad(urls){
       return;
     }
 
-    const fcMax = 220 - a;
+    const fcMax = 220 - a; // estimativa
     const alvo50 = karvonenTarget(fcMax, r, 0.50);
     const alvo65 = karvonenTarget(fcMax, r, 0.65);
 
@@ -236,4 +228,3 @@ async function tryLoad(urls){
   });
   calc();
 })();
-</script>
