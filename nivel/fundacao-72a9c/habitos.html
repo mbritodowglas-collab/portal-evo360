@@ -48,7 +48,7 @@
 
     .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-    /* Meta atual */
+    /* Meta atual / progresso */
     .progress-wrap{margin-top:10px}
     .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
@@ -62,7 +62,7 @@
     .goal-card small{color:var(--silver)}
     .goal-card[data-edit]{cursor:pointer}
 
-    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
+    /* === Progresso (20 dias por hábito) === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
     .streak-list{ display:grid; gap:12px; margin-top:12px }
@@ -209,7 +209,7 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- ===== Script PRINCIPAL (seu script que já funcionava) ===== -->
+  <!-- ===== Script PRINCIPAL ===== -->
   <script>
   // ===== Helpers =====
   const $ = (s, r = document) => r.querySelector(s);
@@ -313,21 +313,46 @@
   });
 
   // ===== Recompensas =====
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // Agora esta função mostra a META ATIVA + ARQUIVO
   function renderGoalsArchive(){
     const list = $('#goalsList');
-    const arc = LS.get(K.goalArchive, []);
     list.innerHTML = '';
-    if(!arc.length){
+
+    const cur = LS.get(K.goalCurrent, null);
+    const arc = LS.get(K.goalArchive, []);
+
+    if(!cur && !arc.length){
       list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
       return;
     }
+
+    // Card da meta ATIVA
+    if(cur){
+      const pctCur = Math.round(Math.min(100, ((cur.progressDays||0)/(cur.target||1))*100));
+      const nodeCur = document.createElement('div');
+      nodeCur.className = 'goal-card';
+      nodeCur.innerHTML = `
+        <div class="hdr">
+          <div class="name">${esc(cur.name || 'Meta ativa')}</div>
+          <small>${cur.startedISO || '—'}</small>
+        </div>
+        <div class="progress" style="margin-top:6px"><i style="width:${pctCur}%"></i></div>
+        <small>${cur.progressDays||0}/${cur.target} dias completos · <span class="muted">Meta ativa</span></small>
+      `;
+      list.appendChild(nodeCur);
+    }
+
+    // Cards das metas ARQUIVADAS
     arc.forEach((g,i)=>{
-      const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
+      const pct = Math.round(Math.min(100, ((g.progressDays||0)/(g.target||1))*100));
       const node = document.createElement('div');
       node.className = 'goal-card';
       node.innerHTML = `
         <div class="hdr">
-          <div class="name">${g.name || 'Meta'}</div>
+          <div class="name">${esc(g.name || 'Meta')}</div>
           <small>${g.startedISO || '—'}</small>
         </div>
         <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
@@ -343,12 +368,18 @@
   function renderGoal(){
     const cur = LS.get(K.goalCurrent, null);
     const wrap = $('#goalCurrentWrap');
-    if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
+    if(!cur){
+      wrap.style.display='none';
+      renderGoalsArchive();
+      return;
+    }
     wrap.style.display = ''; // (fica oculto por CSS global)
     $('#goalCurrentName').textContent = cur.name || 'Meta';
     const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
     $('#goalProgress').style.width = pct + '%';
     $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
+
+    // Atualiza quadro “Minhas metas” imediatamente
     renderGoalsArchive();
   }
   renderGoal();
@@ -356,9 +387,10 @@
   // Salvar meta (ativa e vai para topo)
   $('#btnSaveGoal').addEventListener('click', ()=>{
     const name = $('#goal_name').value.trim();
-    const target = Math.max(1, Math.min(60, +$('#goal_days')?.value || 0));
+    const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
     if(!name || !target){ return; }
 
+    // Se já havia meta atual, manda para o arquivo
     const prev = LS.get(K.goalCurrent, null);
     if(prev){
       const arc = LS.get(K.goalArchive, []);
@@ -369,6 +401,7 @@
     const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
     LS.set(K.goalCurrent, cur);
 
+    // Limpa inputs e atualiza UI (aparece na hora)
     $('#goal_name').value = '';
     $('#goal_days').value = '';
     renderGoal();
