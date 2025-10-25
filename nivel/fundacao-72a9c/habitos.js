@@ -1,4 +1,3 @@
-<script>
 // ===== Helpers =====
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -103,7 +102,7 @@ $('#btnSaveDay').addEventListener('click', ()=>{
   setDisabledAll(true);
   $('#saveInfo').style.display = 'flex';
 
-  // Atualiza painel de metas (progresso) — função agora só mantém lista em “Minhas metas”
+  // Atualiza painel de metas (progresso)
   renderGoal();
 });
 
@@ -127,23 +126,25 @@ function renderGoalsArchive(){
       </div>
       <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
       <small>${g.progressDays||0}/${g.target} dias completos</small>
-      <div class="row-actions" style="margin-top:8px">
-        <button class="btn ghost" data-del="${i}">Excluir</button>
-      </div>
     `;
     list.appendChild(node);
   });
 }
 
-// ⚠️ Agora esta função apenas oculta o bloco do formulário e mantém a lista
 function renderGoal(){
+  const cur = LS.get(K.goalCurrent, null);
   const wrap = $('#goalCurrentWrap');
-  if (wrap) wrap.style.display = 'none'; // some com “Alvo/Progresso” do formulário
+  if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
+  wrap.style.display = '';
+  $('#goalCurrentName').textContent = cur.name || 'Meta';
+  const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
+  $('#goalProgress').style.width = pct + '%';
+  $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
   renderGoalsArchive();
 }
 renderGoal();
 
-// Salvar meta (ativa -> vai para arquivo, e formulário fica limpo)
+// Salvar meta (ativa e vai para topo)
 $('#btnSaveGoal').addEventListener('click', ()=>{
   const name = $('#goal_name').value.trim();
   const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
@@ -157,10 +158,14 @@ $('#btnSaveGoal').addEventListener('click', ()=>{
     LS.set(K.goalArchive, arc);
   }
 
-  const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
+  const cur = {
+    name, target,
+    startedISO: todayISO(),
+    progressDays: 0
+  };
   LS.set(K.goalCurrent, cur);
 
-  // Limpa inputs e atualiza apenas “Minhas metas”
+  // Limpa inputs e atualiza UI
   $('#goal_name').value = '';
   $('#goal_days').value = '';
   renderGoal();
@@ -175,19 +180,6 @@ $('#btnClearGoal').addEventListener('click', ()=>{
     LS.set(K.goalArchive, arc);
     LS.del(K.goalCurrent);
     renderGoal();
-  }
-});
-
-// Exclusão somente na lista de metas (delegado; não interfere nas tabs)
-document.getElementById('goalsList')?.addEventListener('click', (e)=>{
-  const btn = e.target.closest('button[data-del]');
-  if(!btn) return;
-  const idx = +btn.dataset.del;
-  const arc = LS.get(K.goalArchive, []);
-  if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
-    arc.splice(idx, 1);
-    LS.set(K.goalArchive, arc);
-    renderGoalsArchive();
   }
 });
 
@@ -206,4 +198,3 @@ document.getElementById('goalsList')?.addEventListener('click', (e)=>{
   peso.addEventListener('input', calc);
   calc();
 })();
-</script>
