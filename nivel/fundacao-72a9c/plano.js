@@ -1,6 +1,6 @@
 // ============================
-// EVO360 · Fundação · plano.js (versão corrigida)
-// Tarefas semanais + Microtarefas com gotejamento universal
+// EVO360 · Fundação · plano.js (versão corrigida p/ /data)
+// Tarefas semanais + Microtarefas com gotejamento
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -109,19 +109,19 @@ if (typeof window.Drip === 'undefined') {
     ));
 
     const ROOT = repoRoot();
-    const semCfg = window.DATA_TAREFAS_SEMANAIS || '../../_data/tarefas-semanais.json';
-    const micCfg = window.DATA_MICRO_TAREFAS   || '../../_data/microtarefas.json';
+    const semCfg = window.DATA_TAREFAS_SEMANAIS || '../../data/tarefas-semanais.json';
+    const micCfg = window.DATA_MICRO_TAREFAS   || '../../data/microtarefas.json';
 
     const semPaths = [
       semCfg,
-      ROOT + '_data/tarefas-semanais.json',
+      ROOT + 'data/tarefas-semanais.json',
       ROOT + 'assets/data/tarefas-semanais.json'
     ];
     const micPaths = [
       micCfg,
-      ROOT + '_data/microtarefas.json',
+      ROOT + 'data/microtarefas.json',
       ROOT + 'assets/data/microtarefas.json',
-      ROOT + '_data/micro-tarefas.json'
+      ROOT + 'data/micro-tarefas.json'
     ];
 
     const semanais = await fetchJsonSmart(semPaths);
