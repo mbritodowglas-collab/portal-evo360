@@ -1,48 +1,83 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Dicas e Orientações</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação · Hábitos e Recompensas</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    /* texto justificado nesta página */
+    /* ===== Ajustes locais desta página ===== */
     .content p, .content li { text-align: justify; }
 
-    /* abas e painéis */
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    /* Tabs — tudo numa linha, com rolagem lateral se precisar */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      flex-wrap:nowrap;                 /* mesma linha */
+      overflow-x:auto;                  /* rola se faltar espaço */
+      -webkit-overflow-scrolling:touch; /* rolagem suave no iOS */
+      scrollbar-width:none;             /* esconde barra no Firefox */
+    }
+    .tabs::-webkit-scrollbar{ display:none; } /* esconde barra no WebKit */
+
+    .tab{
+      flex:0 0 auto;                    /* largura do conteúdo */
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0f1318;
+      cursor:pointer;
+      white-space:nowrap;               /* não quebrar texto */
+    }
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+
     .panel{display:none}
     .panel.active{display:block}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* --- AJUSTE: garantir que a dica inteira apareça no card --- */
-    #dica-meta{
-      display:block;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.35;
-    }
-    #dica-texto{
-      margin-top:6px;
-      white-space:pre-wrap;     /* preserva \n das dicas */
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.55;
-    }
-    .card p, .card small{
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
+    /* Listas de hábitos */
+    .habits-group{margin-top:12px}
+    .habits-title{font-weight:800;color:var(--serenity-2);margin:8px 0}
+    .habits-grid{display:grid;grid-template-columns:1fr;gap:10px;align-items:center}
+    @media (min-width:760px){ .habits-grid{grid-template-columns:1fr 1fr} }
+    .habit-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#0f1318;padding:10px;border-radius:12px;min-height:48px}
+    .habit-item input[type="checkbox"]{width:20px;height:20px;accent-color:#6fb7ff;cursor:pointer}
+
+    .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+    /* Meta atual */
+    .progress-wrap{margin-top:10px}
+    .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
+    .muted-ok{display:flex;gap:8px;align-items:center;margin-top:10px}
+
+    /* Lista de metas salvas */
+    .goal-list{display:grid;gap:10px;margin-top:10px}
+    .goal-card{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:10px}
+    .goal-card .hdr{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .goal-card .name{font-weight:700}
+    .goal-card small{color:var(--silver)}
+    .goal-card[data-edit]{cursor:pointer}
+
+    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
+    .streak-box{ margin-top:18px }
+    .streak-legend{ color:var(--silver); margin-top:6px }
+    .streak-list{ display:grid; gap:12px; margin-top:12px }
+    .streak-row{ display:flex; flex-direction:column; gap:6px }
+    .streak-label{ color:var(--silver); font-weight:600 }
+    .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
+    .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
+
+    /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
+    #goalCurrentWrap { display: none !important; }
   </style>
 </head>
+
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
@@ -52,84 +87,433 @@
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
-      <a class="sb-item active" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
       <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
-      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item active" href="./habitos.html">Hábitos e Recompensas</a>
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
     <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
+  <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner (apenas imagem) -->
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Dica do dia (gotejamento) -->
-    <section class="card" id="dica-dia">
-      <h2>Dica & orientação do dia</h2>
-      <div class="muted" id="dica-meta">Dia —</div>
-      <p id="dica-texto">Carregando…</p>
-      <div class="row" style="margin-top:12px">
-        <button class="btn ghost" id="btnPrev">Anterior</button>
-        <button class="btn" id="btnNext">Próxima</button>
-      </div>
-      <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
-    </section>
-
-    <!-- Calculadoras -->
+    <!-- Card -->
     <section class="card">
-      <h2>Calculadoras</h2>
+      <h2>Hábitos e Recompensas</h2>
+      <p>
+        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+      </p>
+
       <div class="tabs">
-        <button class="tab active" data-tab="karvonen">FC de Reserva (Karvonen)</button>
-        <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
+        <button class="tab active" data-tab="rastreador">Hábitos</button>
+        <button class="tab" data-tab="recompensas">Recompensas</button>
+        <button class="tab" data-tab="ferramentas">Ferramentas</button>
       </div>
 
-      <!-- Karvonen (lista 50% a 80% por 5%) -->
-      <div class="panel active" id="panel-karvonen">
-        <div class="grid-2">
-          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
-          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
-          <div class="small muted" style="align-self:end">Sugestão Fundação: 50–65% (cardio leve/moderado)</div>
+      <!-- Painel: Rastreador -->
+      <div class="panel active" id="panel-rastreador">
+        <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
+
+        <div class="habits-group">
+          <div class="habits-title">Essenciais (contam para “dia completo”)</div>
+          <div class="habits-grid" id="essenciais">
+            <label class="habit-item"><input type="checkbox" data-habit="agua"><span>Água na meta do dia</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sono"><span>Higiene do sono (rotina + ≥7h)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="movimento"><span>Movimento do dia (≥30 min leve/mod.)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="alimentacao"><span>Alimentação consciente (3 boas escolhas)</span></label>
+          </div>
         </div>
 
-        <!-- Resumo -->
-        <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
+        <div class="habits-group">
+          <div class="habits-title">Complementares (registro extra)</div>
+          <div class="habits-grid" id="complementares">
+            <label class="habit-item"><input type="checkbox" data-habit="mobilidade"><span>Mobilidade/Postura (5–10 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sol"><span>Ar livre / Sol (10–15 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="forca"><span>Treino de força/musculação</span></label>
+          </div>
+        </div>
 
-        <!-- Ações -->
         <div class="row-actions">
-          <button class="btn" id="k_calcBtn">Calcular</button>
-          <button class="btn ghost" id="k_clearBtn">Limpar</button>
+          <button class="btn" id="btnSaveDay">Salvar dia</button>
+          <button class="btn ghost" id="btnClearDay">Limpar marcações</button>
         </div>
 
-        <!-- Tabela de zonas (50% a 80% por 5%) -->
-        <div class="calc-out" id="k_table" aria-live="polite"></div>
+        <div class="alert info muted-ok" id="saveInfo" style="display:none">
+          <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
+        </div>
+
+        <!-- Progresso 20 dias por hábito -->
+        <div class="streak-box" id="progress20">
+          <h3 class="habits-title">Progresso (últimos 20 dias)</h3>
+          <div class="streak-legend">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</div>
+          <div id="streakList" class="streak-list" aria-live="polite"></div>
+        </div>
       </div>
 
-      <!-- TMB -->
-      <div class="panel" id="panel-tmb">
+      <!-- Painel: Recompensas -->
+      <div class="panel" id="panel-recompensas">
+        <h3 class="habits-title">Meta de recompensa (baseada em dias completos)</h3>
+
         <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
-          <label>Sexo<br>
-            <select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select>
+          <label>Recompensa (ex.: “Spa em casa”, “Filme + pipoca”)<br>
+            <input type="text" id="goal_name" placeholder="Ex.: Spa em casa">
+          </label>
+          <label>Dias completos para merecer<br>
+            <input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20">
           </label>
         </div>
-        <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
-        <small class="muted">A TMB é o gasto energético em repouso — autoconhecimento, não plano alimentar.</small>
+
+        <div class="row-actions">
+          <button class="btn" id="btnSaveGoal">Salvar meta</button>
+          <button class="btn ghost" id="btnClearGoal">Limpar meta</button>
+        </div>
+
+        <!-- (contador escondido por CSS) -->
+        <div class="progress-wrap" id="goalCurrentWrap" style="display:none">
+          <div class="muted">Alvo: <strong id="goalCurrentName"></strong></div>
+          <div class="progress"><i id="goalProgress" style="width:0%"></i></div>
+          <div class="muted" id="goalProgressText">Progresso: —</div>
+          <div class="muted" id="goalResetNote" style="display:none">Contagem reiniciada por 3 ausências seguidas.</div>
+        </div>
+
+        <hr class="divisor">
+
+        <h3 class="habits-title">Minhas metas</h3>
+        <div id="goalsList" class="goal-list">
+          <div class="muted">Nenhuma meta cadastrada ainda.</div>
+        </div>
+
+        <!-- Aviso de regra -->
+        <p class="muted" style="margin-top:12px">
+          <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
+          a contagem da recompensa é <strong>zerada</strong> automaticamente.
+        </p>
+      </div>
+
+      <!-- Painel: Ferramentas (simples) -->
+      <div class="panel" id="panel-ferramentas">
+        <p class="muted">Pequenas ferramentas que ajudam a manter bons hábitos.</p>
+        <div class="grid-2">
+          <label>Calculadora simples de água (ml/kg) — alvo sugerido 30–35 ml/kg<br>
+            <input type="number" id="w_peso" placeholder="Peso (kg)">
+          </label>
+          <div class="calc-out" id="w_out">Informe seu peso para estimar a meta diária de água.</div>
+        </div>
       </div>
     </section>
   </main>
 
+  <script>window.NIVEL="fundacao-72a9c";</script>
+
+  <!-- ===== Script PRINCIPAL (seu script que já funcionava) ===== -->
   <script>
-    /* Gotejamento usa este caminho real do seu data */
-    window.NIVEL = "fundacao-72a9c";
-    window.DATA_DICAS = "/portal-evo360/data/fundacao.json";  // << único ajuste
+  // ===== Helpers =====
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const LS = {
+    get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+    set:(k,v)=>localStorage.setItem(k, JSON.stringify(v)),
+    del:(k)=>localStorage.removeItem(k)
+  };
+  const iso = d => new Date(d).toISOString().slice(0,10);
+  const todayISO = () => iso(new Date());
+
+  // Keys por nível
+  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  const K = {
+    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
+    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
+    daysDone:         `hab_${LEVEL}_days_complete`,
+    goalCurrent:      `hab_${LEVEL}_goal_current`,
+    goalArchive:      `hab_${LEVEL}_goal_archive`
+  };
+
+  // ===== Tabs =====
+  (function tabs(){
+    const map = { rastreador: '#panel-rastreador', recompensas:'#panel-recompensas', ferramentas:'#panel-ferramentas' };
+    $$('.tab').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        $$('.panel').forEach(p=>p.classList.remove('active'));
+        $(map[btn.dataset.tab]).classList.add('active');
+      });
+    });
+  })();
+
+  // ===== Rastreador: carregar estado do dia =====
+  const today = todayISO();
+  const savedToday = !!LS.get(K.daySaved(today), false);
+
+  function setDisabledAll(disabled){
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb => cb.disabled = disabled);
+    $('#btnSaveDay').disabled = disabled;
+    $('#btnClearDay').disabled = disabled;
+  }
+  function loadDay(){
+    const log = LS.get(K.dayLog(today), {});
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+      const id = cb.dataset.habit;
+      cb.checked = !!log[id];
+    });
+    if(savedToday){
+      setDisabledAll(true);
+      $('#saveInfo').style.display = 'flex';
+    }else{
+      setDisabledAll(false);
+      $('#saveInfo').style.display = 'none';
+    }
+  }
+  loadDay();
+
+  // Limpar marcações (sem salvar)
+  $('#btnClearDay').addEventListener('click', ()=>{
+    if(savedToday) return;
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb=> cb.checked = false);
+    LS.set(K.dayLog(today), {});
+  });
+
+  // Auto-rascunho ao clicar
+  $$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      if(savedToday) return;
+      const log = LS.get(K.dayLog(today), {});
+      log[cb.dataset.habit] = cb.checked;
+      LS.set(K.dayLog(today), log);
+    });
+  });
+
+  // Salvar dia
+  $('#btnSaveDay').addEventListener('click', ()=>{
+    if(savedToday) return;
+
+    const log = LS.get(K.dayLog(today), {});
+    const essentials = ['agua','sono','movimento','alimentacao'];
+    const allEssential = essentials.every(h => !!log[h]);
+
+    LS.set(K.daySaved(today), true);
+
+    if(allEssential){
+      const done = +LS.get(K.daysDone, 0) + 1;
+      LS.set(K.daysDone, done);
+      const cur = LS.get(K.goalCurrent, null);
+      if(cur){
+        cur.progressDays = Math.min(cur.target, (cur.progressDays||0) + 1);
+        LS.set(K.goalCurrent, cur);
+      }
+    }
+
+    setDisabledAll(true);
+    $('#saveInfo').style.display = 'flex';
+    renderGoal();
+  });
+
+  // ===== Recompensas =====
+  function renderGoalsArchive(){
+    const list = $('#goalsList');
+    const arc = LS.get(K.goalArchive, []);
+    list.innerHTML = '';
+    if(!arc.length){
+      list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
+      return;
+    }
+    arc.forEach((g,i)=>{
+      const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
+      const node = document.createElement('div');
+      node.className = 'goal-card';
+      node.innerHTML = `
+        <div class="hdr">
+          <div class="name">${g.name || 'Meta'}</div>
+          <small>${g.startedISO || '—'}</small>
+        </div>
+        <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
+        <small>${g.progressDays||0}/${g.target} dias completos</small>
+        <div class="row-actions" style="margin-top:8px">
+          <button class="btn ghost" data-del="${i}">Excluir</button>
+        </div>
+      `;
+      list.appendChild(node);
+    });
+  }
+
+  function renderGoal(){
+    const cur = LS.get(K.goalCurrent, null);
+    const wrap = $('#goalCurrentWrap');
+    if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
+    wrap.style.display = '';
+    $('#goalCurrentName').textContent = cur.name || 'Meta';
+    const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
+    $('#goalProgress').style.width = pct + '%';
+    $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
+    renderGoalsArchive();
+  }
+  renderGoal();
+
+  // Salvar meta (ativa e vai para topo)
+  $('#btnSaveGoal').addEventListener('click', ()=>{
+    const name = $('#goal_name').value.trim();
+    const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
+    if(!name || !target){ return; }
+
+    const prev = LS.get(K.goalCurrent, null);
+    if(prev){
+      const arc = LS.get(K.goalArchive, []);
+      arc.unshift(prev);
+      LS.set(K.goalArchive, arc);
+    }
+
+    const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
+    LS.set(K.goalCurrent, cur);
+
+    $('#goal_name').value = '';
+    $('#goal_days').value = '';
+    renderGoal();
+  });
+
+  // Limpar meta atual (move para arquivo)
+  $('#btnClearGoal').addEventListener('click', ()=>{
+    const cur = LS.get(K.goalCurrent, null);
+    if(cur){
+      const arc = LS.get(K.goalArchive, []);
+      arc.unshift(cur);
+      LS.set(K.goalArchive, arc);
+      LS.del(K.goalCurrent);
+      renderGoal();
+    }
+  });
+
+  // Excluir meta arquivada (lista)
+  document.getElementById('goalsList')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-del]');
+    if(!btn) return;
+    const idx = +btn.dataset.del;
+    const arc = LS.get(K.goalArchive, []);
+    if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
+      arc.splice(idx, 1);
+      LS.set(K.goalArchive, arc);
+      renderGoalsArchive();
+    }
+  });
+
+  // ===== Ferramentas: água =====
+  (function waterTool(){
+    const peso = $('#w_peso'), out = $('#w_out');
+    function calc(){
+      const p = +peso.value || 0;
+      if(p>0){
+        const low = Math.round(p*30), high = Math.round(p*35);
+        out.innerHTML = `Meta sugerida: <strong>${low}–${high} ml/dia</strong> (30–35 ml/kg).`;
+      }else{
+        out.textContent = 'Informe seu peso para estimar a meta diária de água.';
+      }
+    }
+    peso.addEventListener('input', calc);
+    calc();
+  })();
   </script>
 
-  <!-- Drip + JS da página (ordem: drip antes) -->
-  <script src="../../assets/js/drip.js?v=18" defer></script>
-  <script src="./dicas-orientacoes.js?v=16" defer></script>
+  <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
+  <script>
+  (function(){
+    const NIVEL = window.NIVEL || 'fundacao-72a9c';
+    const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
+    const HABITS = [
+      {id:'forca',label:'Treino de força / Musculação'},
+      {id:'agua',label:'Ingestão adequada de água'},
+      {id:'sono',label:'Higiene do sono'},
+      {id:'movimento',label:'Movimento do dia'},
+      {id:'alimentacao',label:'Alimentação consciente'},
+      {id:'mobilidade',label:'Mobilidade/Postura'},
+      {id:'sol',label:'Ar livre / Sol'}
+    ];
+    const $ = s=>document.querySelector(s);
+    const toDate = v => (v instanceof Date)?new Date(v):new Date(String(v).replace(/T.*$/,'T00:00:00'));
+    const localISO = (v=new Date())=>{const d=toDate(v);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    const today = ()=>localISO(new Date());
+    const addDays = (iso,n)=>{const d=toDate(`${iso}T00:00:00`);d.setDate(d.getDate()+n);return localISO(d);}
+    const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+    const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
+
+    const MIGR_KEY=`bp_localdate_migrated_${NIVEL}`;
+    function migrateToLocalKeys(){
+      if(LS.get(MIGR_KEY,false)) return;
+      const isLocal=k=>/^\d{4}-\d{2}-\d{2}$/.test(k);
+      HABITS.forEach(h=>{
+        const hist=LS.get(keyHabit(h.id),null); if(!hist) return;
+        let changed=false; const newer={};
+        for(const [k,v] of Object.entries(hist)){ if(isLocal(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; }
+        if(changed) LS.set(keyHabit(h.id),newer);
+      });
+      const dcomp=LS.get(KEY_DAYCOMP,null);
+      if(dcomp){ let changed=false; const newer={}; for(const [k,v] of Object.entries(dcomp)){
+        if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
+        const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
+      } if(changed) LS.set(KEY_DAYCOMP,newer); }
+      LS.set(MIGR_KEY,true);
+    }
+
+    function renderHabitDots(){
+      const wrap=$('#streakList'); if(!wrap) return; wrap.innerHTML='';
+      const days=[]; for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(localISO(d)); }
+      HABITS.forEach(h=>{
+        const hist=LS.get(keyHabit(h.id),{});
+        const row=document.createElement('div'); row.className='streak-row';
+        const label=document.createElement('div'); label.className='streak-label'; label.textContent=h.label;
+        const grid=document.createElement('div'); grid.className='streak-grid';
+        days.forEach(k=>{ const el=document.createElement('i'); el.className='dot'+(hist[k]===1?' ok':(hist[k]===0?' no':'')); grid.appendChild(el); });
+        row.appendChild(label); row.appendChild(grid); wrap.appendChild(row);
+      });
+    }
+
+    function updateGoalProgress(){
+      const hist=LS.get(KEY_DAYCOMP,{}), wrap=$('#goalCurrentWrap'); if(!wrap) return;
+      const name=($('#goal_name')?.value)||'Recompensa';
+      const target=parseInt(($('#goal_days')?.value)||0,10)||20;
+      const dates=Object.keys(hist).sort();
+      let lastReset=-1; for(let i=0;i<dates.length;i++){
+        const a=hist[dates[i]],b=hist[dates[i+1]],c=hist[dates[i+2]];
+        if(a===0&&b===0&&c===0){ lastReset=i+2; }
+      }
+      let start=(lastReset>=0)?lastReset+1:0, done=0;
+      for(let i=start;i<dates.length;i++){ if(hist[dates[i]]===1) done++; }
+      wrap.style.display='block';
+      $('#goalCurrentName').textContent=name;
+      $('#goalProgress').style.width=Math.max(0,Math.min(100,Math.round((done/target)*100)))+'%';
+      $('#goalProgressText').textContent=`Progresso: ${done}/${target} dias completos`;
+      $('#goalResetNote').style.display=lastReset>=0?'block':'none';
+    }
+
+    function hookSaveDay(){
+      const btn=document.getElementById('btnSaveDay'); if(!btn) return;
+      btn.addEventListener('click',()=>{
+        const snap={}; HABITS.forEach(h=>{ const el=document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`); snap[h.id]=!!(el&&el.checked); });
+        setTimeout(()=>{
+          const t=today();
+          HABITS.forEach(h=>{ const hist=LS.get(keyHabit(h.id),{}); hist[t]=snap[h.id]?1:0; LS.set(keyHabit(h.id),hist); });
+          const essentials=['agua','sono','movimento','alimentacao'];
+          const all=essentials.every(id=>snap[id]); const dcomp=LS.get(KEY_DAYCOMP,{}); dcomp[t]=all?1:0; LS.set(KEY_DAYCOMP,dcomp);
+          const d1=t,d0=addDays(d1,-1),dm1=addDays(d1,-2);
+          if(dcomp[dm1]===0&&dcomp[d0]===0&&dcomp[d1]===0){ LS.set(`bp_progress_reset_at_${NIVEL}`,d1); }
+          renderHabitDots(); updateGoalProgress();
+        },0);
+      });
+    }
+    function hookClearDay(){ const b=document.getElementById('btnClearDay'); if(!b) return; b.addEventListener('click',()=>setTimeout(renderHabitDots,60)); }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      migrateToLocalKeys();
+      renderHabitDots();
+      updateGoalProgress();
+      hookSaveDay();
+      hookClearDay();
+      window.updateGoalProgress=updateGoalProgress;
+    });
+  })();
+  </script>
 </body>
 </html>
