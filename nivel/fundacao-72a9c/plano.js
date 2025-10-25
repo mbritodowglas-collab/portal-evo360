@@ -1,6 +1,6 @@
 // ============================
-// EVO360 · Fundação
-// Página: Tarefas e Neuro-Hábito
+// EVO360 · Fundação · plano.js
+// Tarefas semanais + Microtarefas (com gotejamento)
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -19,14 +19,33 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
 })();
 
-// Util: escape seguro p/ HTML
-function esc(s) {
-  return String(s ?? '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
+// ---------- Utils de carregamento ----------
+function resolveUrlSmart(url) {
+  // Se vier absoluta, retorna como está
+  try { const u = new URL(url); return u.href; } catch(_) {}
+  // Base atual da página (suporta GitHub Pages sob subdiretórios)
+  const base = new URL('.', location.href).href;
+  return new URL(url, base).href;
+}
+
+async function loadAny(urls) {
+  for (const raw of urls) {
+    if (!raw) continue;
+    const url = resolveUrlSmart(raw);
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const data = await res.json();
+      // aceita array direto ou objeto com campo-coleção
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.items)) return data.items;
+      if (data && Array.isArray(data.dados)) return data.dados;
+      if (data && Array.isArray(data.dicas)) return data.dicas;
+      // se veio algo, retorna assim mesmo
+      return data;
+    } catch(_) { /* tenta próximo */ }
+  }
+  return null;
 }
 
 // ---------- Gotejamento ----------
@@ -39,11 +58,38 @@ function esc(s) {
     const SEM_MAX = 8;
     const MIC_MAX = 20;
 
-    // Marca início
+    // Garante Drip (caso drip.js não tenha carregado por algum motivo)
+    if (typeof window.Drip === 'undefined') {
+      const localISO = (d=new Date())=>{
+        const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${dd}`;
+      };
+      const parseISO = (s)=>new Date(`${s}T12:00:00`);
+      const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+      const todayISO = ()=>localISO(new Date());
+      const LS = {
+        get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+        set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
+      };
+      window.Drip = {
+        ensureStart(level, stream){
+          const KEY=`drip_start_${level}_${stream}`;
+          let s = LS.get(KEY, null);
+          if(!s){ s = todayISO(); LS.set(KEY, s); }
+          return s;
+        },
+        getTodayIndex(startISO, maxDays=60){
+          const idx = daysBetween(startISO, todayISO()) + 1;
+          return Math.max(1, Math.min(maxDays, idx));
+        }
+      };
+    }
+
+    // datas iniciais
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
     const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
-    // Índices (1-based)
+    // índices (1-based): semana = cada 7 dias; micro = cada 3 dias
     const semIdx = Math.max(1, Math.min(
       SEM_MAX,
       Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
@@ -53,45 +99,17 @@ function esc(s) {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // ===== Resolver caminhos de forma robusta (GitHub Pages) =====
-    // Base do projeto = tudo antes de "/nivel/"
-    const projectBase = (() => {
-      const p = location.pathname;
-      const i = p.indexOf('/nivel/');
-      if (i >= 0) return p.slice(0, i);        // ex.: "/portal-evo360"
-      const parts = p.split('/').filter(Boolean);
-      return parts.length ? '/' + parts[0] : ''; // fallback conservador
-    })();
-
-    // Normaliza uma URL relativa a partir da página atual
-    const rel = (u) => new URL(u, location.href).pathname;
-
-    async function loadAny(urls) {
-      for (const u of urls) {
-        try {
-          if (!u) continue;
-          const r = await fetch(u, { cache: 'no-store' });
-          if (r.ok) return await r.json();
-        } catch (_) {}
-      }
-      return null;
-    }
-
+    // Carrega JSON (com vários fallbacks de caminho)
     const semanais = await loadAny([
-      // caminho informado pelo HTML (se existir)
       window.DATA_TAREFAS_SEMANAIS,
-      // relativos a partir do arquivo atual
-      rel('../../_data/tarefas-semanais.json'),
-      // absoluto dentro do projeto no GitHub Pages
-      `${projectBase}/_data/tarefas-semanais.json`
+      "../../_data/tarefas-semanais.json",
+      "/_data/tarefas-semanais.json"
     ]);
-
     const micros = await loadAny([
       window.DATA_MICRO_TAREFAS,
-      rel('../../_data/microtarefas.json'),
-      rel('../../_data/micro-tarefas.json'),
-      `${projectBase}/_data/microtarefas.json`,
-      `${projectBase}/_data/micro-tarefas.json`
+      "../../_data/microtarefas.json",
+      "/_data/microtarefas.json",
+      "../../_data/micro-tarefas.json"
     ]);
 
     // ---------- Semanais ----------
@@ -103,44 +121,41 @@ function esc(s) {
 
     const SEM_VIEW_KEY = `drip_view_${LEVEL_ID}_${SEM_ID}`;
     const LS = {
-      get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},
-      set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
     let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
     function renderSem() {
-      if (!Array.isArray(semanais) || semanais.length === 0) {
-        semMeta && (semMeta.textContent = 'Semana —');
-        semTit  && (semTit.textContent  = 'Conteúdo indisponível');
-        semTxt  && (semTxt.textContent  = '—');
+      const arr = Array.isArray(semanais) ? semanais : [];
+      if (!arr.length) {
+        if (semMeta) semMeta.textContent = 'Semana —';
+        if (semTit)  semTit.textContent  = 'Conteúdo indisponível';
+        if (semTxt)  semTxt.textContent  = '—';
         if (semPrev) semPrev.disabled = true;
         if (semNext) semNext.disabled = true;
         return;
       }
       const cap = semIdx;
       semDay = Math.max(1, Math.min(semDay, cap));
-      const item = semanais[semDay - 1] || {};
+      const item = arr[semDay - 1];
+
+      // Compatibilidade de campos (texto || (conceito + orientacao))
+      const titulo = item?.titulo || '—';
+      let texto = '';
+      if (typeof item?.texto === 'string' && item.texto.trim()) {
+        texto = item.texto.trim();
+      } else {
+        const partes = [];
+        if (item?.conceito)   partes.push(String(item.conceito).trim());
+        if (item?.orientacao) partes.push(String(item.orientacao).trim());
+        texto = partes.join('\n\n');
+      }
 
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
-      semTit.textContent  = item.titulo ? String(item.titulo) : '—';
-
-      // Monta bloco com {conceito, orientacao, tarefas[]} ou fallback "texto"
-      let bloco = '';
-      if (item.conceito) {
-        bloco += `<strong>Conceito:</strong> ${esc(item.conceito)}`;
-      }
-      if (item.orientacao) {
-        bloco += (bloco ? '<br><br>' : '') + `<strong>Orientação:</strong> ${esc(item.orientacao)}`;
-      }
-      if (Array.isArray(item.tarefas) && item.tarefas.length) {
-        bloco += (bloco ? '<br><br>' : '') + `<strong>Tarefas da semana:</strong><br>` +
-                 item.tarefas.map(t => `• ${esc(t)}`).join('<br>');
-      }
-      if (!bloco && item.texto) bloco = esc(item.texto);
-      if (!bloco) bloco = '—';
-
-      semTxt.innerHTML = bloco;
+      semTit.textContent  = titulo;
+      semTxt.textContent  = texto || '—';
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
@@ -162,21 +177,22 @@ function esc(s) {
     let micDay = LS.get(MIC_VIEW_KEY, micIdx);
 
     function renderMic() {
-      if (!Array.isArray(micros) || micros.length === 0) {
-        micMeta && (micMeta.textContent = 'Bloco —');
-        micTit  && (micTit.textContent  = 'Conteúdo indisponível');
-        micTxt  && (micTxt.textContent  = '—');
+      const arr = Array.isArray(micros) ? micros : [];
+      if (!arr.length) {
+        if (micMeta) micMeta.textContent = 'Bloco —';
+        if (micTit)  micTit.textContent  = 'Conteúdo indisponível';
+        if (micTxt)  micTxt.textContent  = '—';
         if (micPrev) micPrev.disabled = true;
         if (micNext) micNext.disabled = true;
         return;
       }
       const cap = micIdx;
       micDay = Math.max(1, Math.min(micDay, cap));
-      const item = micros[micDay - 1] || {};
+      const item = arr[micDay - 1];
 
       micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
-      micTit.textContent  = item.titulo ? String(item.titulo) : '—';
-      micTxt.textContent  = item.texto  ? String(item.texto)  : '—';
+      micTit.textContent  = item?.titulo || '—';
+      micTxt.textContent  = (item?.texto || '').trim() || '—';
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
