@@ -12,9 +12,27 @@
     /* ===== Ajustes locais desta página ===== */
     .content p, .content li { text-align: justify; }
 
-    /* Tabs */
-    .tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    /* Tabs — tudo numa linha, com rolagem lateral se precisar */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .tabs::-webkit-scrollbar{ display:none; }
+
+    .tab{
+      flex:0 0 auto;
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0f1318;
+      cursor:pointer;
+      white-space:nowrap;
+    }
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
 
     .panel{display:none}
@@ -52,8 +70,8 @@
     .streak-label{ color:var(--silver); font-weight:600 }
     .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
     .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }
 
     /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
     #goalCurrentWrap { display: none !important; }
@@ -92,12 +110,12 @@
       </p>
 
       <div class="tabs">
-        <button class="tab active" data-tab="rastreador">Rastreador diário</button>
+        <button class="tab active" data-tab="rastreador">Hábitos</button>
         <button class="tab" data-tab="recompensas">Recompensas</button>
         <button class="tab" data-tab="ferramentas">Ferramentas</button>
       </div>
 
-      <!-- Painel: Rastreador -->
+      <!-- Painel: Hábitos -->
       <div class="panel active" id="panel-rastreador">
         <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
 
@@ -170,7 +188,6 @@
           <div class="muted">Nenhuma meta cadastrada ainda.</div>
         </div>
 
-        <!-- Aviso de regra -->
         <p class="muted" style="margin-top:12px">
           <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
           a contagem da recompensa é <strong>zerada</strong> automaticamente.
@@ -208,11 +225,11 @@
   // Keys por nível
   const LEVEL = window.NIVEL || "fundacao-72a9c";
   const K = {
-    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,      // marcações do dia (checkboxes)
-    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,    // flag bloqueio do dia
-    daysDone:         `hab_${LEVEL}_days_complete`,      // contagem acumulada de dias completos
-    goalCurrent:      `hab_${LEVEL}_goal_current`,       // meta ativa {name, target, startedISO, progressDays}
-    goalArchive:      `hab_${LEVEL}_goal_archive`        // metas anteriores (array)
+    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
+    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
+    daysDone:         `hab_${LEVEL}_days_complete`,
+    goalCurrent:      `hab_${LEVEL}_goal_current`,
+    goalArchive:      `hab_${LEVEL}_goal_archive`
   };
 
   // ===== Tabs =====
@@ -257,7 +274,7 @@
   $('#btnClearDay').addEventListener('click', ()=>{
     if(savedToday) return;
     $$('#panel-rastreador input[type="checkbox"]').forEach(cb=> cb.checked = false);
-    LS.set(K.dayLog(today), {}); // limpa rascunho do dia
+    LS.set(K.dayLog(today), {});
   });
 
   // Auto-rascunho ao clicar
@@ -275,18 +292,14 @@
     if(savedToday) return;
 
     const log = LS.get(K.dayLog(today), {});
-    // Essenciais
     const essentials = ['agua','sono','movimento','alimentacao'];
     const allEssential = essentials.every(h => !!log[h]);
 
-    // Persiste “dia salvo” (bloqueia)
     LS.set(K.daySaved(today), true);
 
-    // Atualiza contagem de dias completos (se bateu essenciais)
     if(allEssential){
       const done = +LS.get(K.daysDone, 0) + 1;
       LS.set(K.daysDone, done);
-      // Avança meta atual (se existir)
       const cur = LS.get(K.goalCurrent, null);
       if(cur){
         cur.progressDays = Math.min(cur.target, (cur.progressDays||0) + 1);
@@ -294,11 +307,8 @@
       }
     }
 
-    // UI
     setDisabledAll(true);
     $('#saveInfo').style.display = 'flex';
-
-    // Atualiza painel de metas (progresso)
     renderGoal();
   });
 
@@ -334,7 +344,7 @@
     const cur = LS.get(K.goalCurrent, null);
     const wrap = $('#goalCurrentWrap');
     if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
-    wrap.style.display = ''; // (fica oculto por CSS)
+    wrap.style.display = ''; // (fica oculto por CSS global)
     $('#goalCurrentName').textContent = cur.name || 'Meta';
     const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
     $('#goalProgress').style.width = pct + '%';
@@ -346,10 +356,9 @@
   // Salvar meta (ativa e vai para topo)
   $('#btnSaveGoal').addEventListener('click', ()=>{
     const name = $('#goal_name').value.trim();
-    const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
+    const target = Math.max(1, Math.min(60, +$('#goal_days')?.value || 0));
     if(!name || !target){ return; }
 
-    // Se já havia meta atual, manda para o arquivo
     const prev = LS.get(K.goalCurrent, null);
     if(prev){
       const arc = LS.get(K.goalArchive, []);
@@ -357,14 +366,9 @@
       LS.set(K.goalArchive, arc);
     }
 
-    const cur = {
-      name, target,
-      startedISO: todayISO(),
-      progressDays: 0
-    };
+    const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
     LS.set(K.goalCurrent, cur);
 
-    // Limpa inputs e atualiza UI
     $('#goal_name').value = '';
     $('#goal_days').value = '';
     renderGoal();
@@ -412,6 +416,18 @@
   })();
   </script>
 
+  <!-- ===== Força os rótulos das abas (se algum cache/JS antigo sobrescrever) ===== -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
+    const tabRec = document.querySelector('.tabs .tab[data-tab="recompensas"]');
+    const tabFer = document.querySelector('.tabs .tab[data-tab="ferramentas"]');
+    if (tabHab) tabHab.textContent = 'Hábitos';
+    if (tabRec) tabRec.textContent = 'Recompensas';
+    if (tabFer) tabFer.textContent = 'Ferramentas';
+  });
+  </script>
+
   <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
   <script>
   (function(){
@@ -441,11 +457,21 @@
       HABITS.forEach(h=>{
         const hist=LS.get(keyHabit(h.id),null); if(!hist) return;
         let changed=false; const newer={};
-        for(const [k,v] of Object.entries(hist)){ if(isLocal(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; }
+        for(const [k,v] of Object.entries(hist)){
+          if(isLocal(k)){ newer[k]=v; continue; }
+          const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
+        }
         if(changed) LS.set(keyHabit(h.id),newer);
       });
       const dcomp=LS.get(KEY_DAYCOMP,null);
-      if(dcomp){ let changed=false; const newer={}; for(const [k,v] of Object.entries(dcomp)){ if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; } if(changed) LS.set(KEY_DAYCOMP,newer); }
+      if(dcomp){
+        let changed=false; const newer={};
+        for(const [k,v] of Object.entries(dcomp)){
+          if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
+          const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
+        }
+        if(changed) LS.set(KEY_DAYCOMP,newer);
+      }
       LS.set(MIGR_KEY,true);
     }
 
@@ -467,8 +493,12 @@
       const name=($('#goal_name')?.value)||'Recompensa';
       const target=parseInt(($('#goal_days')?.value)||0,10)||20;
       const dates=Object.keys(hist).sort();
-      let lastReset=-1; for(let i=0;i<dates.length;i++){ const a=hist[dates[i]],b=hist[dates[i+1]],c=hist[dates[i+2]]; if(a===0&&b===0&&c===0){ lastReset=i+2; } }
-      let start=(lastReset>=0)?lastReset+1:0, done=0; for(let i=start;i<dates.length;i++){ if(hist[dates[i]]===1) done++; }
+      let lastReset=-1; for(let i=0;i<dates.length;i++){
+        const a=hist[dates[i]],b=hist[dates[i+1]],c=hist[dates[i+2]];
+        if(a===0&&b===0&&c===0){ lastReset=i+2; }
+      }
+      let start=(lastReset>=0)?lastReset+1:0, done=0;
+      for(let i=start;i<dates.length;i++){ if(hist[dates[i]]===1) done++; }
       wrap.style.display='block';
       $('#goalCurrentName').textContent=name;
       $('#goalProgress').style.width=Math.max(0,Math.min(100,Math.round((done/target)*100)))+'%';
@@ -485,7 +515,8 @@
           HABITS.forEach(h=>{ const hist=LS.get(keyHabit(h.id),{}); hist[t]=snap[h.id]?1:0; LS.set(keyHabit(h.id),hist); });
           const essentials=['agua','sono','movimento','alimentacao'];
           const all=essentials.every(id=>snap[id]); const dcomp=LS.get(KEY_DAYCOMP,{}); dcomp[t]=all?1:0; LS.set(KEY_DAYCOMP,dcomp);
-          const d1=t,d0=addDays(d1,-1),dm1=addDays(d1,-2); if(dcomp[dm1]===0&&dcomp[d0]===0&&dcomp[d1]===0){ LS.set(`bp_progress_reset_at_${NIVEL}`,d1); }
+          const d1=t,d0=addDays(d1,-1),dm1=addDays(d1,-2);
+          if(dcomp[dm1]===0&&dcomp[d0]===0&&dcomp[d1]===0){ LS.set(`bp_progress_reset_at_${NIVEL}`,d1); }
           renderHabitDots(); updateGoalProgress();
         },0);
       });
