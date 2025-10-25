@@ -1,11 +1,29 @@
+<script>
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (JS completo)
+// Página: Dicas e Orientações (JS completo, verificado)
 // ============================
 
-// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// helpers de fetch
+function cacheBust(url){
+  if(!url) return url;
+  const u = new URL(url, location.href);
+  u.searchParams.set('cb', String(Date.now()));
+  return u.href;
+}
+async function tryLoad(urls){
+  for (const u of urls){
+    try{
+      if(!u) continue;
+      const r = await fetch(cacheBust(u), { cache: 'no-store' });
+      if (r.ok) return await r.json();
+    }catch(_){}
+  }
+  return null;
+}
 
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
@@ -13,48 +31,47 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
-    // pode não existir se drip.js não carregar, por isso o try/catch
-    const startISO = (typeof Drip !== 'undefined')
+    // start ISO + auto-heal se ficar no futuro (ex.: ajuste de relógio)
+    let startISO = (typeof Drip !== 'undefined')
       ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
       : (new Date()).toISOString().slice(0,10);
 
-    async function load(url) {
-      try {
-        if (!url) return null;
-        const r = await fetch(url, { cache: 'no-store' });
-        if (!r.ok) throw 0;
-        return await r.json();
-      } catch {
-        return null;
+    if (typeof Drip !== 'undefined') {
+      const diff = Drip.diffFrom(startISO);
+      if (diff < 0) { // start no futuro -> corrige para hoje
+        Drip.reset(LEVEL_ID, DRIP_ID);
+        startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
       }
+      // debug opcional:
+      console.debug('[Dicas] start=', startISO, 'today=', Drip.getTodayISO(), 'diff=', Drip.diffFrom(startISO));
     }
 
-    const raw = await load(window.DATA_DICAS);
+    // fontes possíveis do JSON (compat)
+    const ROOT = (()=>{ const p=location.pathname, i=p.indexOf('/nivel/'); return i>-1 ? p.slice(0,i+1) : '/'; })();
+    const raw = await tryLoad([
+      window.DATA_DICAS,              // caminho configurado na página
+      `${ROOT}data/fundacao.json`,    // caminho novo
+      `${ROOT}_data/fundacao.json`    // caminho legacy
+    ]);
 
-    // Aceita _data como array direto OU como { dicas: [...] }
+    // Aceita array direto OU { dicas:[...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
-    // Se não houver dados válidos, mostra fallback e sai
     if (!data || data.length === 0) {
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      if (meta)  meta.textContent  = 'Dia —';
-      if (texto) texto.textContent = 'Dica indisponível.';
+      $('#dica-meta')?.textContent  = 'Dia —';
+      $('#dica-texto')?.textContent = 'Dica indisponível.';
       return;
     }
 
-    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
     const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
+    const todayIdx = (typeof Drip !== 'undefined') ? Drip.getTodayIndex(startISO, MAX_DAYS) : 1;
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
 
-    // garante que textos longos quebrem dentro do card
+    // estilo para não cortar textos longos
     if (texto) {
       texto.style.whiteSpace   = 'normal';
       texto.style.overflowWrap = 'anywhere';
@@ -65,26 +82,24 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
     const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
     const LS = {
-      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
     let day = LS.get(VIEW_KEY, todayIdx);
 
     function render() {
-      const cap = Math.max(1, todayIdx);
-      day = Math.max(1, Math.min(day, cap));
-      const item = data[day - 1];
+      const cap = Math.max(1, todayIdx);   // não permite ir além do liberado hoje
+      day = Math.max(1, Math.min(day, cap)); // auto-clamp da visualização
 
+      const item = data[day - 1];
       if (item) {
         const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+                     : item.categoria === 'nutricao' ? 'Nutrição'
+                     : item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica';
 
-        // título no meta (mantendo padrão anterior)
         meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
 
-        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
         const blocoHTML = (item.conceito || item.orientacao)
           ? `
             <div class="dica-bloco">
@@ -109,7 +124,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     next?.addEventListener('click', () => { day++; render(); });
     render();
   } catch (e) {
-    console.warn('drip init falhou:', e);
+    console.warn('dicaDrip falhou:', e);
   }
 })();
 
@@ -228,3 +243,4 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
   calc();
 })();
+</script>
