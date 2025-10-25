@@ -26,22 +26,9 @@
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
 
     /* --- AJUSTE: garantir quebra e altura automática nos textos --- */
-    #sem-titulo, #mic-titulo{
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.35;
-    }
-    #sem-texto, #mic-texto{
-      white-space:pre-wrap;     /* preserva \n do conteúdo */
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.55;
-    }
-    .panel p, .panel .note{      /* guarda-chuva de segurança */
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
+    #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
+    #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
+    .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -140,8 +127,8 @@
     window.NIVEL = "fundacao-72a9c";
 
     /* Caminhos dos JSONs reais no seu _data */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, texto}]
-    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, texto}]
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, ...}]
+    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, ...}]
 
     /* Aliases para compatibilidade com scripts que usam nomes anteriores */
     window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
@@ -150,6 +137,44 @@
 
   <!-- motor de gotejamento (antes do JS da página) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
+
+  <!-- SHIM: se drip.js não carregar, garante um Drip básico para o plano.js -->
+  <script>
+    (function(){
+      if (typeof window.Drip === 'undefined') {
+        const Drip = (() => {
+          const localISO = (d=new Date())=>{
+            const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${dd}`;
+          };
+          const parseISO = (s)=>new Date(`${s}T12:00:00`);
+          const todayISO = ()=>localISO(new Date());
+          const daysBetween = (aISO,bISO)=>Math.floor((parseISO(bISO)-parseISO(aISO))/86400000);
+          const LS = {
+            get:(k,def=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+            set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
+            del:(k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }
+          };
+          function ensureStart(levelId, streamId){
+            const KEY=`drip_start_${levelId}_${streamId}`;
+            let start = LS.get(KEY, null);
+            if(!start){ start = todayISO(); LS.set(KEY, start); }
+            return start;
+          }
+          function getTodayIndex(startISO, maxDays=60){
+            const delta = daysBetween(startISO, todayISO());
+            return Math.max(1, Math.min(maxDays, delta + 1));
+          }
+          function reset(levelId, streamId){
+            LS.del(`drip_start_${levelId}_${streamId}`);
+          }
+          return { ensureStart, getTodayIndex, reset, LS };
+        })();
+        window.Drip = Drip;
+      }
+    })();
+  </script>
+
   <!-- JS desta página -->
   <script src="./plano.js?v=18" defer></script>
 </body>
