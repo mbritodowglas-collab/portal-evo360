@@ -1,5 +1,5 @@
 // ============================
-// EVO360 · Fundação · plano.js (versão corrigida p/ /data)
+// EVO360 · Fundação · plano.js (unificado ou separado)
 // Tarefas semanais + Microtarefas com gotejamento
 // ============================
 
@@ -34,26 +34,17 @@ function repoRoot() {
   return base || '/';
 }
 
-// fetch com fallback local/file://
-async function fetchJsonSmart(paths) {
-  for (const p of paths) {
-    if (!p) continue;
-    try {
-      const res = await fetch(cacheBust(p), { cache: 'no-store' });
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (Array.isArray(data) && data.length) return data;
-    } catch(_){ /* tenta próximo */ }
-  }
+async function fetchJson(url){
+  const res = await fetch(cacheBust(url), { cache: 'no-store' });
+  if (!res.ok) throw new Error(String(res.status));
+  return await res.json();
+}
 
-  // Se estiver rodando em file:// (sem servidor), busca dados injetados inline
-  if (location.protocol === 'file:') {
-    if (paths.join().includes('tarefas-semanais') && Array.isArray(window.__DEV_TAREFAS_SEMANAIS))
-      return window.__DEV_TAREFAS_SEMANAIS;
-    if (paths.join().includes('microtarefas') && Array.isArray(window.__DEV_MICROTAREFAS))
-      return window.__DEV_MICROTAREFAS;
+async function tryMany(urls){
+  for (const url of urls){
+    if (!url) continue;
+    try { return await fetchJson(url); } catch(_) {}
   }
-
   return null;
 }
 
@@ -96,9 +87,11 @@ if (typeof window.Drip === 'undefined') {
     const SEM_MAX = 8;
     const MIC_MAX = 20;
 
+    // datas iniciais (marcam o "dia 1" de cada stream)
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
     const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
+    // índices (1-based): semana = cada 7 dias; micro = cada 3 dias
     const semIdx = Math.max(1, Math.min(
       SEM_MAX,
       Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
@@ -108,24 +101,36 @@ if (typeof window.Drip === 'undefined') {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
+    // -------- Carregamento dos dados (unificado -> separado) --------
     const ROOT = repoRoot();
-    const semCfg = window.DATA_TAREFAS_SEMANAIS || '../../data/tarefas-semanais.json';
-    const micCfg = window.DATA_MICRO_TAREFAS   || '../../data/microtarefas.json';
 
-    const semPaths = [
-      semCfg,
-      ROOT + 'data/tarefas-semanais.json',
-      ROOT + 'assets/data/tarefas-semanais.json'
-    ];
-    const micPaths = [
-      micCfg,
-      ROOT + 'data/microtarefas.json',
-      ROOT + 'assets/data/microtarefas.json',
-      ROOT + 'data/micro-tarefas.json'
-    ];
+    // 2.1) Caminhos do arquivo unificado
+    const PLANO_CFG = window.DATA_PLANO || `${ROOT}data/plano.json`;
+    const planoRaw = await tryMany([
+      PLANO_CFG,
+      `${ROOT}_data/plano.json`
+    ]);
 
-    const semanais = await fetchJsonSmart(semPaths);
-    const micros   = await fetchJsonSmart(micPaths);
+    let semanais = null;
+    let micros   = null;
+
+    if (planoRaw && Array.isArray(planoRaw.semanais) && Array.isArray(planoRaw.micros)) {
+      // Unificado
+      semanais = planoRaw.semanais;
+      micros   = planoRaw.micros;
+    } else {
+      // 2.2) Fallback para arquivos separados (mantém compatibilidade)
+      const semCfg = window.DATA_TAREFAS_SEMANAIS || `${ROOT}data/tarefas-semanais.json`;
+      const micCfg = window.DATA_MICRO_TAREFAS   || `${ROOT}data/microtarefas.json`;
+
+      const semanaisRaw = await tryMany([ semCfg, `${ROOT}_data/tarefas-semanais.json` ]);
+      const microsRaw   = await tryMany([ micCfg, `${ROOT}_data/microtarefas.json`, `${ROOT}_data/micro-tarefas.json` ]);
+
+      semanais = Array.isArray(semanaisRaw) ? semanaisRaw
+               : (semanaisRaw && Array.isArray(semanaisRaw.items) ? semanaisRaw.items : []);
+      micros   = Array.isArray(microsRaw) ? microsRaw
+               : (microsRaw && Array.isArray(microsRaw.items) ? microsRaw.items : []);
+    }
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
@@ -144,10 +149,11 @@ if (typeof window.Drip === 'undefined') {
 
     function renderSem() {
       if (!Array.isArray(semanais) || semanais.length === 0) {
-        semMeta.textContent = 'Semana —';
-        semTit.textContent  = 'Conteúdo indisponível';
-        semTxt.textContent  = '—';
-        semPrev.disabled = semNext.disabled = true;
+        semMeta && (semMeta.textContent = 'Semana —');
+        semTit  && (semTit.textContent  = 'Conteúdo indisponível');
+        semTxt  && (semTxt.textContent  = '—');
+        if (semPrev) semPrev.disabled = true;
+        if (semNext) semNext.disabled = true;
         return;
       }
       const cap = semIdx;
@@ -156,16 +162,19 @@ if (typeof window.Drip === 'undefined') {
 
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
       semTit.textContent  = item.titulo || '—';
-      semTxt.innerHTML = item
-        ? `<div style="margin-bottom:8px">${(item.conceito||'')}</div>
-           <div style="margin-bottom:8px">${(item.orientacao||'')}</div>
-           ${(Array.isArray(item.tarefas) && item.tarefas.length)
-              ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
-              : ''}`
-        : '—';
 
-      semPrev.disabled = (semDay <= 1);
-      semNext.disabled = (semDay >= cap);
+      // monta bloco com conceito + orientação + lista de tarefas (se houver)
+      semTxt.innerHTML =
+        (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
+        (item.orientacao ? `<div style="margin-bottom:8px">${item.orientacao}</div>` : '') +
+        (Array.isArray(item.tarefas) && item.tarefas.length
+          ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
+          : '');
+
+      if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
+
+      if (semPrev) semPrev.disabled = (semDay <= 1);
+      if (semNext) semNext.disabled = (semDay >= cap);
       LS.set(SEM_VIEW_KEY, semDay);
     }
 
@@ -185,10 +194,11 @@ if (typeof window.Drip === 'undefined') {
 
     function renderMic() {
       if (!Array.isArray(micros) || micros.length === 0) {
-        micMeta.textContent = 'Bloco —';
-        micTit.textContent  = 'Conteúdo indisponível';
-        micTxt.textContent  = '—';
-        micPrev.disabled = micNext.disabled = true;
+        micMeta && (micMeta.textContent = 'Bloco —');
+        micTit  && (micTit.textContent  = 'Conteúdo indisponível');
+        micTxt  && (micTxt.textContent  = '—');
+        if (micPrev) micPrev.disabled = true;
+        if (micNext) micNext.disabled = true;
         return;
       }
       const cap = micIdx;
@@ -199,8 +209,8 @@ if (typeof window.Drip === 'undefined') {
       micTit.textContent  = item.titulo || '—';
       micTxt.textContent  = (item.texto || '').trim() || '—';
 
-      micPrev.disabled = (micDay <= 1);
-      micNext.disabled = (micDay >= cap);
+      if (micPrev) micPrev.disabled = (micDay <= 1);
+      if (micNext) micNext.disabled = (micDay >= cap);
       LS.set(MIC_VIEW_KEY, micDay);
     }
 
