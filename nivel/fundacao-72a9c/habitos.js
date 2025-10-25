@@ -103,19 +103,48 @@ $('#btnSaveDay').addEventListener('click', ()=>{
   setDisabledAll(true);
   $('#saveInfo').style.display = 'flex';
 
-  // Atualiza painel de metas (progresso)
-  renderGoal();
+  // Atualiza painel de metas (progresso na lista)
+  renderGoal();     // <- agora só relista em "Minhas metas"
 });
 
 // ===== Recompensas =====
+
+// Lista “Minhas metas” (inclui a meta ATIVA no topo + arquivadas)
+// e remove o contador/“Alvo” do bloco de inclusão (goalCurrentWrap fica oculto).
 function renderGoalsArchive(){
   const list = $('#goalsList');
+  if(!list) return;
+
+  const cur = LS.get(K.goalCurrent, null);
   const arc = LS.get(K.goalArchive, []);
+
   list.innerHTML = '';
-  if(!arc.length){
+
+  // 1) Meta ativa (se existir) — aparece na lista e pode ser excluída
+  if(cur){
+    const pctCur = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
+    const curNode = document.createElement('div');
+    curNode.className = 'goal-card';
+    curNode.innerHTML = `
+      <div class="hdr">
+        <div class="name">${cur.name || 'Meta'}</div>
+        <small>${cur.startedISO || '—'}</small>
+      </div>
+      <div class="progress" style="margin-top:6px"><i style="width:${pctCur}%"></i></div>
+      <small>${cur.progressDays||0}/${cur.target} dias completos</small>
+      <div class="row-actions" style="margin-top:8px">
+        <button class="btn ghost" data-del-current="1">Excluir</button>
+      </div>
+    `;
+    list.appendChild(curNode);
+  }
+
+  // 2) Arquivo de metas
+  if(!arc.length && !cur){
     list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
     return;
   }
+
   arc.forEach((g,i)=>{
     const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
     const node = document.createElement('div');
@@ -135,15 +164,15 @@ function renderGoalsArchive(){
   });
 }
 
-function renderGoal(){
-  const cur = LS.get(K.goalCurrent, null);
+// Esconde DEFINITIVAMENTE o bloco de “Alvo/Progresso” do formulário
+function hideInlineGoalBox(){
   const wrap = $('#goalCurrentWrap');
-  if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
-  wrap.style.display = '';
-  $('#goalCurrentName').textContent = cur.name || 'Meta';
-  const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
-  $('#goalProgress').style.width = pct + '%';
-  $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
+  if(wrap){ wrap.style.display = 'none'; }
+}
+
+// Mantém só a listagem em “Minhas metas”
+function renderGoal(){
+  hideInlineGoalBox();
   renderGoalsArchive();
 }
 renderGoal();
@@ -169,7 +198,7 @@ $('#btnSaveGoal').addEventListener('click', ()=>{
   };
   LS.set(K.goalCurrent, cur);
 
-  // Limpa inputs e atualiza UI
+  // Limpa inputs e atualiza UI (somente a lista)
   $('#goal_name').value = '';
   $('#goal_days').value = '';
   renderGoal();
@@ -184,6 +213,31 @@ $('#btnClearGoal').addEventListener('click', ()=>{
     LS.set(K.goalArchive, arc);
     LS.del(K.goalCurrent);
     renderGoal();
+  }
+});
+
+// Exclusões (meta ativa e arquivadas)
+document.getElementById('goalsList')?.addEventListener('click', (e)=>{
+  const tgt = e.target;
+
+  // Excluir meta ativa
+  const delCur = tgt.closest('button[data-del-current]');
+  if(delCur){
+    LS.del(K.goalCurrent);
+    renderGoal();
+    return;
+  }
+
+  // Excluir meta arquivada por índice
+  const delArc = tgt.closest('button[data-del]');
+  if(delArc){
+    const idx = +delArc.dataset.del;
+    const arc = LS.get(K.goalArchive, []);
+    if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
+      arc.splice(idx, 1);
+      LS.set(K.goalArchive, arc);
+      renderGoalsArchive();
+    }
   }
 });
 
@@ -202,17 +256,4 @@ $('#btnClearGoal').addEventListener('click', ()=>{
   peso.addEventListener('input', calc);
   calc();
 })();
-
-// ===== Exclusão segura de metas arquivadas (não interfere nos demais botões) =====
-document.getElementById('goalsList')?.addEventListener('click', (e)=>{
-  const btn = e.target.closest('button[data-del]');
-  if(!btn) return;
-  const idx = +btn.dataset.del;
-  const arc = LS.get(K.goalArchive, []);
-  if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
-    arc.splice(idx, 1);
-    LS.set(K.goalArchive, arc);
-    renderGoalsArchive(); // re-renderiza somente a lista
-  }
-});
 </script>
