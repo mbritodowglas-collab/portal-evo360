@@ -19,7 +19,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
 })();
 
-// Escapar HTML básico
+// Util: escape seguro p/ HTML
 function esc(s) {
   return String(s ?? '')
     .replace(/&/g,'&amp;')
@@ -53,40 +53,45 @@ function esc(s) {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // === Ajuste: fallback de caminho para GitHub Pages (repo base) ===
-    // Se o site está em /<repo>/..., precisamos prefixar os JSONs com /<repo>
-    const repoBase = (() => {
-      const parts = location.pathname.split('/').filter(Boolean);
-      // ex.: /portal-evo360/nivel/fundacao/plano.html -> '/portal-evo360'
-      return parts.length ? '/' + parts[0] : '';
+    // ===== Resolver caminhos de forma robusta (GitHub Pages) =====
+    // Base do projeto = tudo antes de "/nivel/"
+    const projectBase = (() => {
+      const p = location.pathname;
+      const i = p.indexOf('/nivel/');
+      if (i >= 0) return p.slice(0, i);        // ex.: "/portal-evo360"
+      const parts = p.split('/').filter(Boolean);
+      return parts.length ? '/' + parts[0] : ''; // fallback conservador
     })();
 
+    // Normaliza uma URL relativa a partir da página atual
+    const rel = (u) => new URL(u, location.href).pathname;
+
     async function loadAny(urls) {
-      for (const url of urls) {
+      for (const u of urls) {
         try {
-          if (!url) continue;
-          const r = await fetch(url, { cache: 'no-store' });
+          if (!u) continue;
+          const r = await fetch(u, { cache: 'no-store' });
           if (r.ok) return await r.json();
-        } catch {}
+        } catch (_) {}
       }
       return null;
     }
 
     const semanais = await loadAny([
-      // caminho que vem do HTML
+      // caminho informado pelo HTML (se existir)
       window.DATA_TAREFAS_SEMANAIS,
-      // relativos usuais
-      "../../_data/tarefas-semanais.json",
-      // fallback com base do repositório (GitHub Pages)
-      `${repoBase}/_data/tarefas-semanais.json`
+      // relativos a partir do arquivo atual
+      rel('../../_data/tarefas-semanais.json'),
+      // absoluto dentro do projeto no GitHub Pages
+      `${projectBase}/_data/tarefas-semanais.json`
     ]);
 
     const micros = await loadAny([
       window.DATA_MICRO_TAREFAS,
-      "../../_data/microtarefas.json",
-      "../../_data/micro-tarefas.json",
-      `${repoBase}/_data/microtarefas.json`,
-      `${repoBase}/_data/micro-tarefas.json`
+      rel('../../_data/microtarefas.json'),
+      rel('../../_data/micro-tarefas.json'),
+      `${projectBase}/_data/microtarefas.json`,
+      `${projectBase}/_data/micro-tarefas.json`
     ]);
 
     // ---------- Semanais ----------
@@ -120,7 +125,7 @@ function esc(s) {
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
       semTit.textContent  = item.titulo ? String(item.titulo) : '—';
 
-      // Monta a partir de {conceito, orientacao, tarefas[]} (ou fallback "texto")
+      // Monta bloco com {conceito, orientacao, tarefas[]} ou fallback "texto"
       let bloco = '';
       if (item.conceito) {
         bloco += `<strong>Conceito:</strong> ${esc(item.conceito)}`;
