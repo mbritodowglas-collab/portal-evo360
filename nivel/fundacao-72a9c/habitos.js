@@ -9,150 +9,161 @@
     del:(k)=>localStorage.removeItem(k)
   };
 
+  // === chaves usadas pelo rastreador e pela UI oficial de metas ===
   const K = {
-    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
-    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
+    dayLog:      (date) => `hab_${LEVEL}_day_${date}`,     // { agua:true, ... }
+    daySaved:    (date) => `hab_${LEVEL}_saved_${date}`,    // true/false
+    goalCurrent:        `hab_${LEVEL}_goal_current`,        // {name,target,startedISO,progressDays,essentials?}
+    goalArchive:        `hab_${LEVEL}_goal_archive`         // array de metas anteriores
   };
 
-  const GOALS_KEY = `hab_${LEVEL}_goals_list`;
-
+  // util: ISO local (yyyy-mm-dd)
   const iso = (d=new Date())=>{
     const x = new Date(d);
     const y = x.getFullYear(), m = String(x.getMonth()+1).padStart(2,'0'), dd = String(x.getDate()).padStart(2,'0');
     return `${y}-${m}-${dd}`;
   };
-  const addDays = (dateISO, n)=>{ const d=new Date(dateISO+'T00:00:00'); d.setDate(d.getDate()+n); return iso(d); };
 
-  function readGoals(){ return LS.get(GOALS_KEY, []); }
-  function saveGoals(arr){ LS.set(GOALS_KEY, arr); }
-
+  // ---- Helpers para essenciais do formulário (se existir o checkbox de essenciais) ----
   function getSelectedEssentials(){
     const vals = $$('.goal-essential:checked').map(i=>i.value);
+    // fallback: se não houver checkboxes, exige pelo menos “agua”
     return vals.length ? vals : ['agua'];
   }
 
-  function computeProgress(goal){
-    if(!goal || !goal.startedISO) return {done:0, resetAt:null};
+  // ---- Render de segurança (caso a UI oficial não esteja exposta em window) ----
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 
-    let done = 0;
-    let resetAt = null;
-    let streakZeros = 0;
-
-    const today = iso(new Date());
-    for(let d = goal.startedISO; d <= today; d = addDays(d, 1)){
-      const saved = !!LS.get(K.daySaved(d), false);
-      if(!saved){ continue; }
-
-      const log = LS.get(K.dayLog(d), {});
-      const ok = (goal.essentials||[]).every(id => !!log[id]);
-
-      if(ok){
-        if(resetAt) { /* continua após reset */ }
-        done += 1;
-        streakZeros = 0;
-      }else{
-        streakZeros += 1;
-        if(streakZeros >= 3){
-          resetAt = d;
-          done = 0;
-          streakZeros = 3;
-        }
-      }
-    }
-    return {done, resetAt};
-  }
-
-  function renderGoals(){
+  function fallbackRenderGoals(){
     const box = $('#goalsList');
     if(!box) return;
 
-    const arr = readGoals();
-    if(!arr.length){
+    const cur = LS.get(K.goalCurrent, null);
+    const arc = LS.get(K.goalArchive, []);
+    box.innerHTML = '';
+
+    if(!cur && !arc.length){
       box.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
       return;
     }
 
-    box.innerHTML = '';
-    arr.forEach((g, idx)=>{
-      const {done} = computeProgress(g);
-      const pct = Math.max(0, Math.min(100, Math.round((done/(g.target||1))*100)));
+    // card da meta ATIVA
+    if(cur){
+      const pctCur = Math.round(Math.min(100, ( (cur.progressDays||0) / (cur.target||1) ) * 100));
+      const nodeCur = document.createElement('div');
+      nodeCur.className = 'goal-card';
+      nodeCur.innerHTML = `
+        <div class="hdr">
+          <div class="name">${escapeHTML(cur.name || 'Meta ativa')}</div>
+          <small>${cur.startedISO || '—'}</small>
+        </div>
+        <div class="progress" style="margin-top:6px"><i style="width:${pctCur}%"></i></div>
+        <small>${cur.progressDays||0}/${cur.target} dias completos · <span class="muted">Meta ativa</span></small>
+      `;
+      box.appendChild(nodeCur);
+    }
 
-      const card = document.createElement('div');
-      card.className = 'goal-card';
-      card.innerHTML = `
+    // cards do ARQUIVO
+    arc.forEach((g,i)=>{
+      const pct = Math.round(Math.min(100, ((g.progressDays||0)/(g.target||1))*100));
+      const node = document.createElement('div');
+      node.className = 'goal-card';
+      node.innerHTML = `
         <div class="hdr">
           <div class="name">${escapeHTML(g.name || 'Meta')}</div>
           <small>${g.startedISO || '—'}</small>
         </div>
         <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
-        <small>${done}/${g.target} dias completos</small>
+        <small>${g.progressDays||0}/${g.target} dias completos</small>
         <div class="row-actions" style="margin-top:8px">
-          <button class="btn ghost" data-del="${idx}">Excluir</button>
+          <button class="btn ghost" data-del="${i}">Excluir</button>
         </div>
       `;
-      box.appendChild(card);
+      box.appendChild(node);
     });
   }
 
-  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+  // disponibiliza um hook global opcional (se a UI oficial não expuser nada)
+  window.__renderGoalsFallback = fallbackRenderGoals;
 
-  // Formulário
+  // ---- Salvar meta (agora sincroniza com a UI oficial) ----
   $('#btnSaveGoal')?.addEventListener('click', ()=>{
     const name = $('#goal_name')?.value.trim();
     const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
-    const essentials = getSelectedEssentials();
     if(!name || !target) return;
 
-    const arr = readGoals();
-    arr.unshift({
-      id: Date.now().toString(36),
+    const essentials = getSelectedEssentials();
+
+    // se já havia meta atual, joga para o ARQUIVO
+    const prev = LS.get(K.goalCurrent, null);
+    if(prev){
+      const arc = LS.get(K.goalArchive, []);
+      arc.unshift(prev);
+      LS.set(K.goalArchive, arc);
+    }
+
+    // define a NOVA meta ATIVA, zerada
+    const cur = {
       name,
       target,
-      essentials,
-      startedISO: iso(new Date())
+      startedISO: iso(new Date()),
+      progressDays: 0,
+      essentials
+    };
+    LS.set(K.goalCurrent, cur);
+
+    // limpa campos
+    if($('#goal_name')) $('#goal_name').value = '';
+    if($('#goal_days')) $('#goal_days').value = '';
+    // (se houver checkboxes de essenciais, restaura padrão sugerido)
+    $$('.goal-essential').forEach(cb => {
+      cb.checked = ['agua','sono','movimento','alimentacao'].includes(cb.value);
     });
-    saveGoals(arr);
 
-    if($('#goal_name')) $('#goal_name').value = '';
-    if($('#goal_days')) $('#goal_days').value = '';
-    $$('.goal-essential').forEach(cb => { cb.checked = ['agua','sono','movimento','alimentacao'].includes(cb.value); });
-
-    renderGoals();
+    // re-render imediato:
+    // 1) tenta usar os renderizadores oficiais, se existirem
+    if (typeof window.renderGoal === 'function')      window.renderGoal();
+    else if (typeof window.renderGoalsArchive === 'function') window.renderGoalsArchive();
+    else                                              fallbackRenderGoals();
   });
 
-  $('#btnClearGoal')?.addEventListener('click', ()=>{
-    if($('#goal_name')) $('#goal_name').value = '';
-    if($('#goal_days')) $('#goal_days').value = '';
-  });
-
-  // Excluir meta
-  $('#goalsList')?.addEventListener('click', (e)=>{
+  // ---- Excluir meta arquivada via lista (compatível com o fallback) ----
+  document.getElementById('goalsList')?.addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-del]');
     if(!btn) return;
     const idx = +btn.dataset.del;
-    const arr = readGoals();
-    if(Number.isInteger(idx) && idx>=0 && idx<arr.length){
-      arr.splice(idx,1);
-      saveGoals(arr);
-      renderGoals();
+    const arc = LS.get(K.goalArchive, []);
+    if(Number.isInteger(idx) && idx>=0 && idx<arc.length){
+      arc.splice(idx,1);
+      LS.set(K.goalArchive, arc);
+      if (typeof window.renderGoalsArchive === 'function') window.renderGoalsArchive();
+      else fallbackRenderGoals();
     }
   });
 
-  // Atualiza metas após salvar dia
+  // ---- Atualiza metas após “Salvar dia” (pra refletir progresso) ----
   document.getElementById('btnSaveDay')?.addEventListener('click', ()=>{
-    setTimeout(renderGoals, 0);
+    // dá tempo do script do rastreador persistir e atualizar progressDays
+    setTimeout(()=>{
+      if (typeof window.renderGoal === 'function') window.renderGoal();
+      else if (typeof window.renderGoalsArchive === 'function') window.renderGoalsArchive();
+      else fallbackRenderGoals();
+    }, 0);
   });
 
-  document.addEventListener('DOMContentLoaded', renderGoals);
-})();
+  // ---- Força os rótulos das abas (se algum cache/JS antigo sobrescrever) ----
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
+    const tabRec = document.querySelector('.tabs .tab[data-tab="recompensas"]');
+    const tabFer = document.querySelector('.tabs .tab[data-tab="ferramentas"]');
+    if (tabHab) tabHab.textContent = 'Hábitos';
+    if (tabRec) tabRec.textContent = 'Recompensas';
+    if (tabFer) tabFer.textContent = 'Ferramentas';
 
-// força rótulos das abas (se algum cache/JS antigo sobrescrever)
-document.addEventListener('DOMContentLoaded', () => {
-  const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
-  const tabRec = document.querySelector('.tabs .tab[data-tab="recompensas"]');
-  const tabFer = document.querySelector('.tabs .tab[data-tab="ferramentas"]');
-  if (tabHab) tabHab.textContent = 'Hábitos';
-  if (tabRec) tabRec.textContent = 'Recompensas';
-  if (tabFer) tabFer.textContent = 'Ferramentas';
-});
+    // primeira renderização “de segurança” (caso os oficiais não rodem)
+    if (typeof window.renderGoalsArchive !== 'function' && typeof window.renderGoal !== 'function'){
+      fallbackRenderGoals();
+    }
+  });
+})();
 </script>
