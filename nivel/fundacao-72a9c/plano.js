@@ -1,6 +1,6 @@
 // ============================
 // EVO360 · Fundação · plano.js
-// Tarefas semanais + Microtarefas (com gotejamento)
+// Tarefas semanais + Microtarefas com gotejamento
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -19,33 +19,63 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
 })();
 
-// ---------- Utils de carregamento ----------
-function resolveUrlSmart(url) {
-  // Se vier absoluta, retorna como está
-  try { const u = new URL(url); return u.href; } catch(_) {}
-  // Base atual da página (suporta GitHub Pages sob subdiretórios)
-  const base = new URL('.', location.href).href;
-  return new URL(url, base).href;
+// ---------- Utils ----------
+function cacheBust(url){
+  if(!url) return url;
+  const u = new URL(url, location.href);
+  u.searchParams.set('cb', String(Date.now())); // força não-cached
+  return u.href;
 }
 
-async function loadAny(urls) {
-  for (const raw of urls) {
-    if (!raw) continue;
-    const url = resolveUrlSmart(raw);
+function repoRoot() {
+  // Se for user site (ex: wglas-collab.github.io), root = "/"
+  // Se for project site (ex: /portal-evo360/...), root = "/portal-evo360/"
+  const path = location.pathname; // ex: /portal-evo360/nivel/fundacao/plano.html ou /nivel/fundacao/plano.html
+  const i = path.indexOf('/nivel/');
+  const base = i > -1 ? path.slice(0, i + 1) : '/';
+  return base || '/';
+}
+
+async function fetchJsonSmart(paths) {
+  for (const p of paths) {
+    if (!p) continue;
     try {
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(cacheBust(p), { cache: 'no-store' });
       if (!res.ok) continue;
       const data = await res.json();
-      // aceita array direto ou objeto com campo-coleção
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.items)) return data.items;
-      if (data && Array.isArray(data.dados)) return data.dados;
-      if (data && Array.isArray(data.dicas)) return data.dicas;
-      // se veio algo, retorna assim mesmo
       return data;
-    } catch(_) { /* tenta próximo */ }
+    } catch(_){ /* tenta próximo */ }
   }
   return null;
+}
+
+// ---------- Drip fallback (se drip.js não carregar por algum motivo) ----------
+if (typeof window.Drip === 'undefined') {
+  (function(){
+    const localISO = (d=new Date())=>{
+      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    };
+    const parseISO = (s)=>new Date(`${s}T12:00:00`);
+    const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const todayISO = ()=>localISO(new Date());
+    const LS = {
+      get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+      set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
+    };
+    window.Drip = {
+      ensureStart(level, stream){
+        const KEY=`drip_start_${level}_${stream}`;
+        let s = LS.get(KEY, null);
+        if(!s){ s = todayISO(); LS.set(KEY, s); }
+        return s;
+      },
+      getTodayIndex(startISO, maxDays=60){
+        const idx = daysBetween(startISO, todayISO()) + 1;
+        return Math.max(1, Math.min(maxDays, idx));
+      }
+    };
+  })();
 }
 
 // ---------- Gotejamento ----------
@@ -57,33 +87,6 @@ async function loadAny(urls) {
     const MIC_ID  = 'card2_microtarefas';
     const SEM_MAX = 8;
     const MIC_MAX = 20;
-
-    // Garante Drip (caso drip.js não tenha carregado por algum motivo)
-    if (typeof window.Drip === 'undefined') {
-      const localISO = (d=new Date())=>{
-        const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-        return `${y}-${m}-${dd}`;
-      };
-      const parseISO = (s)=>new Date(`${s}T12:00:00`);
-      const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-      const todayISO = ()=>localISO(new Date());
-      const LS = {
-        get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
-        set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
-      };
-      window.Drip = {
-        ensureStart(level, stream){
-          const KEY=`drip_start_${level}_${stream}`;
-          let s = LS.get(KEY, null);
-          if(!s){ s = todayISO(); LS.set(KEY, s); }
-          return s;
-        },
-        getTodayIndex(startISO, maxDays=60){
-          const idx = daysBetween(startISO, todayISO()) + 1;
-          return Math.max(1, Math.min(maxDays, idx));
-        }
-      };
-    }
 
     // datas iniciais
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
@@ -99,18 +102,31 @@ async function loadAny(urls) {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // Carrega JSON (com vários fallbacks de caminho)
-    const semanais = await loadAny([
-      window.DATA_TAREFAS_SEMANAIS,
-      "../../_data/tarefas-semanais.json",
-      "/_data/tarefas-semanais.json"
-    ]);
-    const micros = await loadAny([
-      window.DATA_MICRO_TAREFAS,
-      "../../_data/microtarefas.json",
-      "/_data/microtarefas.json",
-      "../../_data/micro-tarefas.json"
-    ]);
+    // Resolve caminhos (funciona em raiz e em subpasta)
+    const ROOT = repoRoot(); // ex: "/" ou "/portal-evo360/"
+    const semCfg = window.DATA_TAREFAS_SEMANAIS || '../../_data/tarefas-semanais.json';
+    const micCfg = window.DATA_MICRO_TAREFAS   || '../../_data/microtarefas.json';
+
+    const semPaths = [
+      semCfg,
+      ROOT + '_data/tarefas-semanais.json'
+    ];
+    const micPaths = [
+      micCfg,
+      ROOT + '_data/microtarefas.json',
+      ROOT + '_data/micro-tarefas.json'
+    ];
+
+    const semanaisRaw = await fetchJsonSmart(semPaths);
+    const microsRaw   = await fetchJsonSmart(micPaths);
+
+    // Normalização (espera array)
+    const semanais = Array.isArray(semanaisRaw)
+      ? semanaisRaw
+      : (semanaisRaw && Array.isArray(semanaisRaw.items) ? semanaisRaw.items : []);
+    const micros   = Array.isArray(microsRaw)
+      ? microsRaw
+      : (microsRaw && Array.isArray(microsRaw.items) ? microsRaw.items : []);
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
@@ -128,8 +144,7 @@ async function loadAny(urls) {
     let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
     function renderSem() {
-      const arr = Array.isArray(semanais) ? semanais : [];
-      if (!arr.length) {
+      if (!Array.isArray(semanais) || semanais.length === 0) {
         if (semMeta) semMeta.textContent = 'Semana —';
         if (semTit)  semTit.textContent  = 'Conteúdo indisponível';
         if (semTxt)  semTxt.textContent  = '—';
@@ -139,17 +154,16 @@ async function loadAny(urls) {
       }
       const cap = semIdx;
       semDay = Math.max(1, Math.min(semDay, cap));
-      const item = arr[semDay - 1];
+      const item = semanais[semDay - 1] || {};
 
-      // Compatibilidade de campos (texto || (conceito + orientacao))
-      const titulo = item?.titulo || '—';
+      const titulo = item.titulo || '—';
       let texto = '';
-      if (typeof item?.texto === 'string' && item.texto.trim()) {
+      if (typeof item.texto === 'string' && item.texto.trim()) {
         texto = item.texto.trim();
       } else {
         const partes = [];
-        if (item?.conceito)   partes.push(String(item.conceito).trim());
-        if (item?.orientacao) partes.push(String(item.orientacao).trim());
+        if (item.conceito)   partes.push(String(item.conceito).trim());
+        if (item.orientacao) partes.push(String(item.orientacao).trim());
         texto = partes.join('\n\n');
       }
 
@@ -177,8 +191,7 @@ async function loadAny(urls) {
     let micDay = LS.get(MIC_VIEW_KEY, micIdx);
 
     function renderMic() {
-      const arr = Array.isArray(micros) ? micros : [];
-      if (!arr.length) {
+      if (!Array.isArray(micros) || micros.length === 0) {
         if (micMeta) micMeta.textContent = 'Bloco —';
         if (micTit)  micTit.textContent  = 'Conteúdo indisponível';
         if (micTxt)  micTxt.textContent  = '—';
@@ -188,11 +201,11 @@ async function loadAny(urls) {
       }
       const cap = micIdx;
       micDay = Math.max(1, Math.min(micDay, cap));
-      const item = arr[micDay - 1];
+      const item = micros[micDay - 1] || {};
 
       micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
-      micTit.textContent  = item?.titulo || '—';
-      micTxt.textContent  = (item?.texto || '').trim() || '—';
+      micTit.textContent  = item.titulo || '—';
+      micTxt.textContent  = (item.texto || '').trim() || '—';
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
