@@ -1,3 +1,4 @@
+<script>
 // ===== Helpers =====
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -131,16 +132,12 @@ function renderGoalsArchive(){
   });
 }
 
+// >>> Única alteração: esconder o bloco do formulário e manter só a lista <<<
 function renderGoal(){
-  const cur = LS.get(K.goalCurrent, null);
-  const wrap = $('#goalCurrentWrap');
-  if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
-  wrap.style.display = '';
-  $('#goalCurrentName').textContent = cur.name || 'Meta';
-  const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
-  $('#goalProgress').style.width = pct + '%';
-  $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
-  renderGoalsArchive();
+  const cur = LS.get(K.goalCurrent, null);           // mantido por compatibilidade
+  const wrap = $('#goalCurrentWrap');                // pode não existir; tratamos isso
+  if (wrap) wrap.style.display = 'none';             // esconde “Alvo/Progresso” do formulário
+  renderGoalsArchive();                              // renderiza apenas “Minhas metas”
 }
 renderGoal();
 
@@ -198,136 +195,4 @@ $('#btnClearGoal').addEventListener('click', ()=>{
   peso.addEventListener('input', calc);
   calc();
 })();
-
-/* ============================================================
-   PROGRESSO 21 DIAS — render por hábito (sem alterar lógica atual)
-   ============================================================ */
-
-(function Progress21(){
-  const NIVEL = window.NIVEL || 'fundacao-72a9c';
-  const SAVE_BUTTON_ID = 'btnSalvarHabitos';   // id do botão “Salvar dia” que você já usa
-  const LIST_SELECTOR  = '.habit-list input[type="checkbox"]'; // ajuste se seu seletor for outro
-  const WRAP_ID        = 'habProgressWrap';    // container do quadro
-
-  // util
-  const iso = d => new Date(d).toISOString().slice(0,10);
-  const today = new Date();
-  const addDays = (dt, n) => { const x = new Date(dt); x.setDate(x.getDate()+n); return x; };
-
-  // chave de armazenamento diário deste complemento
-  function dayKey(dateISO){ return `hab_day_${NIVEL}_${dateISO}`; }
-
-  // coleta os hábitos (id e rótulo). Não muda sua estrutura: busca os checkboxes existentes.
-  function collectHabits(){
-    const inputs = Array.from(document.querySelectorAll(LIST_SELECTOR));
-    return inputs.map((inp, idx) => {
-      const id = inp.dataset.habitId || inp.id || inp.name || `h${idx+1}`;
-      let label = '';
-      // tenta pegar o texto do label associado
-      if (inp.id) {
-        const l = document.querySelector(`label[for="${inp.id}"]`);
-        if (l) label = l.textContent.trim();
-      }
-      if (!label) {
-        // fallback: tenta achar um label no ancestral
-        const parentLabel = inp.closest('label');
-        if (parentLabel) label = parentLabel.textContent.trim();
-      }
-      if (!label) label = id;
-      return { id, label };
-    });
-  }
-
-  // grava o que foi marcado hoje (lista de ids) - sem atrapalhar seu fluxo atual
-  function saveTodaySnapshot(){
-    const inputs = Array.from(document.querySelectorAll(LIST_SELECTOR));
-    const checkedIds = inputs
-      .filter(i => i.checked)
-      .map((i, idx) => i.dataset.habitId || i.id || i.name || `h${idx+1}`);
-    const k = dayKey(iso(today));
-    localStorage.setItem(k, JSON.stringify(checkedIds));
-  }
-
-  // lê a lista de ids marcados de uma data específica (se existir)
-  function readDaySnapshot(dateISO){
-    try{
-      const raw = localStorage.getItem(dayKey(dateISO));
-      return raw ? JSON.parse(raw) : null;
-    }catch(_){ return null; }
-  }
-
-  // constrói 21 dias (do mais antigo ao mais recente)
-  function build21Days(){
-    const days = [];
-    for (let i=20; i>=0; i--){
-      const d = addDays(today, -i);
-      days.push( iso(d) );
-    }
-    return days;
-  }
-
-  // render
-  function renderProgress21(){
-    const wrap = document.getElementById(WRAP_ID);
-    if(!wrap) return;
-    const habits = collectHabits();
-    const days = build21Days();
-
-    // limpa
-    wrap.innerHTML = '';
-
-    habits.forEach(h => {
-      const block = document.createElement('div');
-      block.className = 'streak-block';
-
-      const title = document.createElement('div');
-      title.className = 'streak-title';
-      title.textContent = h.label;
-      block.appendChild(title);
-
-      const grid = document.createElement('div');
-      grid.className = 'streak-grid';
-
-      days.forEach(dayISO => {
-        const dot = document.createElement('div');
-        dot.className = 'dot na';
-        const snap = readDaySnapshot(dayISO);
-
-        if (snap && Array.isArray(snap)) {
-          // houve “salvar dia” → se o hábito está em snap = verde; senão, vermelho
-          dot.className = snap.includes(h.id) ? 'dot ok' : 'dot no';
-        } else {
-          // sem registro nesse dia
-          dot.className = 'dot na';
-        }
-
-        dot.title = `${h.label} — ${dayISO}`;
-        grid.appendChild(dot);
-      });
-
-      block.appendChild(grid);
-      wrap.appendChild(block);
-    });
-  }
-
-  // amarra no botão “Salvar dia” sem interferir no handler existente
-  document.getElementById(SAVE_BUTTON_ID)?.addEventListener('click', () => {
-    // cria o snapshot leve deste complemento
-    saveTodaySnapshot();
-    // re-render
-    renderProgress21();
-
-    // dica visual opcional (não quebra nada)
-    try{
-      const ok = document.createElement('div');
-      ok.className = 'alert';
-      ok.textContent = 'Dia salvo. O quadro de 21 dias foi atualizado.';
-      ok.style.marginTop = '10px';
-      const parent = document.getElementById(WRAP_ID)?.parentElement;
-      if(parent){ parent.appendChild(ok); setTimeout(()=> ok.remove(), 2500); }
-    }catch(_){}
-  });
-
-  // primeira renderização
-  window.addEventListener('DOMContentLoaded', renderProgress21);
-})();
+</script>
