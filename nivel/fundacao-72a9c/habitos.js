@@ -1,3 +1,4 @@
+<script>
 // ===== Helpers =====
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -126,6 +127,9 @@ function renderGoalsArchive(){
       </div>
       <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
       <small>${g.progressDays||0}/${g.target} dias completos</small>
+      <div class="row-actions" style="margin-top:8px">
+        <button class="btn ghost" data-del="${i}">Excluir</button>
+      </div>
     `;
     list.appendChild(node);
   });
@@ -198,3 +202,17 @@ $('#btnClearGoal').addEventListener('click', ()=>{
   peso.addEventListener('input', calc);
   calc();
 })();
+
+// ===== Exclusão segura de metas arquivadas (não interfere nos demais botões) =====
+document.getElementById('goalsList')?.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-del]');
+  if(!btn) return;
+  const idx = +btn.dataset.del;
+  const arc = LS.get(K.goalArchive, []);
+  if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
+    arc.splice(idx, 1);
+    LS.set(K.goalArchive, arc);
+    renderGoalsArchive(); // re-renderiza somente a lista
+  }
+});
+</script>
