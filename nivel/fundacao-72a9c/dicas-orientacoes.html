@@ -115,7 +115,7 @@
         <button class="tab" data-tab="ferramentas">Ferramentas</button>
       </div>
 
-      <!-- Painel: Rastreador -->
+      <!-- Painel: Hábitos -->
       <div class="panel active" id="panel-rastreador">
         <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
 
@@ -188,7 +188,6 @@
           <div class="muted">Nenhuma meta cadastrada ainda.</div>
         </div>
 
-        <!-- Aviso de regra -->
         <p class="muted" style="margin-top:12px">
           <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
           a contagem da recompensa é <strong>zerada</strong> automaticamente.
@@ -345,7 +344,7 @@
     const cur = LS.get(K.goalCurrent, null);
     const wrap = $('#goalCurrentWrap');
     if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
-    wrap.style.display = '';
+    wrap.style.display = ''; // oculto por CSS global
     $('#goalCurrentName').textContent = cur.name || 'Meta';
     const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
     $('#goalProgress').style.width = pct + '%';
@@ -446,14 +445,21 @@
       HABITS.forEach(h=>{
         const hist=LS.get(keyHabit(h.id),null); if(!hist) return;
         let changed=false; const newer={};
-        for(const [k,v] of Object.entries(hist)){ if(isLocal(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; }
+        for(const [k,v] of Object.entries(hist)){
+          if(isLocal(k)){ newer[k]=v; continue; }
+          const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
+        }
         if(changed) LS.set(keyHabit(h.id),newer);
       });
       const dcomp=LS.get(KEY_DAYCOMP,null);
-      if(dcomp){ let changed=false; const newer={}; for(const [k,v] of Object.entries(dcomp)){
-        if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
-        const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
-      } if(changed) LS.set(KEY_DAYCOMP,newer); }
+      if(dcomp){
+        let changed=false; const newer={};
+        for(const [k,v] of Object.entries(dcomp)){
+          if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; }
+          const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k;
+        }
+        if(changed) LS.set(KEY_DAYCOMP,newer);
+      }
       LS.set(MIGR_KEY,true);
     }
 
