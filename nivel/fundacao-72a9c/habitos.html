@@ -44,7 +44,7 @@
     .goal-card small{color:var(--silver)}
     .goal-card[data-edit]{cursor:pointer}
 
-    /* === Progresso (20 dias por hábito) === */
+    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
     .streak-list{ display:grid; gap:12px; margin-top:12px }
@@ -52,11 +52,11 @@
     .streak-label{ color:var(--silver); font-weight:600 }
     .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
     .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
 
-    /* Esconde contador disfuncional antigo */
-    #goalCurrentWrap{ display:none !important; }
+    /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
+    #goalCurrentWrap { display: none !important; }
   </style>
 </head>
 
@@ -80,13 +80,17 @@
 
   <!-- Conteúdo -->
   <main class="content">
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
+    <!-- Card -->
     <section class="card">
       <h2>Hábitos e Recompensas</h2>
-      <p>Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.</p>
+      <p>
+        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+      </p>
 
-      <!-- Tabs -->
       <div class="tabs">
         <button class="tab active" data-tab="rastreador">Rastreador diário</button>
         <button class="tab" data-tab="recompensas">Recompensas</button>
@@ -98,21 +102,21 @@
         <p class="muted">Marque os hábitos do dia. Ao salvar, as marcações de hoje ficam bloqueadas até amanhã.</p>
 
         <div class="habits-group">
-          <div class="habits-title">Essenciais</div>
+          <div class="habits-title">Essenciais (contam para “dia completo”)</div>
           <div class="habits-grid" id="essenciais">
             <label class="habit-item"><input type="checkbox" data-habit="agua"><span>Água na meta do dia</span></label>
-            <label class="habit-item"><input type="checkbox" data-habit="sono"><span>Higiene do sono (≥7h)</span></label>
-            <label class="habit-item"><input type="checkbox" data-habit="movimento"><span>Movimento (≥30 min)</span></label>
-            <label class="habit-item"><input type="checkbox" data-habit="alimentacao"><span>Alimentação consciente</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sono"><span>Higiene do sono (rotina + ≥7h)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="movimento"><span>Movimento do dia (≥30 min leve/mod.)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="alimentacao"><span>Alimentação consciente (3 boas escolhas)</span></label>
           </div>
         </div>
 
         <div class="habits-group">
-          <div class="habits-title">Complementares</div>
+          <div class="habits-title">Complementares (registro extra)</div>
           <div class="habits-grid" id="complementares">
-            <label class="habit-item"><input type="checkbox" data-habit="mobilidade"><span>Mobilidade / Postura</span></label>
-            <label class="habit-item"><input type="checkbox" data-habit="sol"><span>Ar livre / Sol</span></label>
-            <label class="habit-item"><input type="checkbox" data-habit="forca"><span>Treino de força</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="mobilidade"><span>Mobilidade/Postura (5–10 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="sol"><span>Ar livre / Sol (10–15 min)</span></label>
+            <label class="habit-item"><input type="checkbox" data-habit="forca"><span>Treino de força/musculação</span></label>
           </div>
         </div>
 
@@ -122,47 +126,64 @@
         </div>
 
         <div class="alert info muted-ok" id="saveInfo" style="display:none">
-          <span>✅ Dia salvo. As marcações de hoje estão bloqueadas.</span>
+          <span>✅ Dia salvo. As marcações de hoje estão bloqueadas. Volte amanhã.</span>
         </div>
 
-        <!-- Progresso 20 dias -->
+        <!-- Progresso 20 dias por hábito -->
         <div class="streak-box" id="progress20">
           <h3 class="habits-title">Progresso (últimos 20 dias)</h3>
           <div class="streak-legend">Verde = marcado; Vermelho = não marcado; Cinza = sem registro.</div>
-          <div id="streakList" class="streak-list"></div>
+          <div id="streakList" class="streak-list" aria-live="polite"></div>
         </div>
       </div>
 
       <!-- Painel: Recompensas -->
       <div class="panel" id="panel-recompensas">
-        <h3 class="habits-title">Meta de recompensa</h3>
+        <h3 class="habits-title">Meta de recompensa (baseada em dias completos)</h3>
 
         <div class="grid-2">
-          <label>Recompensa<br><input type="text" id="goal_name" placeholder="Ex.: Spa em casa"></label>
-          <label>Dias completos<br><input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20"></label>
+          <label>Recompensa (ex.: “Spa em casa”, “Filme + pipoca”)<br>
+            <input type="text" id="goal_name" placeholder="Ex.: Spa em casa">
+          </label>
+          <label>Dias completos para merecer<br>
+            <input type="number" id="goal_days" min="1" max="60" placeholder="Ex.: 20">
+          </label>
         </div>
 
         <div class="row-actions">
           <button class="btn" id="btnSaveGoal">Salvar meta</button>
-          <button class="btn ghost" id="btnClearGoal">Limpar</button>
+          <button class="btn ghost" id="btnClearGoal">Limpar meta</button>
+        </div>
+
+        <!-- (contador escondido por CSS) -->
+        <div class="progress-wrap" id="goalCurrentWrap" style="display:none">
+          <div class="muted">Alvo: <strong id="goalCurrentName"></strong></div>
+          <div class="progress"><i id="goalProgress" style="width:0%"></i></div>
+          <div class="muted" id="goalProgressText">Progresso: —</div>
+          <div class="muted" id="goalResetNote" style="display:none">Contagem reiniciada por 3 ausências seguidas.</div>
         </div>
 
         <hr class="divisor">
+
         <h3 class="habits-title">Minhas metas</h3>
         <div id="goalsList" class="goal-list">
           <div class="muted">Nenhuma meta cadastrada ainda.</div>
         </div>
 
+        <!-- Aviso de regra -->
         <p class="muted" style="margin-top:12px">
-          <strong>Regra:</strong> se houver <strong>3 dias seguidos</strong> sem cumprir os essenciais, o progresso da meta é <strong>zerado</strong>.
+          <strong>Regra:</strong> caso ocorram <strong>3 ausências seguidas</strong> (dias não completos),
+          a contagem da recompensa é <strong>zerada</strong> automaticamente.
         </p>
       </div>
 
-      <!-- Painel: Ferramentas -->
+      <!-- Painel: Ferramentas (simples) -->
       <div class="panel" id="panel-ferramentas">
-        <p class="muted">Calculadora simples de água (30–35 ml/kg).</p>
+        <p class="muted">Pequenas ferramentas que ajudam a manter bons hábitos.</p>
         <div class="grid-2">
-          <label><input type="number" id="w_peso" placeholder="Peso (kg)"></label>
+          <label>Calculadora simples de água (ml/kg) — alvo sugerido 30–35 ml/kg<br>
+            <input type="number" id="w_peso" placeholder="Peso (kg)">
+          </label>
           <div class="calc-out" id="w_out">Informe seu peso para estimar a meta diária de água.</div>
         </div>
       </div>
@@ -171,74 +192,313 @@
 
   <script>window.NIVEL="fundacao-72a9c";</script>
 
-  <!-- Script oficial (mantido) -->
-  <script src="./habitos.js?v=18" defer></script>
+  <!-- ===== Script PRINCIPAL (seu script que já funcionava) ===== -->
+  <script>
+  // ===== Helpers =====
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const LS = {
+    get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+    set:(k,v)=>localStorage.setItem(k, JSON.stringify(v)),
+    del:(k)=>localStorage.removeItem(k)
+  };
+  const iso = d => new Date(d).toISOString().slice(0,10);
+  const todayISO = () => iso(new Date());
 
-  <!-- Script EXTRA corrigido -->
-  <script defer>
+  // Keys por nível
+  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  const K = {
+    dayLog:   (date) => `hab_${LEVEL}_day_${date}`,      // marcações do dia (checkboxes)
+    daySaved: (date) => `hab_${LEVEL}_saved_${date}`,    // flag bloqueio do dia
+    daysDone:         `hab_${LEVEL}_days_complete`,      // contagem acumulada de dias completos
+    goalCurrent:      `hab_${LEVEL}_goal_current`,       // meta ativa {name, target, startedISO, progressDays}
+    goalArchive:      `hab_${LEVEL}_goal_archive`        // metas anteriores (array)
+  };
+
+  // ===== Tabs =====
+  (function tabs(){
+    const map = { rastreador: '#panel-rastreador', recompensas:'#panel-recompensas', ferramentas:'#panel-ferramentas' };
+    $$('.tab').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        $$('.panel').forEach(p=>p.classList.remove('active'));
+        $(map[btn.dataset.tab]).classList.add('active');
+      });
+    });
+  })();
+
+  // ===== Rastreador: carregar estado do dia =====
+  const today = todayISO();
+  const savedToday = !!LS.get(K.daySaved(today), false);
+
+  function setDisabledAll(disabled){
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb => cb.disabled = disabled);
+    $('#btnSaveDay').disabled = disabled;
+    $('#btnClearDay').disabled = disabled;
+  }
+  function loadDay(){
+    const log = LS.get(K.dayLog(today), {});
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+      const id = cb.dataset.habit;
+      cb.checked = !!log[id];
+    });
+    if(savedToday){
+      setDisabledAll(true);
+      $('#saveInfo').style.display = 'flex';
+    }else{
+      setDisabledAll(false);
+      $('#saveInfo').style.display = 'none';
+    }
+  }
+  loadDay();
+
+  // Limpar marcações (sem salvar)
+  $('#btnClearDay').addEventListener('click', ()=>{
+    if(savedToday) return;
+    $$('#panel-rastreador input[type="checkbox"]').forEach(cb=> cb.checked = false);
+    LS.set(K.dayLog(today), {}); // limpa rascunho do dia
+  });
+
+  // Auto-rascunho ao clicar
+  $$('#panel-rastreador input[type="checkbox"]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      if(savedToday) return;
+      const log = LS.get(K.dayLog(today), {});
+      log[cb.dataset.habit] = cb.checked;
+      LS.set(K.dayLog(today), log);
+    });
+  });
+
+  // Salvar dia
+  $('#btnSaveDay').addEventListener('click', ()=>{
+    if(savedToday) return;
+
+    const log = LS.get(K.dayLog(today), {});
+    // Essenciais
+    const essentials = ['agua','sono','movimento','alimentacao'];
+    const allEssential = essentials.every(h => !!log[h]);
+
+    // Persiste “dia salvo” (bloqueia)
+    LS.set(K.daySaved(today), true);
+
+    // Atualiza contagem de dias completos (se bateu essenciais)
+    if(allEssential){
+      const done = +LS.get(K.daysDone, 0) + 1;
+      LS.set(K.daysDone, done);
+      // Avança meta atual (se existir)
+      const cur = LS.get(K.goalCurrent, null);
+      if(cur){
+        cur.progressDays = Math.min(cur.target, (cur.progressDays||0) + 1);
+        LS.set(K.goalCurrent, cur);
+      }
+    }
+
+    // UI
+    setDisabledAll(true);
+    $('#saveInfo').style.display = 'flex';
+
+    // Atualiza painel de metas (progresso)
+    renderGoal();
+  });
+
+  // ===== Recompensas =====
+  function renderGoalsArchive(){
+    const list = $('#goalsList');
+    const arc = LS.get(K.goalArchive, []);
+    list.innerHTML = '';
+    if(!arc.length){
+      list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
+      return;
+    }
+    arc.forEach((g,i)=>{
+      const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
+      const node = document.createElement('div');
+      node.className = 'goal-card';
+      node.innerHTML = `
+        <div class="hdr">
+          <div class="name">${g.name || 'Meta'}</div>
+          <small>${g.startedISO || '—'}</small>
+        </div>
+        <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
+        <small>${g.progressDays||0}/${g.target} dias completos</small>
+        <div class="row-actions" style="margin-top:8px">
+          <button class="btn ghost" data-del="${i}">Excluir</button>
+        </div>
+      `;
+      list.appendChild(node);
+    });
+  }
+
+  function renderGoal(){
+    const cur = LS.get(K.goalCurrent, null);
+    const wrap = $('#goalCurrentWrap');
+    if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
+    wrap.style.display = ''; // (fica oculto por CSS)
+    $('#goalCurrentName').textContent = cur.name || 'Meta';
+    const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
+    $('#goalProgress').style.width = pct + '%';
+    $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
+    renderGoalsArchive();
+  }
+  renderGoal();
+
+  // Salvar meta (ativa e vai para topo)
+  $('#btnSaveGoal').addEventListener('click', ()=>{
+    const name = $('#goal_name').value.trim();
+    const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
+    if(!name || !target){ return; }
+
+    // Se já havia meta atual, manda para o arquivo
+    const prev = LS.get(K.goalCurrent, null);
+    if(prev){
+      const arc = LS.get(K.goalArchive, []);
+      arc.unshift(prev);
+      LS.set(K.goalArchive, arc);
+    }
+
+    const cur = {
+      name, target,
+      startedISO: todayISO(),
+      progressDays: 0
+    };
+    LS.set(K.goalCurrent, cur);
+
+    // Limpa inputs e atualiza UI
+    $('#goal_name').value = '';
+    $('#goal_days').value = '';
+    renderGoal();
+  });
+
+  // Limpar meta atual (move para arquivo)
+  $('#btnClearGoal').addEventListener('click', ()=>{
+    const cur = LS.get(K.goalCurrent, null);
+    if(cur){
+      const arc = LS.get(K.goalArchive, []);
+      arc.unshift(cur);
+      LS.set(K.goalArchive, arc);
+      LS.del(K.goalCurrent);
+      renderGoal();
+    }
+  });
+
+  // Excluir meta arquivada (lista)
+  document.getElementById('goalsList')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-del]');
+    if(!btn) return;
+    const idx = +btn.dataset.del;
+    const arc = LS.get(K.goalArchive, []);
+    if (Number.isInteger(idx) && idx >= 0 && idx < arc.length) {
+      arc.splice(idx, 1);
+      LS.set(K.goalArchive, arc);
+      renderGoalsArchive();
+    }
+  });
+
+  // ===== Ferramentas: água =====
+  (function waterTool(){
+    const peso = $('#w_peso'), out = $('#w_out');
+    function calc(){
+      const p = +peso.value || 0;
+      if(p>0){
+        const low = Math.round(p*30), high = Math.round(p*35);
+        out.innerHTML = `Meta sugerida: <strong>${low}–${high} ml/dia</strong> (30–35 ml/kg).`;
+      }else{
+        out.textContent = 'Informe seu peso para estimar a meta diária de água.';
+      }
+    }
+    peso.addEventListener('input', calc);
+    calc();
+  })();
+  </script>
+
+  <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
+  <script>
   (function(){
     const NIVEL = window.NIVEL || 'fundacao-72a9c';
-    const GOALS_KEY = `bp_goals_${NIVEL}`;
-    const DAYCOMP_KEY = `bp_progress_${NIVEL}`;
+    const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
+    const HABITS = [
+      {id:'forca',label:'Treino de força / Musculação'},
+      {id:'agua',label:'Ingestão adequada de água'},
+      {id:'sono',label:'Higiene do sono'},
+      {id:'movimento',label:'Movimento do dia'},
+      {id:'alimentacao',label:'Alimentação consciente'},
+      {id:'mobilidade',label:'Mobilidade/Postura'},
+      {id:'sol',label:'Ar livre / Sol'}
+    ];
     const $ = s=>document.querySelector(s);
-    const LS = {
-      get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},
-      set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
-    };
-    const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const toDate = v => (v instanceof Date)?new Date(v):new Date(String(v).replace(/T.*$/,'T00:00:00'));
+    const localISO = (v=new Date())=>{const d=toDate(v);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    const today = ()=>localISO(new Date());
+    const addDays = (iso,n)=>{const d=toDate(`${iso}T00:00:00`);d.setDate(d.getDate()+n);return localISO(d);}
+    const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+    const keyHabit = hid => `bp_habit_hist_${NIVEL}_${hid}`;
 
-    const goals=()=>LS.get(GOALS_KEY,[]);
-    const save=g=>LS.set(GOALS_KEY,g);
-
-    function calcDoneCount(){
-      const hist=LS.get(DAYCOMP_KEY,{});const dates=Object.keys(hist).sort();
-      if(!dates.length)return 0;let reset=-1;
-      for(let i=0;i<dates.length-2;i++){if(hist[dates[i]]===0&&hist[dates[i+1]]===0&&hist[dates[i+2]]===0){reset=i+2;}}
-      let start=(reset>=0)?reset+1:0,done=0;
-      for(let i=start;i<dates.length;i++){if(hist[dates[i]]===1)done++;}
-      return done;
+    const MIGR_KEY=`bp_localdate_migrated_${NIVEL}`;
+    function migrateToLocalKeys(){
+      if(LS.get(MIGR_KEY,false)) return;
+      const isLocal=k=>/^\d{4}-\d{2}-\d{2}$/.test(k);
+      HABITS.forEach(h=>{
+        const hist=LS.get(keyHabit(h.id),null); if(!hist) return;
+        let changed=false; const newer={};
+        for(const [k,v] of Object.entries(hist)){ if(isLocal(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; }
+        if(changed) LS.set(keyHabit(h.id),newer);
+      });
+      const dcomp=LS.get(KEY_DAYCOMP,null);
+      if(dcomp){ let changed=false; const newer={}; for(const [k,v] of Object.entries(dcomp)){ if(/^\d{4}-\d{2}-\d{2}$/.test(k)){ newer[k]=v; continue; } const loc=localISO(new Date(k)); newer[loc]=v; changed=changed||loc!==k; } if(changed) LS.set(KEY_DAYCOMP,newer); }
+      LS.set(MIGR_KEY,true);
     }
 
-    function renderGoals(){
-      const box=$('#goalsList');if(!box)return;
-      const arr=goals();const done=calcDoneCount();
-      if(!arr.length){box.innerHTML='<div class="muted">Nenhuma meta cadastrada ainda.</div>';return;}
-      box.innerHTML=arr.map(g=>{
-        const t=parseInt(g.days)||0;const p=Math.min(done,t);
-        const pct=t?Math.round((p/t)*100):0;
-        return `<div class="goal-card" data-id="${g.id}">
-          <div class="hdr"><div class="name">${esc(g.name)}</div><small>${esc(g.createdISO||'')}</small></div>
-          <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
-          <small>${p}/${t} dias completos</small>
-          <div class="row-actions" style="margin-top:8px"><button class="btn ghost" data-del="${g.id}">Excluir</button></div>
-        </div>`;
-      }).join('');
+    function renderHabitDots(){
+      const wrap=$('#streakList'); if(!wrap) return; wrap.innerHTML='';
+      const days=[]; for(let i=19;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(localISO(d)); }
+      HABITS.forEach(h=>{
+        const hist=LS.get(keyHabit(h.id),{});
+        const row=document.createElement('div'); row.className='streak-row';
+        const label=document.createElement('div'); label.className='streak-label'; label.textContent=h.label;
+        const grid=document.createElement('div'); grid.className='streak-grid';
+        days.forEach(k=>{ const el=document.createElement('i'); el.className='dot'+(hist[k]===1?' ok':(hist[k]===0?' no':'')); grid.appendChild(el); });
+        row.appendChild(label); row.appendChild(grid); wrap.appendChild(row);
+      });
     }
+
+    function updateGoalProgress(){
+      const hist=LS.get(KEY_DAYCOMP,{}), wrap=$('#goalCurrentWrap'); if(!wrap) return;
+      const name=($('#goal_name')?.value)||'Recompensa';
+      const target=parseInt(($('#goal_days')?.value)||0,10)||20;
+      const dates=Object.keys(hist).sort();
+      let lastReset=-1; for(let i=0;i<dates.length;i++){ const a=hist[dates[i]],b=hist[dates[i+1]],c=hist[dates[i+2]]; if(a===0&&b===0&&c===0){ lastReset=i+2; } }
+      let start=(lastReset>=0)?lastReset+1:0, done=0; for(let i=start;i<dates.length;i++){ if(hist[dates[i]]===1) done++; }
+      wrap.style.display='block';
+      $('#goalCurrentName').textContent=name;
+      $('#goalProgress').style.width=Math.max(0,Math.min(100,Math.round((done/target)*100)))+'%';
+      $('#goalProgressText').textContent=`Progresso: ${done}/${target} dias completos`;
+      $('#goalResetNote').style.display=lastReset>=0?'block':'none';
+    }
+
+    function hookSaveDay(){
+      const btn=document.getElementById('btnSaveDay'); if(!btn) return;
+      btn.addEventListener('click',()=>{
+        const snap={}; HABITS.forEach(h=>{ const el=document.querySelector(`input[type="checkbox"][data-habit="${h.id}"]`); snap[h.id]=!!(el&&el.checked); });
+        setTimeout(()=>{
+          const t=today();
+          HABITS.forEach(h=>{ const hist=LS.get(keyHabit(h.id),{}); hist[t]=snap[h.id]?1:0; LS.set(keyHabit(h.id),hist); });
+          const essentials=['agua','sono','movimento','alimentacao'];
+          const all=essentials.every(id=>snap[id]); const dcomp=LS.get(KEY_DAYCOMP,{}); dcomp[t]=all?1:0; LS.set(KEY_DAYCOMP,dcomp);
+          const d1=t,d0=addDays(d1,-1),dm1=addDays(d1,-2); if(dcomp[dm1]===0&&dcomp[d0]===0&&dcomp[d1]===0){ LS.set(`bp_progress_reset_at_${NIVEL}`,d1); }
+          renderHabitDots(); updateGoalProgress();
+        },0);
+      });
+    }
+    function hookClearDay(){ const b=document.getElementById('btnClearDay'); if(!b) return; b.addEventListener('click',()=>setTimeout(renderHabitDots,60)); }
 
     document.addEventListener('DOMContentLoaded',()=>{
-      renderGoals();
-
-      $('#btnSaveGoal')?.addEventListener('click',e=>{
-        e.preventDefault();
-        const name=$('#goal_name')?.value.trim();const days=parseInt($('#goal_days')?.value)||0;
-        if(!name||!days)return;
-        const arr=goals();arr.unshift({id:Date.now().toString(36),name,days,createdISO:new Date().toISOString().slice(0,10)});
-        save(arr);$('#goal_name').value='';$('#goal_days').value='';renderGoals();
-      });
-
-      $('#btnClearGoal')?.addEventListener('click',e=>{
-        e.preventDefault();$('#goal_name').value='';$('#goal_days').value='';
-      });
-
-      $('#goalsList')?.addEventListener('click',e=>{
-        const t=e.target;const del=t.dataset?.del;
-        if(del){const arr=goals().filter(x=>x.id!==del);save(arr);renderGoals();return;}
-        const card=t.closest('.goal-card');
-        if(card?.dataset?.id){const g=goals().find(x=>x.id===card.dataset.id);
-          if(g){$('#goal_name').value=g.name;$('#goal_days').value=g.days;}}
-      });
-
-      document.getElementById('btnSaveDay')?.addEventListener('click',()=>setTimeout(renderGoals,0));
+      migrateToLocalKeys();
+      renderHabitDots();
+      updateGoalProgress();
+      hookSaveDay();
+      hookClearDay();
+      window.updateGoalProgress=updateGoalProgress;
     });
   })();
   </script>
