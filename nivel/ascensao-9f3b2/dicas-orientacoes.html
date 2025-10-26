@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Hábitos e Recompensas</title>
+  <title>EVO360 · Ascensão · Hábitos e Recompensas</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <!-- tema da ASCENSÃO -->
+  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* ===== Ajustes locais desta página ===== */
@@ -17,21 +18,21 @@
       display:flex;
       gap:8px;
       margin:12px 0;
-      flex-wrap:nowrap;                 /* mesma linha */
-      overflow-x:auto;                  /* rola se faltar espaço */
-      -webkit-overflow-scrolling:touch; /* rolagem suave no iOS */
-      scrollbar-width:none;             /* esconde barra no Firefox */
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
     }
-    .tabs::-webkit-scrollbar{ display:none; } /* esconde barra no WebKit */
+    .tabs::-webkit-scrollbar{ display:none; }
 
     .tab{
-      flex:0 0 auto;                    /* largura do conteúdo */
+      flex:0 0 auto;
       padding:8px 12px;
       border-radius:10px;
       border:1px solid var(--line);
       background:#0f1318;
       cursor:pointer;
-      white-space:nowrap;               /* não quebrar texto */
+      white-space:nowrap;
     }
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
 
@@ -48,7 +49,7 @@
 
     .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-    /* Meta atual */
+    /* Meta atual / progresso */
     .progress-wrap{margin-top:10px}
     .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
@@ -70,8 +71,8 @@
     .streak-label{ color:var(--silver); font-weight:600 }
     .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
     .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }
 
     /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
     #goalCurrentWrap { display: none !important; }
@@ -80,10 +81,10 @@
 
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+  <aside class="sidebar" aria-label="Navegação do Nível Ascensão">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Fundação</div>
+      <div class="nivel">Nível Ascensão</div>
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
@@ -99,14 +100,14 @@
   <!-- Conteúdo -->
   <main class="content">
     <!-- Banner -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
     <!-- Card -->
     <section class="card">
       <h2>Hábitos e Recompensas</h2>
       <p>
         Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
-        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do <strong>Nível Ascensão</strong> (60 dias).
       </p>
 
       <div class="tabs">
@@ -207,9 +208,10 @@
     </section>
   </main>
 
-  <script>window.NIVEL="fundacao-72a9c";</script>
+  <!-- Define o código do nível Ascensão (pode trocar pelo seu código real) -->
+  <script>window.NIVEL=(location.pathname.match(/ascensao-[\w-]+/)||[])[0]||"ascensao-9xxxx";</script>
 
-  <!-- ===== Script PRINCIPAL (seu script que já funcionava) ===== -->
+  <!-- ===== Script PRINCIPAL ===== -->
   <script>
   // ===== Helpers =====
   const $ = (s, r = document) => r.querySelector(s);
@@ -222,8 +224,8 @@
   const iso = d => new Date(d).toISOString().slice(0,10);
   const todayISO = () => iso(new Date());
 
-  // Keys por nível
-  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  // Keys por nível (agora usando Ascensão)
+  const LEVEL = window.NIVEL || (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || "ascensao-9xxxx";
   const K = {
     dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
     daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
@@ -313,21 +315,45 @@
   });
 
   // ===== Recompensas =====
+  function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // Exibe META ATIVA + ARQUIVO
   function renderGoalsArchive(){
     const list = $('#goalsList');
-    const arc = LS.get(K.goalArchive, []);
     list.innerHTML = '';
-    if(!arc.length){
+
+    const cur = LS.get(K.goalCurrent, null);
+    const arc = LS.get(K.goalArchive, []);
+
+    if(!cur && !arc.length){
       list.innerHTML = '<div class="muted">Nenhuma meta cadastrada ainda.</div>';
       return;
     }
+
+    // Card da meta ATIVA
+    if(cur){
+      const pctCur = Math.round(Math.min(100, ((cur.progressDays||0)/(cur.target||1))*100));
+      const nodeCur = document.createElement('div');
+      nodeCur.className = 'goal-card';
+      nodeCur.innerHTML = `
+        <div class="hdr">
+          <div class="name">${esc(cur.name || 'Meta ativa')}</div>
+          <small>${cur.startedISO || '—'}</small>
+        </div>
+        <div class="progress" style="margin-top:6px"><i style="width:${pctCur}%"></i></div>
+        <small>${cur.progressDays||0}/${cur.target} dias completos · <span class="muted">Meta ativa</span></small>
+      `;
+      list.appendChild(nodeCur);
+    }
+
+    // Cards do ARQUIVO
     arc.forEach((g,i)=>{
-      const pct = Math.round(Math.min(100, (g.progressDays/g.target)*100));
+      const pct = Math.round(Math.min(100, ((g.progressDays||0)/(g.target||1))*100));
       const node = document.createElement('div');
       node.className = 'goal-card';
       node.innerHTML = `
         <div class="hdr">
-          <div class="name">${g.name || 'Meta'}</div>
+          <div class="name">${esc(g.name || 'Meta')}</div>
           <small>${g.startedISO || '—'}</small>
         </div>
         <div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div>
@@ -343,8 +369,12 @@
   function renderGoal(){
     const cur = LS.get(K.goalCurrent, null);
     const wrap = $('#goalCurrentWrap');
-    if(!cur){ wrap.style.display='none'; renderGoalsArchive(); return; }
-    wrap.style.display = ''; // oculto por CSS global
+    if(!cur){
+      wrap.style.display='none';
+      renderGoalsArchive();
+      return;
+    }
+    wrap.style.display = '';
     $('#goalCurrentName').textContent = cur.name || 'Meta';
     const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
     $('#goalProgress').style.width = pct + '%';
@@ -356,9 +386,10 @@
   // Salvar meta (ativa e vai para topo)
   $('#btnSaveGoal').addEventListener('click', ()=>{
     const name = $('#goal_name').value.trim();
-    const target = Math.max(1, Math.min(60, +$('#goal_days').value || 0));
+    const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
     if(!name || !target){ return; }
 
+    // Se já havia meta atual, manda para o arquivo
     const prev = LS.get(K.goalCurrent, null);
     if(prev){
       const arc = LS.get(K.goalArchive, []);
@@ -369,6 +400,7 @@
     const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
     LS.set(K.goalCurrent, cur);
 
+    // Limpa inputs e atualiza UI
     $('#goal_name').value = '';
     $('#goal_days').value = '';
     renderGoal();
@@ -419,7 +451,7 @@
   <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
   <script>
   (function(){
-    const NIVEL = window.NIVEL || 'fundacao-72a9c';
+    const NIVEL = window.NIVEL || (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || 'ascensao-9xxxx';
     const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
     const HABITS = [
       {id:'forca',label:'Treino de força / Musculação'},
