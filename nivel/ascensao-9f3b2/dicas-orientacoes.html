@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=14">
   <meta name="theme-color" content="#063527">
   <style>
-    /* texto justificado nesta página */
+    /* Texto justificado (padrão) */
     .content p, .content li { text-align: justify; }
 
-    /* abas e painéis (padrão) */
+    /* Tabs/painéis (padrão Fundação) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
@@ -22,24 +22,19 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* garantir dica inteira no card */
-    #dica-meta{
-      display:block;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.35;
-    }
-    #dica-texto{
-      margin-top:6px;
-      white-space:pre-wrap;     /* preserva \n das dicas */
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.55;
-    }
-    .card p, .card small{
-      overflow-wrap:anywhere;
-      word-break:break-word;
+    /* Dica do dia – garantir quebra completa (igual Fundação) */
+    #dica-meta{display:block;white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
+    #dica-texto{margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
+    .card p, .card small{overflow-wrap:anywhere;word-break:break-word}
+
+    /* ===== FIX MOBILE (igual ao que já usamos no Fundação): esconder sidebar e liberar largura ===== */
+    @media (max-width:1024px){
+      body.layout-with-sidebar .sidebar{ display:none !important; }
+      body.layout-with-sidebar .content{
+        margin:0 !important; padding:16px !important;
+        width:100vw !important; max-width:100vw !important; box-sizing:border-box !important;
+      }
+      html,body{ overflow-x:hidden !important; }
     }
   </style>
 </head>
@@ -61,11 +56,12 @@
     <div class="sb-footer"><div class="quote">Você está ascendendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
+  <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner (apenas imagem) -->
+    <!-- Banner (imagem) -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Dica do dia (gotejamento) -->
+    <!-- Dica do dia -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -85,24 +81,18 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen (lista 50% a 80% por 5%) -->
+      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
           <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
-          <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado)</div>
+          <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado) — ajuste com seu treinador.</div>
         </div>
-
-        <!-- Resumo -->
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-
-        <!-- Ações -->
         <div class="row-actions">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
-
-        <!-- Tabela de zonas (50% a 80% por 5%) -->
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
@@ -122,13 +112,13 @@
     </section>
   </main>
 
+  <!-- Config do nível + caminho do JSON -->
   <script>
-    /* Gotejamento usa este caminho real do seu data */
     window.NIVEL = "ascensao-9f3b2";
     window.DATA_DICAS = "/portal-evo360/data/ascensao.json";
   </script>
 
-  <!-- Drip + JS da página (ordem: drip antes) -->
+  <!-- Drip + JS global (mesma ordem do Fundação) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
   <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
