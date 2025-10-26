@@ -1,0 +1,422 @@
+[
+  {
+    "dia": 1,
+    "categoria": "mentalidade",
+    "titulo": "Bem-vinda à Ascensão",
+    "conceito": "Agora você consolida técnica, disciplina e consciência corporal. O foco é maturidade de execução e consistência inteligente.",
+    "orientacao": "Entre no nível com calma firme. Mostre presença no treino, organização básica na alimentação e respeito ao descanso. Aqui, evolução vem da soma do básico muito bem feito."
+  },
+  {
+    "dia": 2,
+    "categoria": "treino",
+    "titulo": "Qualidade antes de quantidade",
+    "conceito": "A resposta do corpo depende da precisão do gesto motor e do controle do ritmo (tempo sob tensão).",
+    "orientacao": "Nos exercícios do seu app, priorize postura, amplitude segura e controle da fase excêntrica. Sinta o músculo trabalhar em cada repetição."
+  },
+  {
+    "dia": 3,
+    "categoria": "nutricao",
+    "titulo": "Déficit calórico sustentável",
+    "conceito": "Queima de gordura vem de um déficit calórico coerente e repetido no tempo — sem extremos.",
+    "orientacao": "Faça escolhas que te deixem bem depois de comer. Proteína em cada refeição, fibras e água para saciedade. O segredo é manter o padrão."
+  },
+  {
+    "dia": 4,
+    "categoria": "mentalidade",
+    "titulo": "Consistência > perfeição",
+    "conceito": "O cérebro aprende por repetição estável. Pequenas vitórias somadas constroem o resultado.",
+    "orientacao": "Esqueça o 100%. Mire 80–90% de acerto diário. Se sair da rota, retome na refeição seguinte — sem drama."
+  },
+  {
+    "dia": 5,
+    "categoria": "treino",
+    "titulo": "Tempo sob tensão consciente",
+    "conceito": "A fase de descida controlada aumenta a ativação e a segurança articular.",
+    "orientacao": "No movimento do seu treino, desacelere 2–3s na volta/descida. Menos pressa, mais controle. O músculo entende o recado."
+  },
+  {
+    "dia": 6,
+    "categoria": "nutricao",
+    "titulo": "Proteína é base",
+    "conceito": "Proteína sustenta massa magra, melhora saciedade e favorece a perda de gordura.",
+    "orientacao": "Inclua fonte proteica em todas as refeições: ovos, iogurte, frango, peixe, cortes magros, leguminosas. Pense primeiro nela."
+  },
+  {
+    "dia": 7,
+    "categoria": "mentalidade",
+    "titulo": "Progresso silencioso",
+    "conceito": "Mudanças reais nem sempre aparecem na balança no curto prazo.",
+    "orientacao": "Observe roupas, energia, sono e foco. Esses sinais guiam melhor que um número. Confie no processo."
+  },
+  {
+    "dia": 8,
+    "categoria": "treino",
+    "titulo": "Amplitude segura e repetível",
+    "conceito": "Repetir o mesmo padrão técnico permite comparar evolução real ao longo das semanas.",
+    "orientacao": "Use sempre a mesma posição e amplitude confortável. Padrão estável = progresso confiável."
+  },
+  {
+    "dia": 9,
+    "categoria": "nutricao",
+    "titulo": "Fibras que sustentam",
+    "conceito": "Fibras regulam saciedade, glicemia e intestino — ajudam a manter o déficit sem sofrimento.",
+    "orientacao": "Inclua verduras, legumes, frutas e grãos integrais. Prato colorido mantém fome e ansiedade sob controle."
+  },
+  {
+    "dia": 10,
+    "categoria": "mentalidade",
+    "titulo": "Você dirige sua atenção",
+    "conceito": "Atenção é treinável. Onde você foca, você cresce.",
+    "orientacao": "Durante o treino e as refeições, esteja presente. Telefone longe, respiração calma, intenção clara."
+  },
+  {
+    "dia": 11,
+    "categoria": "treino",
+    "titulo": "Respiração como aliada",
+    "conceito": "Respirar no ritmo certo estabiliza tronco e melhora força/controle.",
+    "orientacao": "Inspire no preparo e solte o ar no esforço. Use o ar para estabilizar, sem prender de forma desconfortável."
+  },
+  {
+    "dia": 12,
+    "categoria": "nutricao",
+    "titulo": "Água e eletrólitos",
+    "conceito": "Hidratação adequada melhora foco, performance e recuperação.",
+    "orientacao": "Tenha água por perto o dia todo. Tempinho quente/exercício? Reforce com sal leve na comida e potássio via alimentos."
+  },
+  {
+    "dia": 13,
+    "categoria": "mentalidade",
+    "titulo": "Jogo longo",
+    "conceito": "Resultados sólidos vêm de meses consistentes, não de dias perfeitos.",
+    "orientacao": "Pense em 4–8 semanas de constância. Marque presença e acumule vitórias pequenas. Isso é Ascensão."
+  },
+  {
+    "dia": 14,
+    "categoria": "treino",
+    "titulo": "Conexão mente–músculo",
+    "conceito": "Focar no músculo-alvo aumenta a ativação neural.",
+    "orientacao": "No exercício, direcione a atenção para a região trabalhada. Sinta a contração, sem pressa."
+  },
+  {
+    "dia": 15,
+    "categoria": "nutricao",
+    "titulo": "Carboidrato com estratégia",
+    "conceito": "Usar carboidrato em horários úteis ajuda energia e adesão.",
+    "orientacao": "Prefira fontes simples e limpas perto do treino (conforme tolerância) e mais fibrosas nas demais refeições."
+  },
+  {
+    "dia": 16,
+    "categoria": "mentalidade",
+    "titulo": "Autoacordo diário",
+    "conceito": "Cumprir o combinado fortalece autoestima e disciplina.",
+    "orientacao": "Escolha 1–2 ações do dia e cumpra. Pequeninas, mas imbatíveis. Você com você."
+  },
+  {
+    "dia": 17,
+    "categoria": "treino",
+    "titulo": "Aquecimento inteligente",
+    "conceito": "Preparar articulações e padrão motor melhora execução.",
+    "orientacao": "Antes da série efetiva, faça 1–2 séries leves para lembrar o movimento. Sem fadigar."
+  },
+  {
+    "dia": 18,
+    "categoria": "nutricao",
+    "titulo": "Gorduras do bem",
+    "conceito": "Gorduras boas sustentam saciedade e hormônios.",
+    "orientacao": "Inclua azeite, abacate, castanhas e peixes. Quantidade moderada; qualidade conta."
+  },
+  {
+    "dia": 19,
+    "categoria": "mentalidade",
+    "titulo": "Sem culpa, com consciência",
+    "conceito": "Culpa gera estresse e sabotagem. Consciência gera ajuste.",
+    "orientacao": "Saiu da rota? Respire, observe, retome. Aprenda com o evento e siga — sem castigo."
+  },
+  {
+    "dia": 20,
+    "categoria": "treino",
+    "titulo": "Postura organiza força",
+    "conceito": "Alinhamento eficiente melhora alavancas e protege articulações.",
+    "orientacao": "Ombros baixos, tronco estável, pés firmes. Sinta o corpo como um conjunto único trabalhando."
+  },
+  {
+    "dia": 21,
+    "categoria": "nutricao",
+    "titulo": "Prato que dá saciedade",
+    "conceito": "Combinar proteína + fibras + volume de verduras aumenta saciedade com poucas calorias.",
+    "orientacao": "Montei o prato? Veja se há proteína, 1–2 porções de vegetais e uma fonte de carbo/boa gordura coerente com seu dia."
+  },
+  {
+    "dia": 22,
+    "categoria": "mentalidade",
+    "titulo": "Planejamento simples",
+    "conceito": "Ambiente e preparo reduzem decisões e aumentam adesão.",
+    "orientacao": "Separe garrafa, lanche simples e horários base. Quanto menos fricção, mais constância."
+  },
+  {
+    "dia": 23,
+    "categoria": "treino",
+    "titulo": "Cadência constante",
+    "conceito": "Ritmo estável facilita técnica e comparação de progresso.",
+    "orientacao": "Evite arrancos. Suba e desça no mesmo compasso. Consistência é a sua assinatura."
+  },
+  {
+    "dia": 24,
+    "categoria": "nutricao",
+    "titulo": "Alimentos que ajudam a queimar gordura",
+    "conceito": "Proteína magra, vegetais fibrosos e alimentos minimamente processados facilitam manter déficit.",
+    "orientacao": "Priorize carnes magras, ovos, iogurte natural, legumes, folhas, frutas, grãos simples. Cozinha simples, resultado limpo."
+  },
+  {
+    "dia": 25,
+    "categoria": "mentalidade",
+    "titulo": "Aceite dias médios",
+    "conceito": "Tentar ser perfeita gera abandono. Dias ‘médios’ mantêm a roda girando.",
+    "orientacao": "Hoje deu 70%? Ótimo. Some 70% de novo amanhã. O acúmulo vence."
+  },
+  {
+    "dia": 26,
+    "categoria": "treino",
+    "titulo": "Sinal de fadiga técnica",
+    "conceito": "Quando a forma desaba, o corpo avisa o limite útil.",
+    "orientacao": "Ao notar perda clara de técnica, encerre a série. Qualidade acima do ego."
+  },
+  {
+    "dia": 27,
+    "categoria": "nutricao",
+    "titulo": "Saciedade estratégica",
+    "conceito": "Proteína + fibras + água = fome organizada.",
+    "orientacao": "Inclua saladas volumosas, caldos/legumes e frutas com água (melão, laranja). Isso segura vontade de beliscar."
+  },
+  {
+    "dia": 28,
+    "categoria": "mentalidade",
+    "titulo": "Comparação rouba foco",
+    "conceito": "Cada corpo responde num ritmo. Comparar sabota.",
+    "orientacao": "Olhe seu caminho. Seu corpo está aprendendo no seu tempo. Siga o plano com calma e firmeza."
+  },
+  {
+    "dia": 29,
+    "categoria": "treino",
+    "titulo": "Padrões estáveis",
+    "conceito": "Repetir ângulos, apoios e sequência ajuda na aprendizagem motora.",
+    "orientacao": "Monte os exercícios do app sempre do mesmo jeito. Consistência gera confiança corporal."
+  },
+  {
+    "dia": 30,
+    "categoria": "nutricao",
+    "titulo": "Ultraprocessados: consciência",
+    "conceito": "Esses alimentos tendem a aumentar fome e reduzir saciedade.",
+    "orientacao": "Priorize comida de verdade. Se consumir algo industrial, faça caber sem perder o padrão do dia."
+  },
+  {
+    "dia": 31,
+    "categoria": "mentalidade",
+    "titulo": "Resiliência leve",
+    "conceito": "Persistir sem rigidez excessiva mantém saúde mental e adesão.",
+    "orientacao": "Seja firme na direção e gentil na cobrança. Maturidade é equilíbrio."
+  },
+  {
+    "dia": 32,
+    "categoria": "treino",
+    "titulo": "Apoio firme, corpo estável",
+    "conceito": "Base estável melhora força e coordenação.",
+    "orientacao": "Encontre base confortável dos pés/mãos, estabilize o tronco e mova com controle."
+  },
+  {
+    "dia": 33,
+    "categoria": "nutricao",
+    "titulo": "Leitura simples de rótulos",
+    "conceito": "Menos ingredientes, menos açúcar adicionado, mais proteína/fibras.",
+    "orientacao": "Se precisar comprar algo pronto, busque listas curtas e claras. O corpo agradece."
+  },
+  {
+    "dia": 34,
+    "categoria": "mentalidade",
+    "titulo": "Constância que vira identidade",
+    "conceito": "Repetir o comportamento transforma ‘esforço’ em ‘quem eu sou’.",
+    "orientacao": "Diga a si mesma: ‘sou alguém que cuida do corpo todos os dias’. A cabeça segue o rótulo."
+  },
+  {
+    "dia": 35,
+    "categoria": "treino",
+    "titulo": "Controle do início ao fim",
+    "conceito": "A repetição tem começo, meio e fim conscientes.",
+    "orientacao": "Evite ‘deixar cair’ a fase final. Termine cada repetição com intenção e estabilidade."
+  },
+  {
+    "dia": 36,
+    "categoria": "nutricao",
+    "titulo": "Doce com estratégia",
+    "conceito": "Prazer faz parte. Estratégia evita compulsão.",
+    "orientacao": "Se quiser doce, programe após refeição com proteína/fibras. Sacia e reduz exagero."
+  },
+  {
+    "dia": 37,
+    "categoria": "mentalidade",
+    "titulo": "Sinais do corpo",
+    "conceito": "Energia, fome, sono e humor são feedbacks do sistema.",
+    "orientacao": "Observe padrões semanais. Ajuste rotina de sono, água e horários com base nesses sinais."
+  },
+  {
+    "dia": 38,
+    "categoria": "treino",
+    "titulo": "Progressão com técnica",
+    "conceito": "Evolução existe quando a forma permanece boa.",
+    "orientacao": "Se a execução estiver sólida, sua coach pode subir o desafio no app. Você foca em manter a qualidade."
+  },
+  {
+    "dia": 39,
+    "categoria": "nutricao",
+    "titulo": "Proteína em cada refeição",
+    "conceito": "Distribuir proteína ao longo do dia favorece saciedade e recuperação.",
+    "orientacao": "Planeje fontes proteicas no café, almoço, lanche e jantar. Simplifique: o básico funciona."
+  },
+  {
+    "dia": 40,
+    "categoria": "mentalidade",
+    "titulo": "Celebre o processo",
+    "conceito": "Recompensa imediata reforça o hábito no cérebro.",
+    "orientacao": "Anote 1 vitória do dia: treino feito, prato colorido, água batida. Isso sustenta o caminho."
+  },
+  {
+    "dia": 41,
+    "categoria": "treino",
+    "titulo": "Estabilidade do tronco",
+    "conceito": "Centro estável distribui força e protege lombar.",
+    "orientacao": "Ative o core com suavidade e mantenha a coluna neutra nos exercícios que pedem."
+  },
+  {
+    "dia": 42,
+    "categoria": "nutricao",
+    "titulo": "Volume inteligente",
+    "conceito": "Alimentos com baixa densidade calórica enchem o prato com poucas calorias.",
+    "orientacao": "Use saladas, legumes salteados e sopas claras para dar volume e segurar a fome."
+  },
+  {
+    "dia": 43,
+    "categoria": "mentalidade",
+    "titulo": "Paz com a balança",
+    "conceito": "Peso oscila com água, ciclo e digestão. Tendência vale mais que o dia.",
+    "orientacao": "Se for se pesar, use o mesmo protocolo semanal. Sem neurose: olhe a trajetória."
+  },
+  {
+    "dia": 44,
+    "categoria": "treino",
+    "titulo": "Cadência + respiração",
+    "conceito": "Combinar ritmo estável com ar bem usado melhora eficiência.",
+    "orientacao": "Conte mentalmente seu tempo de descida e suba soltando o ar. Sinta o corpo cooperar."
+  },
+  {
+    "dia": 45,
+    "categoria": "nutricao",
+    "titulo": "Refri, álcool e extras",
+    "conceito": "Líquidos calóricos e álcool atrapalham saciedade e sono.",
+    "orientacao": "Prefira água, chás, café moderado. Se beber, consciência e moderação — preserve seu sono."
+  },
+  {
+    "dia": 46,
+    "categoria": "mentalidade",
+    "titulo": "Rotina que te protege",
+    "conceito": "Rituais simples reduzem decisão e previnem sabotagem.",
+    "orientacao": "Deixe roupa pronta, garrafa cheia, lanches definidos. Menos fricção = mais adesão."
+  },
+  {
+    "dia": 47,
+    "categoria": "treino",
+    "titulo": "Atenção aos apoios",
+    "conceito": "Mãos/pés bem posicionados otimizam alavancas e segurança.",
+    "orientacao": "Antes de cada série, ajuste a base. Pequenos alinhamentos fazem grande diferença."
+  },
+  {
+    "dia": 48,
+    "categoria": "nutricao",
+    "titulo": "Sódio sem paranoia",
+    "conceito": "Sódio é necessário; o problema é excesso de ultraprocessados.",
+    "orientacao": "Tempere comida de verdade sem medo. Beba água e evite excesso industrial."
+  },
+  {
+    "dia": 49,
+    "categoria": "mentalidade",
+    "titulo": "Autocompaixão estratégica",
+    "conceito": "Gentileza com firmeza mantém constância nos dias difíceis.",
+    "orientacao": "Fale consigo como com uma amiga. Ajuste, não desista. Esse tom sustenta a jornada."
+  },
+  {
+    "dia": 50,
+    "categoria": "treino",
+    "titulo": "Final de repetição controlado",
+    "conceito": "Soltar a carga no fim reduz estímulo e aumenta risco.",
+    "orientacao": "Termine cada repetição com controle. O último centímetro também educa o corpo."
+  },
+  {
+    "dia": 51,
+    "categoria": "nutricao",
+    "titulo": "Café com consciência",
+    "conceito": "Cafeína ajuda foco, mas excesso piora sono e ansiedade.",
+    "orientacao": "Use no momento certo e evite à noite. Energia boa vem de rotina, não só de café."
+  },
+  {
+    "dia": 52,
+    "categoria": "mentalidade",
+    "titulo": "Padrão de ouro: aparecer",
+    "conceito": "A presença diária vence a oscilação emocional.",
+    "orientacao": "Você não precisa estar animada, precisa estar presente. Faça o que dá, hoje."
+  },
+  {
+    "dia": 53,
+    "categoria": "treino",
+    "titulo": "Músculo-alvo fala com você",
+    "conceito": "Foco atencional melhora a contração e o aprendizado motor.",
+    "orientacao": "Durante o exercício, ative a região que o app indica. Sinta e mantenha o gesto limpo."
+  },
+  {
+    "dia": 54,
+    "categoria": "nutricao",
+    "titulo": "Comer o que constrói o resultado",
+    "conceito": "Comida de verdade molda o ambiente hormonal do progresso.",
+    "orientacao": "Pergunte antes de comer: isso me aproxima do meu objetivo? Escolha com autocuidado."
+  },
+  {
+    "dia": 55,
+    "categoria": "mentalidade",
+    "titulo": "Treine tudo: corpo e cabeça",
+    "conceito": "Disciplina, presença e leveza também se treinam.",
+    "orientacao": "Nos momentos de preguiça, respire, conte até 5 e comece. Movimento gera motivação."
+  },
+  {
+    "dia": 56,
+    "categoria": "treino",
+    "titulo": "Respiração cadenciada",
+    "conceito": "Ritmo de ar estável sustenta controle e foco.",
+    "orientacao": "Mantenha o mesmo padrão em todas as repetições. Você comanda o movimento."
+  },
+  {
+    "dia": 57,
+    "categoria": "nutricao",
+    "titulo": "Flexibilidade com direção",
+    "conceito": "Resultados duradouros pedem liberdade com consciência.",
+    "orientacao": "Dá pra encaixar um prazer sem perder o rumo. Planeje e volte ao padrão na próxima refeição."
+  },
+  {
+    "dia": 58,
+    "categoria": "mentalidade",
+    "titulo": "Ritmo interno",
+    "conceito": "Pressa ativa estresse; presença ativa crescimento.",
+    "orientacao": "Traga a mente para o agora. Treino, prato e sono acontecem no presente."
+  },
+  {
+    "dia": 59,
+    "categoria": "treino",
+    "titulo": "Treinar de verdade",
+    "conceito": "Desafio na medida certa sinaliza adaptação sem desgaste excessivo.",
+    "orientacao": "Sinta esforço técnico, não caos. Se a forma cai, pare a série. Segurança é progresso."
+  },
+  {
+    "dia": 60,
+    "categoria": "nutricao",
+    "titulo": "Consistência que transforma",
+    "conceito": "Metabolismo ama rotina coerente. É ela que consolida o resultado.",
+    "orientacao": "Feche o ciclo celebrando o padrão que você criou: proteína, fibras, água e presença. A próxima fase te espera."
+  }
+]
