@@ -1,6 +1,9 @@
 <script>
 (function(){
-  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  // === Nível Ascensão: detecta pelo caminho da URL; fallback genérico ===
+  const NIVEL_AUTO = (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || "ascensao-9xxxx";
+  const LEVEL = window.NIVEL || NIVEL_AUTO;
+
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const LS = {
@@ -9,7 +12,7 @@
     del:(k)=>localStorage.removeItem(k)
   };
 
-  // === chaves usadas pelo rastreador e pela UI oficial de metas ===
+  // === chaves usadas pelo rastreador e pela UI oficial de metas (agora com LEVEL da Ascensão) ===
   const K = {
     dayLog:      (date) => `hab_${LEVEL}_day_${date}`,     // { agua:true, ... }
     daySaved:    (date) => `hab_${LEVEL}_saved_${date}`,    // true/false
@@ -86,7 +89,7 @@
   // disponibiliza um hook global opcional (se a UI oficial não expuser nada)
   window.__renderGoalsFallback = fallbackRenderGoals;
 
-  // ---- Salvar meta (agora sincroniza com a UI oficial) ----
+  // ---- Salvar meta (sincroniza com a UI oficial) ----
   $('#btnSaveGoal')?.addEventListener('click', ()=>{
     const name = $('#goal_name')?.value.trim();
     const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
@@ -121,10 +124,9 @@
     });
 
     // re-render imediato:
-    // 1) tenta usar os renderizadores oficiais, se existirem
-    if (typeof window.renderGoal === 'function')      window.renderGoal();
+    if (typeof window.renderGoal === 'function')            window.renderGoal();
     else if (typeof window.renderGoalsArchive === 'function') window.renderGoalsArchive();
-    else                                              fallbackRenderGoals();
+    else                                                    fallbackRenderGoals();
   });
 
   // ---- Excluir meta arquivada via lista (compatível com o fallback) ----
@@ -143,7 +145,7 @@
 
   // ---- Atualiza metas após “Salvar dia” (pra refletir progresso) ----
   document.getElementById('btnSaveDay')?.addEventListener('click', ()=>{
-    // dá tempo do script do rastreador persistir e atualizar progressDays
+    // dá tempo do rastreador persistir
     setTimeout(()=>{
       if (typeof window.renderGoal === 'function') window.renderGoal();
       else if (typeof window.renderGoalsArchive === 'function') window.renderGoalsArchive();
@@ -160,7 +162,7 @@
     if (tabRec) tabRec.textContent = 'Recompensas';
     if (tabFer) tabFer.textContent = 'Ferramentas';
 
-    // primeira renderização “de segurança” (caso os oficiais não rodem)
+    // primeira renderização “de segurança”
     if (typeof window.renderGoalsArchive !== 'function' && typeof window.renderGoal !== 'function'){
       fallbackRenderGoals();
     }
