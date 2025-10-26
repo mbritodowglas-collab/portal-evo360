@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=14"><!-- tema do nível -->
   <meta name="theme-color" content="#063527">
   <style>
-    /* texto justificado nesta página */
+    /* ===== Texto justificado (padrão Fundação) ===== */
     .content p, .content li { text-align: justify; }
 
-    /* abas e painéis */
+    /* ===== Abas e painéis (padrão Fundação) ===== */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
@@ -22,7 +22,7 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* Garantir que a dica inteira apareça no card */
+    /* ===== Dica do dia – garantir leitura perfeita ===== */
     #dica-meta{
       display:block;
       white-space:normal;
@@ -42,59 +42,50 @@
       word-break:break-word;
     }
 
-    /* ====== Estilos ESCOPO do novo card (pra não conflitar com tabs existentes) ====== */
-    #sugestoes-alimentares .ntabs{display:flex;gap:8px;margin:12px 0}
-    #sugestoes-alimentares .ntab{
-      padding:8px 12px;border-radius:10px;border:1px solid var(--line);
-      background:#0f1318;cursor:pointer;white-space:nowrap
+    /* ===== Sugestões de Estratégia Alimentar – CSS responsivo (APENAS CSS alterado) ===== */
+    /* Mantém o look dos cards/botões do Fundação, mas com abas próprias e responsivas */
+    #sugestoes-alimentares .ntabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      flex-wrap:wrap;                 /* quebra linha no mobile */
     }
-    #sugestoes-alimentares .ntab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    #sugestoes-alimentares .ntab{
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0f1318;
+      cursor:pointer;
+      white-space:nowrap;
+      text-align:center;
+      flex:1 1 180px;                 /* ocupa bem o espaço e quebra quando precisar */
+      min-width:140px;
+    }
+    #sugestoes-alimentares .ntab.active{
+      border-color:rgba(203,229,255,.35);
+      background:#12161B;
+    }
     #sugestoes-alimentares .npanel{display:none}
     #sugestoes-alimentares .npanel.active{display:block}
 
-    /* ======= Ajustes de responsividade (MOBILE) ======= */
-    @media (max-width: 780px) {
-      /* Abas padrão (Calculadoras) — mantém em linha com rolagem horizontal */
-      .tabs{
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+    /* Melhorias de leitura dentro do card */
+    #sugestoes-alimentares h3{ margin:8px 0 6px }
+    #sugestoes-alimentares ul{ margin:8px 0 0 18px }
+    #sugestoes-alimentares li{ margin:6px 0 }
+
+    /* Ajuste de toque/área em telas pequenas */
+    @media (max-width:480px){
+      #sugestoes-alimentares .ntab{
+        flex:1 1 100%;
+        min-width:0;                 /* ocupa 100% quando necessário */
       }
-      .tabs::-webkit-scrollbar{ display: none; }
-      .tab{ flex: 0 0 auto; }
+    }
 
-      /* Abas do card “Sugestões de Estratégia Alimentar” (escopo local) */
-      #sugestoes-alimentares .ntabs{
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-      }
-      #sugestoes-alimentares .ntabs::-webkit-scrollbar{ display: none; }
-      #sugestoes-alimentares .ntab{ flex: 0 0 auto; }
-
-      /* Grids viram 1 coluna sem esmagar inputs */
-      .grid-2{ grid-template-columns: 1fr; }
-
-      /* Botões em linhas se ajustam e não estouram o card */
-      .row, .row-actions{ gap: 8px; }
-      .row .btn, .row-actions .btn{
-        flex: 1 1 auto;
-        min-width: 140px;
-      }
-
-      /* Banner um pouco menor no mobile */
-      .banner-full{ height: 200px; }
-
-      /* Cards mais respiráveis em telas pequenas */
-      .card{ padding: 12px; }
-
-      /* Conteúdos longos nunca vazam horizontalmente */
-      .calc-out, .card p, .card small{
-        overflow-wrap: anywhere;
-        word-break: break-word;
-      }
+    /* ===== Banner emerald por cima da imagem ===== */
+    .banner-full{
+      background-image:
+        linear-gradient(180deg, rgba(6,53,39,.35) 0%, rgba(6,53,39,.55) 45%, rgba(6,53,39,.75) 100%),
+        url('../../assets/img/hub/banner-ascensao-hero.jpg') !important;
     }
   </style>
 </head>
@@ -117,12 +108,8 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (estilo emerald; troque a imagem quando subir o novo banner) -->
-    <header class="banner-full"
-      style="background-image:
-        linear-gradient(180deg, rgba(6,53,39,.35) 0%, rgba(6,53,39,.55) 45%, rgba(6,53,39,.75) 100%),
-        url('../../assets/img/hub/banner-ascensao-hero.jpg')"
-      aria-hidden="true"></header>
+    <!-- Banner -->
+    <header class="banner-full" aria-hidden="true"></header>
 
     <!-- Dica do dia (gotejamento) -->
     <section class="card" id="dica-dia">
@@ -136,7 +123,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- ====== NOVO CARD (adicionado): Sugestões de Estratégia Alimentar ====== -->
+    <!-- NOVO CARD: Sugestões de Estratégia Alimentar (apenas CSS ajustado) -->
     <section class="card" id="sugestoes-alimentares">
       <h2>Sugestões de Estratégia Alimentar</h2>
       <p>
@@ -159,7 +146,7 @@
           <li>Priorize <strong>proteínas magras</strong> em todas as refeições (ovos, frango, peixe, iogurte natural).</li>
           <li>Garanta <strong>fibras e volume</strong> com verduras, legumes e frutas para saciedade e controle glicêmico.</li>
           <li><strong>Hidratação constante</strong> ao longo do dia (água como hábito, não em “golões”).</li>
-          <li>Ajuste porções; evite “detox” ou restrições agressivas — consistência > radicalidade.</li>
+          <li>Ajuste porções; evite “detox” ou restrições agressivas — consistência &gt; radicalidade.</li>
         </ul>
         <p class="muted">Objetivo: criar previsibilidade metabólica e constância no padrão alimentar.</p>
       </div>
@@ -190,9 +177,8 @@
         <p class="muted">Objetivo: sustentar o resultado com autonomia e leveza, sem efeito sanfona.</p>
       </div>
     </section>
-    <!-- ====== FIM DO NOVO CARD ====== -->
 
-    <!-- Calculadoras (mesmo layout padrão) -->
+    <!-- Calculadoras (padrão Fundação) -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -200,24 +186,18 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen (lista 50% a 80% por 5%) -->
+      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
           <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
           <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado) — ajuste com seu treinador.</div>
         </div>
-
-        <!-- Resumo -->
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-
-        <!-- Ações -->
         <div class="row-actions">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
-
-        <!-- Tabela de zonas (50% a 80% por 5%) -->
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
@@ -237,44 +217,22 @@
     </section>
   </main>
 
-  <!-- Config + fallback de caminho do JSON + tabs estáveis -->
+  <!-- Config + caminho do JSON -->
   <script>
-    // ID do nível (ajuste se o seu for diferente)
     window.NIVEL = "ascensao-9f3b2";
-
-    // candidatos de caminho para o JSON de dicas (funciona no GitHub Pages)
     const DATA_DICAS_CANDIDATES = [
       "../../_data/ascensao.json",
       "../../data/ascensao.json",
       "/_data/ascensao.json",
       "/data/ascensao.json"
     ];
-
-    // escolhe o primeiro caminho que responder OK; senão usa o primeiro como fallback
     (async function setDataPath(){
       async function ok(u){ try{ const r = await fetch(u, {cache:'no-store'}); return r.ok; }catch(_){ return false; } }
       for (const u of DATA_DICAS_CANDIDATES){ if (await ok(u)) { window.DATA_DICAS = u; return; } }
       window.DATA_DICAS = DATA_DICAS_CANDIDATES[0];
     })();
 
-    // garante tabs funcionando mesmo se o JS principal carregar antes
-    document.addEventListener('DOMContentLoaded', () => {
-      const tabs = document.querySelectorAll('.tab');
-      const panels = document.querySelectorAll('.panel');
-      function activate(tb){
-        tabs.forEach(t=>t.classList.remove('active'));
-        panels.forEach(p=>p.classList.remove('active'));
-        tb.classList.add('active');
-        const target = document.querySelector('#panel-' + tb.dataset.tab);
-        (target || panels[0])?.classList.add('active');
-      }
-      if (tabs.length) {
-        tabs.forEach(t => t.addEventListener('click', () => activate(t)));
-        activate([...tabs].find(t=>t.classList.contains('active')) || tabs[0]);
-      }
-    });
-
-    /* ===== Tabs ESCOPADAS do card “Sugestões de Estratégia Alimentar” ===== */
+    /* Tabs escopadas do card “Sugestões de Estratégia Alimentar” (JS já existente; mantido) */
     (function(){
       const wrap = document.getElementById('sugestoes-alimentares');
       if(!wrap) return;
@@ -290,9 +248,26 @@
       ntabs.forEach(b=> b.addEventListener('click', ()=>activate(b)));
       if(ntabs.length) activate(ntabs[0]);
     })();
+
+    /* Tabs padrão das Calculadoras: mantém comportamento do Fundação */
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const panels = document.querySelectorAll('.panel');
+      function activate(tb){
+        tabs.forEach(t=>t.classList.remove('active'));
+        panels.forEach(p=>p.classList.remove('active'));
+        tb.classList.add('active');
+        const target = document.querySelector('#panel-' + tb.dataset.tab);
+        (target || panels[0])?.classList.add('active');
+      }
+      if (tabs.length) {
+        tabs.forEach(t => t.addEventListener('click', () => activate(t)));
+        activate([...tabs].find(t=>t.classList.contains('active')) || tabs[0]);
+      }
+    });
   </script>
 
-  <!-- Drip + JS da página (ordem: drip antes) -->
+  <!-- Drip + JS da página -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
   <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
