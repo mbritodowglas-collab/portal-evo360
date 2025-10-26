@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=17">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=17">
+  <meta name="theme-color" content="#0b0d10">
+
+  <style>
+    /* ===== Ajustes locais (sem mudar estrutura) ===== */
+
+    /* Texto justificado */
+    .content p, .content li { text-align: justify; }
+
+    /* Banner (mantido) */
+    .banner-full{
+      width:100%;
+      height:240px;
+      background:url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat !important;
+      border-radius:0 0 18px 18px;
+      overflow:hidden;
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+      margin:0 0 24px 0;
+    }
+
+    /* Grade dos cards */
+    .tiles.tiles-modern{ display:grid; gap:18px; grid-template-columns:1fr; }
+    @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr);} }
+    @media (min-width:1040px){ .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr);} }
+
+    /* Card-botão (mantido) */
+    .tile{
+      position:relative; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; text-align:center;
+      height:220px;
+      border-radius:18px; overflow:hidden; color:#fff;
+      border:1px solid rgba(203,229,255,.16);
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+      background-size:cover; background-repeat:no-repeat;
+      transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+      cursor: pointer; /* <- adicionado */
+    }
+    .tile::after{ content:none !important; }
+
+    /* Overlay leve */
+    .tile::before{
+      content:""; position:absolute; inset:0; z-index:1;
+      background:linear-gradient(180deg, rgba(10,13,16,.12), rgba(10,13,16,.66) 85%);
+      pointer-events:none;
+    }
+    .tile h3, .tile p{ position:relative; z-index:2; margin:0; }
+    .tile h3{ font-weight:800; font-size:1.18rem; margin-bottom:10px; color:var(--serenity-2); }
+    .tile p{ color:var(--silver); font-size:.98rem; max-width:62ch; }
+
+    .tile:hover{
+      transform:translateY(-2px);
+      border-color:rgba(203,229,255,.35);
+      box-shadow:0 10px 28px rgba(22,28,36,.55);
+    }
+
+    /* Mobile full width */
+    @media (max-width:1024px){
+      body.layout-with-sidebar .sidebar{ display:none !important; }
+      body.layout-with-sidebar .content{
+        margin:0 !important; padding:16px !important;
+        width:100vw !important; max-width:100vw !important; box-sizing:border-box !important;
+      }
+      html,body{ overflow-x:hidden !important; }
+      .banner-full{ height:220px; }
+    }
+  </style>
+</head>
+
+<body class="layout-with-sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" alt="EVO360" class="logo">
+      <div class="nivel">Nível Fundação</div>
+    </div>
+
+    <nav class="sb-nav" role="navigation">
+      <div class="sb-group">
+        <div class="sb-label">Jornada</div>
+        <a class="sb-item active" href="./">Início</a>
+        <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+        <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
+        <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+        <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+        <a class="sb-item" href="./suporte.html">Suporte</a>
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="quote">Você está florescendo.</div>
+      <div class="ver">v1.0 · © Bella Prime</div>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="content">
+    <!-- BANNER -->
+    <header class="banner-full" aria-hidden="true"></header>
+
+    <!-- INTRO -->
+    <section class="card card-intro">
+      <h2>Sobre o Nível Fundação</h2>
+      <p>
+        O <strong>Tratamento Bella Prime</strong> é uma jornada de reconstrução do corpo e da mente.
+        Aqui, o foco é restaurar o equilíbrio físico, mental e emocional — passo a passo, por meio
+        de uma metodologia que conecta ciência, autocuidado e propósito.
+      </p>
+      <p>
+        No <strong>Nível Fundação</strong>, você inicia o processo de transformação: ajusta a rotina,
+        aprende a se alimentar melhor, melhora a postura e desenvolve uma nova relação com o próprio corpo.
+        É o ponto onde você cria as raízes para sustentar tudo o que vem a seguir.
+      </p>
+      <p>
+        O <strong>Sistema EVO360</strong> organiza o tratamento — ele distribui seus treinos, hábitos
+        e práticas mentais em etapas progressivas, garantindo uma evolução leve, constante e consciente.
+        A cada tarefa, você se aproxima da sua melhor versão.
+      </p>
+
+      <hr class="divisor">
+
+      <h3>Critérios para avançar ao nível Ascensão</h3>
+      <ul class="criteria">
+        <li><strong>Consistência:</strong> presença de pelo menos <strong>80%</strong> nos treinos.</li>
+        <li><strong>Evolução física:</strong> redução média de <strong>2–3 kg</strong> na balança
+            (ou melhora visível de postura e medidas).</li>
+        <li><strong>Comportamento:</strong> concluir todos os <strong>exercícios semanais de mudança de hábitos</strong>.</li>
+      </ul>
+
+      <p class="muted">
+        <em>Esses critérios representam o florescimento do seu progresso — quando você chegar aqui,
+        mente e corpo estarão alinhados para o próximo passo.</em>
+      </p>
+    </section>
+
+    <!-- HUB DE CARDS -->
+    <section class="tiles tiles-modern" aria-label="Atalhos">
+      <!-- CARD 1 (comentário REMOVIDO dos atributos) -->
+      <button type="button" class="tile"
+        style="background: url('../../assets/img/hub/tile-tarefas.jpg') center 40% / cover no-repeat !important;"
+        onclick="location.href='./dicas-orientacoes.html'">
+        <h3>Dicas e Orientações</h3>
+        <p>Dicas simples e práticas de treino para mulheres e nutrição — reeducação alimentar sem mitos.</p>
+      </button>
+
+      <!-- CARD 2 -->
+      <button type="button" class="tile"
+        style="background: url('../../assets/img/hub/tile-plano.jpg') center 55% / cover no-repeat !important;"
+        onclick="location.href='./plano.html'">
+        <h3>Tarefas e Neuro-Hábito</h3>
+        <p>Tarefas guiadas de mudança de mentalidade e comportamento com base em neurociência.</p>
+      </button>
+
+      <!-- CARD 3 -->
+      <button type="button" class="tile"
+        style="background: url('../../assets/img/hub/tile-habitos.jpg') center 30% / cover no-repeat !important;"
+        onclick="location.href='./habitos.html'">
+        <h3>Hábitos e Recompensas</h3>
+        <p>Rastreador fixo, metas pessoais e celebração de conquistas.</p>
+      </button>
+
+      <!-- CARD 4 -->
+      <button type="button" class="tile"
+        style="background: url('../../assets/img/hub/tile-praticas.jpg') center 60% / cover no-repeat !important;"
+        onclick="location.href='./praticas.html'">
+        <h3>Práticas Mentais</h3>
+        <p>Visualização guiada, check-in do dia e diário emocional.</p>
+      </button>
+
+      <!-- CARD 5 -->
+      <button type="button" class="tile"
+        style="background: url('../../assets/img/hub/tile-suporte.jpg') center / cover no-repeat !important;"
+        onclick="location.href='./suporte.html'">
+        <h3>Suporte</h3>
+        <p>Sobre o nível, downloads, ajuda, instalar app e configurações.</p>
+      </button>
+    </section>
+  </main>
+
+  <script> window.NIVEL = "fundacao-72a9c"; </script>
+</body>
+</html>
