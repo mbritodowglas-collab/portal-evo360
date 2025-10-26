@@ -22,12 +22,12 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* Dica do dia – garantir quebra completa (igual Fundação) */
+    /* Dica do dia – quebras completas, igual Fundação */
     #dica-meta{display:block;white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
     #dica-texto{margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
     .card p, .card small{overflow-wrap:anywhere;word-break:break-word}
 
-    /* ===== FIX MOBILE (igual ao que já usamos no Fundação): esconder sidebar e liberar largura ===== */
+    /* Mobile: esconder sidebar e liberar largura (como no Fundação) */
     @media (max-width:1024px){
       body.layout-with-sidebar .sidebar{ display:none !important; }
       body.layout-with-sidebar .content{
@@ -115,10 +115,38 @@
   <!-- Config do nível + caminho do JSON -->
   <script>
     window.NIVEL = "ascensao-9f3b2";
-    window.DATA_DICAS = "/portal-evo360/data/ascensao.json";
+    /* Caminho RELATIVO (funciona no GitHub Pages no mesmo repo) */
+    window.DATA_DICAS = "../../data/ascensao.json";
   </script>
 
-  <!-- Drip + JS global (mesma ordem do Fundação) -->
+  <!-- Fallback leve para abas (caso o JS principal não inicialize por algum motivo) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tabs .tab');
+      const panels = document.querySelectorAll('.panel');
+      if (!tabs.length || !panels.length) return;
+      // Se nenhuma troca acontecer em 300ms, fazemos o bind básico
+      setTimeout(() => {
+        let bound = false;
+        tabs.forEach(t => {
+          const evs = getEventListeners ? getEventListeners(t) : null;
+          if (!evs || !evs.click || !evs.click.length) bound = true;
+        });
+        if (bound) {
+          const activate = (tb) => {
+            tabs.forEach(x=>x.classList.remove('active'));
+            panels.forEach(p=>p.classList.remove('active'));
+            tb.classList.add('active');
+            const el = document.getElementById('panel-' + tb.dataset.tab);
+            (el||panels[0]).classList.add('active');
+          };
+          tabs.forEach(t=> t.addEventListener('click', ()=>activate(t)));
+        }
+      }, 300);
+    });
+  </script>
+
+  <!-- Drip + JS global (ordem do Fundação) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
   <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
