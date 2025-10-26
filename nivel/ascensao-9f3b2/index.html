@@ -15,11 +15,18 @@
     /* Texto justificado */
     .content p, .content li { text-align: justify; }
 
-    /* Banner (mantido) */
+    /* Banner – estilo verde esmeralda (gradiente sobre a imagem existente) */
     .banner-full{
       width:100%;
       height:240px;
-      background:url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat !important;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(6, 53, 39, .35) 0%,
+          rgba(6, 53, 39, .55) 45%,
+          rgba(6, 53, 39, .75) 100%
+        ),
+        url("../../assets/img/hub/banner-fundacao-hero.jpg") center/cover no-repeat !important;
       border-radius:0 0 18px 18px;
       overflow:hidden;
       box-shadow:0 6px 24px rgba(0,0,0,.25);
@@ -31,7 +38,7 @@
     @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1040px){ .tiles.tiles-modern{ grid-template-columns:repeat(3,1fr);} }
 
-    /* Card-botão (mantido) */
+    /* Card-botão */
     .tile{
       position:relative; display:flex; flex-direction:column;
       align-items:center; justify-content:center; text-align:center;
@@ -41,7 +48,7 @@
       box-shadow:0 6px 24px rgba(0,0,0,.25);
       background-size:cover; background-repeat:no-repeat;
       transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
-      cursor: pointer; /* <- adicionado */
+      cursor: pointer;
     }
     .tile::after{ content:none !important; }
 
@@ -52,12 +59,18 @@
       pointer-events:none;
     }
     .tile h3, .tile p{ position:relative; z-index:2; margin:0; }
-    .tile h3{ font-weight:800; font-size:1.18rem; margin-bottom:10px; color:var(--serenity-2); }
+
+    /* Título do card com acento esmeralda (fallback para #7ce3b1) */
+    .tile h3{
+      font-weight:800; font-size:1.18rem; margin-bottom:10px;
+      color:var(--emerald-2, #7ce3b1);
+      text-shadow: 0 1px 0 rgba(0,0,0,.25);
+    }
     .tile p{ color:var(--silver); font-size:.98rem; max-width:62ch; }
 
     .tile:hover{
       transform:translateY(-2px);
-      border-color:rgba(203,229,255,.35);
+      border-color:rgba(124, 227, 177, .45); /* esmeralda claro */
       box-shadow:0 10px 28px rgba(22,28,36,.55);
     }
 
@@ -142,7 +155,7 @@
 
     <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
-      <!-- CARD 1 (comentário REMOVIDO dos atributos) -->
+      <!-- CARD 1 -->
       <button type="button" class="tile"
         style="background: url('../../assets/img/hub/tile-tarefas.jpg') center 40% / cover no-repeat !important;"
         onclick="location.href='./dicas-orientacoes.html'">
