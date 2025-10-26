@@ -126,10 +126,42 @@
     </section>
   </main>
 
+  <!-- Config + fallback de caminho do JSON + tabs estáveis -->
   <script>
-    /* Configurações deste nível/página */
-    window.NIVEL = "ascensao-9f3b1";                  // <- id da Ascensão (use o seu se for diferente)
-    window.DATA_DICAS = "/portal-evo360/data/ascensao.json"; // dataset das dicas da Ascensão
+    // ID do nível (ajuste se o seu for diferente)
+    window.NIVEL = "ascensao-9f3b2";
+
+    // candidatos de caminho para o JSON de dicas (funciona no GitHub Pages)
+    const DATA_DICAS_CANDIDATES = [
+      "../../_data/ascensao.json",
+      "../../data/ascensao.json",
+      "/_data/ascensao.json",
+      "/data/ascensao.json"
+    ];
+
+    // escolhe o primeiro caminho que responder OK; senão usa o primeiro como fallback
+    (async function setDataPath(){
+      async function ok(u){ try{ const r = await fetch(u, {cache:'no-store'}); return r.ok; }catch(_){ return false; } }
+      for (const u of DATA_DICAS_CANDIDATES){ if (await ok(u)) { window.DATA_DICAS = u; return; } }
+      window.DATA_DICAS = DATA_DICAS_CANDIDATES[0];
+    })();
+
+    // garante tabs funcionando mesmo se o JS principal carregar antes
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const panels = document.querySelectorAll('.panel');
+      function activate(tb){
+        tabs.forEach(t=>t.classList.remove('active'));
+        panels.forEach(p=>p.classList.remove('active'));
+        tb.classList.add('active');
+        const target = document.querySelector('#panel-' + tb.dataset.tab);
+        (target || panels[0])?.classList.add('active');
+      }
+      if (tabs.length) {
+        tabs.forEach(t => t.addEventListener('click', () => activate(t)));
+        activate([...tabs].find(t=>t.classList.contains('active')) || tabs[0]);
+      }
+    });
   </script>
 
   <!-- Drip + JS da página (ordem: drip antes) -->
