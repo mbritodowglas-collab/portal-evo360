@@ -1,5 +1,7 @@
+<!-- dicas-orientacoes.js (Ascensão) -->
+<script>
 // ============================
-// EVO360 · Fundação
+// EVO360 · Ascensão
 // Página: Dicas e Orientações (JS completo)
 // ============================
 
@@ -10,7 +12,11 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
-    const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+    // Detecta o nível pela URL; fallback para ascensao-9xxxx
+    const LEVEL_ID = window.NIVEL
+      || (location.pathname.match(/ascensao-[\w-]+/)||[])[0]
+      || 'ascensao-9xxxx';
+
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
     // pode não existir se drip.js não carregar, por isso o try/catch
@@ -189,7 +195,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
     out.innerHTML = `
       FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-      <span class="small muted">Faixa sugerida (Fundação): ${alvo50}–${alvo65} bpm</span>
+      <span class="small muted">Faixa sugerida (Ascensão): ${alvo50}–${alvo65} bpm</span>
     `;
     table.innerHTML = construirTabela(fcMax, r);
   }
@@ -244,3 +250,4 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
   calc();
 })();
+</script>
