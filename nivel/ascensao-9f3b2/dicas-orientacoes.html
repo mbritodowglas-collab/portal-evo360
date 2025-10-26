@@ -51,6 +51,51 @@
     #sugestoes-alimentares .ntab.active{border-color:rgba(203,229,255,.35);background:#12161B}
     #sugestoes-alimentares .npanel{display:none}
     #sugestoes-alimentares .npanel.active{display:block}
+
+    /* ======= Ajustes de responsividade (MOBILE) ======= */
+    @media (max-width: 780px) {
+      /* Abas padrão (Calculadoras) — mantém em linha com rolagem horizontal */
+      .tabs{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tabs::-webkit-scrollbar{ display: none; }
+      .tab{ flex: 0 0 auto; }
+
+      /* Abas do card “Sugestões de Estratégia Alimentar” (escopo local) */
+      #sugestoes-alimentares .ntabs{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      #sugestoes-alimentares .ntabs::-webkit-scrollbar{ display: none; }
+      #sugestoes-alimentares .ntab{ flex: 0 0 auto; }
+
+      /* Grids viram 1 coluna sem esmagar inputs */
+      .grid-2{ grid-template-columns: 1fr; }
+
+      /* Botões em linhas se ajustam e não estouram o card */
+      .row, .row-actions{ gap: 8px; }
+      .row .btn, .row-actions .btn{
+        flex: 1 1 auto;
+        min-width: 140px;
+      }
+
+      /* Banner um pouco menor no mobile */
+      .banner-full{ height: 200px; }
+
+      /* Cards mais respiráveis em telas pequenas */
+      .card{ padding: 12px; }
+
+      /* Conteúdos longos nunca vazam horizontalmente */
+      .calc-out, .card p, .card small{
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+    }
   </style>
 </head>
 <body class="layout-with-sidebar">
