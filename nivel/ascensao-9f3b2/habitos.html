@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Hábitos e Recompensas</title>
+  <title>EVO360 · Ascensão · Hábitos e Recompensas</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <!-- tema da Ascensão -->
+  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* ===== Ajustes locais desta página ===== */
@@ -80,10 +81,10 @@
 
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+  <aside class="sidebar" aria-label="Navegação do Nível Ascensão">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Fundação</div>
+      <div class="nivel">Nível Ascensão</div>
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
@@ -93,20 +94,20 @@
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+    <div class="sb-footer"><div class="quote">Você está evoluindo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
   <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner (Ascensão) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
     <!-- Card -->
     <section class="card">
       <h2>Hábitos e Recompensas</h2>
       <p>
         Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
-        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Ascensão.
       </p>
 
       <div class="tabs">
@@ -207,7 +208,10 @@
     </section>
   </main>
 
-  <script>window.NIVEL="fundacao-72a9c";</script>
+  <!-- Detecta automaticamente o ID do nível a partir da URL; fallback genérico -->
+  <script>
+    window.NIVEL = (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || "ascensao-9xxxx";
+  </script>
 
   <!-- ===== Script PRINCIPAL ===== -->
   <script>
@@ -223,7 +227,7 @@
   const todayISO = () => iso(new Date());
 
   // Keys por nível
-  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  const LEVEL = window.NIVEL || "ascensao-9xxxx";
   const K = {
     dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
     daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
@@ -240,7 +244,7 @@
         $$('.tab').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         $$('.panel').forEach(p=>p.classList.remove('active'));
-        $(map[btn.dataset.tab]).classList.add('active');
+        (document.querySelector(map[btn.dataset.tab])||{}).classList?.add('active');
       });
     });
   })();
@@ -313,10 +317,8 @@
   });
 
   // ===== Recompensas =====
-
   function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-  // Agora esta função mostra a META ATIVA + ARQUIVO
   function renderGoalsArchive(){
     const list = $('#goalsList');
     list.innerHTML = '';
@@ -329,7 +331,6 @@
       return;
     }
 
-    // Card da meta ATIVA
     if(cur){
       const pctCur = Math.round(Math.min(100, ((cur.progressDays||0)/(cur.target||1))*100));
       const nodeCur = document.createElement('div');
@@ -345,7 +346,6 @@
       list.appendChild(nodeCur);
     }
 
-    // Cards das metas ARQUIVADAS
     arc.forEach((g,i)=>{
       const pct = Math.round(Math.min(100, ((g.progressDays||0)/(g.target||1))*100));
       const node = document.createElement('div');
@@ -373,24 +373,21 @@
       renderGoalsArchive();
       return;
     }
-    wrap.style.display = ''; // (fica oculto por CSS global)
+    wrap.style.display = '';
     $('#goalCurrentName').textContent = cur.name || 'Meta';
     const pct = Math.round(Math.min(100, (cur.progressDays/cur.target)*100));
     $('#goalProgress').style.width = pct + '%';
     $('#goalProgressText').textContent = `Progresso: ${cur.progressDays}/${cur.target} dias completos`;
-
-    // Atualiza quadro “Minhas metas” imediatamente
     renderGoalsArchive();
   }
   renderGoal();
 
-  // Salvar meta (ativa e vai para topo)
+  // Salvar meta
   $('#btnSaveGoal').addEventListener('click', ()=>{
     const name = $('#goal_name').value.trim();
     const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
     if(!name || !target){ return; }
 
-    // Se já havia meta atual, manda para o arquivo
     const prev = LS.get(K.goalCurrent, null);
     if(prev){
       const arc = LS.get(K.goalArchive, []);
@@ -401,7 +398,6 @@
     const cur = { name, target, startedISO: todayISO(), progressDays: 0 };
     LS.set(K.goalCurrent, cur);
 
-    // Limpa inputs e atualiza UI (aparece na hora)
     $('#goal_name').value = '';
     $('#goal_days').value = '';
     renderGoal();
@@ -449,7 +445,7 @@
   })();
   </script>
 
-  <!-- ===== Força os rótulos das abas (se algum cache/JS antigo sobrescrever) ===== -->
+  <!-- Força os rótulos das abas (se algum cache/JS antigo sobrescrever) -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
@@ -461,10 +457,10 @@
   });
   </script>
 
-  <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
+  <!-- Script adicional: Progresso / datas locais / snapshot / migração -->
   <script>
   (function(){
-    const NIVEL = window.NIVEL || 'fundacao-72a9c';
+    const NIVEL = window.NIVEL || 'ascensao-9xxxx';
     const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
     const HABITS = [
       {id:'forca',label:'Treino de força / Musculação'},
