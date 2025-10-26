@@ -13,11 +13,14 @@ const todayISO = ()=> new Date().toISOString().slice(0,10);
 const daysBetween=(a,b)=> Math.floor((new Date(b)-new Date(a))/(1000*60*60*24));
 
 // ================== Dados básicos do nível ==================
-const NIVEL = window.NIVEL || 'fundacao';
+// Fallback do nível para Ascensão + opcional total de dias via window.NIVEL_DIAS (padrão 60)
+const NIVEL = window.NIVEL || 'ascensao-9F3B1';
+const TOTAL_DAYS = Number(window.NIVEL_DIAS) > 0 ? Number(window.NIVEL_DIAS) : 60;
+
 const START_KEY = `startDate_${NIVEL}`;
 if(!LS.get(START_KEY)) LS.set(START_KEY, todayISO());
 const startISO = LS.get(START_KEY);
-const diaJornada = Math.min(60, daysBetween(startISO, todayISO())+1);
+const diaJornada = Math.min(TOTAL_DAYS, daysBetween(startISO, todayISO())+1);
 
 // KPIs (fallbacks seguros)
 const workouts = LS.get(`workouts_${NIVEL}_history`, []) || [];
@@ -28,15 +31,16 @@ const weightNow   = LS.get(`weight_${NIVEL}_now`, null);
 
 // ================== Elegibilidade ==================
 function calcElegibility(){
-  const windowDays = 60;
+  const windowDays = TOTAL_DAYS;
   const totalDays = Math.min(windowDays, daysBetween(startISO, todayISO())+1);
 
+  // presença por dia (unique)
   const uniqueWorkouts = [...new Set(workouts)];
   const present = uniqueWorkouts.filter(d => daysBetween(startISO, d) < totalDays).length;
   const consist = totalDays ? Math.round((present/totalDays)*100) : 0;
   const consOK = consist >= 80;
 
-  // Peso
+  // Peso (faixa -2 a -3.5 kg)
   let delta = null, weightOK = false;
   if(typeof weightStart === 'number' && typeof weightNow === 'number'){
     delta = +(weightNow - weightStart).toFixed(1);
@@ -47,7 +51,7 @@ function calcElegibility(){
   const habitsTarget = 8;
   const habitsOK = weeklyHabitsDone >= habitsTarget;
 
-  // UI (só aplica se existir)
+  // UI
   setText('[data-target="cons-text"]', consist ? `${consist}%` : '—');
   setText('[data-target="weight-text"]', delta===null ? '—' : `${delta} kg`);
   setText('[data-target="habits-text"]', `${weeklyHabitsDone}/${habitsTarget}`);
@@ -56,17 +60,23 @@ function calcElegibility(){
   $('#elig-weight')?.classList.toggle('ok', weightOK);
   $('#elig-habits')?.classList.toggle('ok', habitsOK);
 
-  const score = (consOK?1:0 + weightOK?1:0 + habitsOK?1:0)/3;
+  // ✅ Correção de precedência no score
+  const score = (
+    (consOK ? 1 : 0) +
+    (weightOK ? 1 : 0) +
+    (habitsOK ? 1 : 0)
+  ) / 3;
+
   setWidth('#elig-bar', Math.round(score*100)+'%');
   const btnAsc = $('#btnAsc'); if(btnAsc) btnAsc.disabled = score < .999;
 
-  setText('#kpi-dias',  `${diaJornada} de 60`);
+  setText('#kpi-dias',  `${diaJornada} de ${TOTAL_DAYS}`);
   setText('#kpi-tr',    `${present}`);
   setText('#kpi-ex',    'Ativo a cada 3 dias');
   setText('#kpi-neuro', `${neuroDone}`);
   setText('#kpi-cons',  consist ? `${consist}%` : '—');
 
-  setWidth('#level-bar', Math.round((diaJornada/60)*100)+'%');
+  setWidth('#level-bar', Math.round((diaJornada/TOTAL_DAYS)*100)+'%');
 }
 calcElegibility();
 
@@ -132,8 +142,8 @@ async function safeLoad(url){
 })();
 
 // ================== Sidebar mobile ==================
-const sb         = document.querySelector('.sidebar');   // antes buscava #sidebar (não existia)
-const sbToggle   = document.getElementById('sbToggle');  // pode não existir em algumas páginas
+const sb         = document.querySelector('.sidebar');
+const sbToggle   = document.getElementById('sbToggle');
 const sbBackdrop = document.getElementById('sbBackdrop');
 
 function openSB(){
