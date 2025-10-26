@@ -22,64 +22,10 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* ===== Dica do dia – garantir leitura perfeita ===== */
-    #dica-meta{
-      display:block;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.35;
-    }
-    #dica-texto{
-      margin-top:6px;
-      white-space:pre-wrap;     /* preserva \n das dicas */
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.55;
-    }
-    .card p, .card small{
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-
-    /* ===== Sugestões de Estratégia Alimentar – CSS responsivo (APENAS CSS alterado) ===== */
-    /* Mantém o look dos cards/botões do Fundação, mas com abas próprias e responsivas */
-    #sugestoes-alimentares .ntabs{
-      display:flex;
-      gap:8px;
-      margin:12px 0;
-      flex-wrap:wrap;                 /* quebra linha no mobile */
-    }
-    #sugestoes-alimentares .ntab{
-      padding:8px 12px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      background:#0f1318;
-      cursor:pointer;
-      white-space:nowrap;
-      text-align:center;
-      flex:1 1 180px;                 /* ocupa bem o espaço e quebra quando precisar */
-      min-width:140px;
-    }
-    #sugestoes-alimentares .ntab.active{
-      border-color:rgba(203,229,255,.35);
-      background:#12161B;
-    }
-    #sugestoes-alimentares .npanel{display:none}
-    #sugestoes-alimentares .npanel.active{display:block}
-
-    /* Melhorias de leitura dentro do card */
-    #sugestoes-alimentares h3{ margin:8px 0 6px }
-    #sugestoes-alimentares ul{ margin:8px 0 0 18px }
-    #sugestoes-alimentares li{ margin:6px 0 }
-
-    /* Ajuste de toque/área em telas pequenas */
-    @media (max-width:480px){
-      #sugestoes-alimentares .ntab{
-        flex:1 1 100%;
-        min-width:0;                 /* ocupa 100% quando necessário */
-      }
-    }
+    /* ===== Dica do dia – leitura perfeita ===== */
+    #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
+    #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
+    .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
 
     /* ===== Banner emerald por cima da imagem ===== */
     .banner-full{
@@ -87,6 +33,47 @@
         linear-gradient(180deg, rgba(6,53,39,.35) 0%, rgba(6,53,39,.55) 45%, rgba(6,53,39,.75) 100%),
         url('../../assets/img/hub/banner-ascensao-hero.jpg') !important;
     }
+
+    /* ===== Card: Sugestões de Estratégia Alimentar (apenas CSS) ===== */
+    /* 1) Título do card — melhora quebra no mobile sem afetar global */
+    #sugestoes-alimentares h2{ margin-bottom:8px; }
+    @media (max-width:480px){
+      #sugestoes-alimentares h2{
+        line-height:1.2;
+        word-break:keep-all;
+      }
+    }
+
+    /* 2) Abinhas tipo “pílula” com scroll horizontal (não esticam) */
+    #sugestoes-alimentares .ntabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      overflow-x:auto;                    /* scroll suave no mobile */
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:4px;
+    }
+    #sugestoes-alimentares .ntab{
+      flex:0 0 auto;                      /* NÃO estica, vira pílula */
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0f1318;
+      cursor:pointer;
+      white-space:nowrap;                  /* fica em uma linha */
+      text-align:center;
+    }
+    #sugestoes-alimentares .ntab.active{
+      border-color:rgba(203,229,255,.35);
+      background:#12161B;
+    }
+
+    /* 3) Painéis e listas */
+    #sugestoes-alimentares .npanel{display:none}
+    #sugestoes-alimentares .npanel.active{display:block}
+    #sugestoes-alimentares h3{ margin:10px 0 6px }
+    #sugestoes-alimentares ul{ margin:8px 0 0 18px }
+    #sugestoes-alimentares li{ margin:6px 0 }
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -123,7 +110,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- NOVO CARD: Sugestões de Estratégia Alimentar (apenas CSS ajustado) -->
+    <!-- Sugestões de Estratégia Alimentar -->
     <section class="card" id="sugestoes-alimentares">
       <h2>Sugestões de Estratégia Alimentar</h2>
       <p>
@@ -232,7 +219,7 @@
       window.DATA_DICAS = DATA_DICAS_CANDIDATES[0];
     })();
 
-    /* Tabs escopadas do card “Sugestões de Estratégia Alimentar” (JS já existente; mantido) */
+    /* Tabs escopadas do card “Sugestões de Estratégia Alimentar” */
     (function(){
       const wrap = document.getElementById('sugestoes-alimentares');
       if(!wrap) return;
@@ -249,7 +236,7 @@
       if(ntabs.length) activate(ntabs[0]);
     })();
 
-    /* Tabs padrão das Calculadoras: mantém comportamento do Fundação */
+    /* Tabs padrão das Calculadoras (mesmo do Fundação) */
     document.addEventListener('DOMContentLoaded', () => {
       const tabs = document.querySelectorAll('.tab');
       const panels = document.querySelectorAll('.panel');
