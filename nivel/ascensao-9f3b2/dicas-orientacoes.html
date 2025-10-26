@@ -5,13 +5,13 @@
   <title>EVO360 · Ascensão · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
-  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=14"><!-- tema do nível -->
+  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=14">
   <meta name="theme-color" content="#063527">
   <style>
-    /* texto justificado (padrão da página) */
+    /* Texto justificado (padrão) */
     .content p, .content li { text-align: justify; }
 
-    /* abas/painéis (iguais ao Fundação) */
+    /* Tabs/painéis (iguais ao Fundação) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
@@ -22,17 +22,17 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* — garantir dica inteira no card (igual Fundação) — */
+    /* Dica do dia – garantir quebra completa (igual Fundação) */
     #dica-meta{display:block;white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
     #dica-texto{margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
     .card p, .card small{overflow-wrap:anywhere;word-break:break-word}
 
-    /* ===== Ajuste MOBILE só para o card de Nutrição ===== */
-    #sugestoes-alimentares .tabs{           /* não quebrar linha, rolar na horizontal */
-      overflow-x:auto; -webkit-overflow-scrolling:touch;
-      flex-wrap:nowrap; gap:8px;
-    }
-    #sugestoes-alimentares .tab{ flex:0 0 auto; white-space:nowrap; }
+    /* ===== Card Nutrição: tabs escopadas para não conflitar com o JS global ===== */
+    #sugestoes-alimentares .ntabs{display:flex;gap:8px;margin:12px 0;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    #sugestoes-alimentares .ntab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;white-space:nowrap;flex:0 0 auto}
+    #sugestoes-alimentares .ntab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    #sugestoes-alimentares .npanel{display:none}
+    #sugestoes-alimentares .npanel.active{display:block}
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -53,11 +53,12 @@
     <div class="sb-footer"><div class="quote">Você está ascendendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
+  <!-- Conteúdo -->
   <main class="content">
     <!-- Banner (mesmo padrão do Fundação: só a imagem) -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Dica do dia (gotejamento) -->
+    <!-- Dica do dia -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -69,7 +70,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- ===== Card extra: Sugestões de Estratégia Alimentar (tabs no padrão) ===== -->
+    <!-- Card extra: Sugestões de Estratégia Alimentar -->
     <section class="card" id="sugestoes-alimentares">
       <h2>Sugestões de Estratégia Alimentar</h2>
       <p>
@@ -78,14 +79,13 @@
         o definido no app pela equipe Bella Prime.
       </p>
 
-      <div class="tabs">
-        <button type="button" class="tab active" data-tab="fase1">Fase 1 · Adaptação (1–30)</button>
-        <button type="button" class="tab" data-tab="fase2">Fase 2 · Otimização (31–60)</button>
-        <button type="button" class="tab" data-tab="fase3">Fase 3 · Consolidação (61–90)</button>
+      <div class="ntabs">
+        <button type="button" class="ntab active" data-ntab="fase1">Fase 1 · Adaptação (1–30)</button>
+        <button type="button" class="ntab" data-ntab="fase2">Fase 2 · Otimização (31–60)</button>
+        <button type="button" class="ntab" data-ntab="fase3">Fase 3 · Consolidação (61–90)</button>
       </div>
 
-      <!-- Fase 1 -->
-      <div class="panel active" id="panel-fase1">
+      <div class="npanel active" id="npanel-fase1">
         <h3>Fase 1 · Adaptação (Dias 1–30)</h3>
         <p>Organize o padrão alimentar e estabilize energia — sem extremos.</p>
         <ul>
@@ -94,36 +94,33 @@
           <li><strong>Hidratação constante</strong> ao longo do dia (água como hábito, não em “golões”).</li>
           <li>Ajuste porções; evite “detox” ou restrições agressivas — consistência &gt; radicalidade.</li>
         </ul>
-        <p class="muted">Objetivo: criar previsibilidade metabólica e constância no padrão alimentar.</p>
+        <p class="muted">Objetivo: previsibilidade metabólica e constância no padrão alimentar.</p>
       </div>
 
-      <!-- Fase 2 -->
-      <div class="panel" id="panel-fase2">
+      <div class="npanel" id="npanel-fase2">
         <h3>Fase 2 · Otimização (Dias 31–60)</h3>
-        <p>Ajuste qualidade e estratégia energética mantendo um <strong>déficit leve e sustentável</strong>.</p>
+        <p>Mantenha um <strong>déficit leve e sustentável</strong>, ajustando qualidade e distribuição de energia.</p>
         <ul>
-          <li>Distribua <strong>carboidratos de qualidade</strong> perto do treino; reduza quando não precisa de tanta energia.</li>
-          <li>Inclua <strong>boas gorduras</strong> (azeite, abacate, castanhas) para estabilidade hormonal e saciedade.</li>
-          <li>Reforce <strong>micronutrientes</strong> com vegetais variados (verdes + coloridos) ao longo do dia.</li>
-          <li>Mantenha proteína alta para preservar massa magra durante o déficit.</li>
+          <li>Carboidratos de qualidade próximos ao treino; reduza quando a demanda energética for menor.</li>
+          <li><strong>Gorduras boas</strong> (azeite, abacate, castanhas) para estabilidade hormonal e saciedade.</li>
+          <li>Vegetais variados (verdes + coloridos) para reforçar <strong>micronutrientes</strong>.</li>
+          <li>Proteína alta para preservar massa magra durante o déficit.</li>
         </ul>
-        <p class="muted">Objetivo: melhorar performance diária e resposta corporal sem “cortes” que sabotam o processo.</p>
+        <p class="muted">Objetivo: performance diária sem “cortes” que sabotam o processo.</p>
       </div>
 
-      <!-- Fase 3 -->
-      <div class="panel" id="panel-fase3">
+      <div class="npanel" id="npanel-fase3">
         <h3>Fase 3 · Consolidação (Dias 61–90)</h3>
         <p>Lapide resultado e consolide o padrão — equilíbrio entre prazer e nutrição.</p>
         <ul>
-          <li>Reavalie <strong>porções</strong> guiada por sinais de fome/saciedade e pelo espelho/medidas.</li>
-          <li>Inclua <strong>refeições de manutenção</strong> sem perder o controle do todo (80/20 funciona).</li>
-          <li>Preserve <strong>sono e hidratação</strong> como pilares da recuperação e do humor.</li>
-          <li>Se o peso estabilizou, ajuste suave de energia (±5–10%) e siga consistente.</li>
+          <li>Reavalie <strong>porções</strong> pelos sinais de fome/saciedade e pelo espelho/medidas.</li>
+          <li><strong>80/20</strong>: refeições de manutenção sem perder o controle do todo.</li>
+          <li>Preserve <strong>sono e hidratação</strong> como pilares de recuperação e humor.</li>
+          <li>Peso estabilizado? Ajuste suave de energia (±5–10%) e siga consistente.</li>
         </ul>
-        <p class="muted">Objetivo: sustentar o resultado com autonomia e leveza, sem efeito sanfona.</p>
+        <p class="muted">Objetivo: sustentar o resultado com autonomia e leveza.</p>
       </div>
     </section>
-    <!-- ===== Fim do card extra ===== -->
 
     <!-- Calculadoras (idênticas ao Fundação) -->
     <section class="card">
@@ -133,7 +130,6 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
@@ -148,7 +144,6 @@
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
-      <!-- TMB -->
       <div class="panel" id="panel-tmb">
         <div class="grid-2">
           <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
@@ -164,13 +159,32 @@
     </section>
   </main>
 
-  <!-- Config igual ao Fundação (apenas troca do JSON) -->
+  <!-- Config do nível + caminho do JSON -->
   <script>
     window.NIVEL = "ascensao-9f3b2";
     window.DATA_DICAS = "/portal-evo360/data/ascensao.json";
   </script>
 
-  <!-- Drip + JS principal (ordem idêntica ao Fundação) -->
+  <!-- Mini-JS escopado das tabs de nutrição (não interfere nas calculadoras) -->
+  <script>
+    (function(){
+      const wrap = document.getElementById('sugestoes-alimentares');
+      if(!wrap) return;
+      const tabs = wrap.querySelectorAll('.ntab');
+      const panels = wrap.querySelectorAll('.npanel');
+      function on(t){
+        tabs.forEach(b=>b.classList.remove('active'));
+        panels.forEach(p=>p.classList.remove('active'));
+        t.classList.add('active');
+        const el = wrap.querySelector('#npanel-' + t.dataset.ntab);
+        (el||panels[0]).classList.add('active');
+      }
+      tabs.forEach(b=> b.addEventListener('click', ()=>on(b)));
+      if(tabs.length) on(tabs[0]);
+    })();
+  </script>
+
+  <!-- Drip + JS global (ordem idêntica ao Fundação) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
   <script src="./dicas-orientacoes.js?v=16" defer></script>
 </body>
