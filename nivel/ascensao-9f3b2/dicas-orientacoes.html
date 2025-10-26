@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Hábitos e Recompensas</title>
+  <title>EVO360 · Ascensão · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <!-- tema da ASCENSÃO -->
+  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* ===== Ajustes locais desta página ===== */
@@ -38,7 +39,7 @@
     .panel{display:none}
     .panel.active{display:block}
 
-    /* Listas de hábitos */
+    /* Listas de hábitos (mantido se você usa nesta página) */
     .habits-group{margin-top:12px}
     .habits-title{font-weight:800;color:var(--serenity-2);margin:8px 0}
     .habits-grid{display:grid;grid-template-columns:1fr;gap:10px;align-items:center}
@@ -62,7 +63,7 @@
     .goal-card small{color:var(--silver)}
     .goal-card[data-edit]{cursor:pointer}
 
-    /* === Progresso (20 dias por hábito) – título em cima, bolinhas abaixo === */
+    /* Progresso (20 dias por hábito) */
     .streak-box{ margin-top:18px }
     .streak-legend{ color:var(--silver); margin-top:6px }
     .streak-list{ display:grid; gap:12px; margin-top:12px }
@@ -70,8 +71,8 @@
     .streak-label{ color:var(--silver); font-weight:600 }
     .streak-grid{ display:grid; grid-template-columns:repeat(20,12px); gap:6px; }
     .dot{ width:12px; height:12px; border-radius:50%; background:#40464f; border:1px solid #30343b }
-    .dot.ok{ background:#31b57a; border-color:#2a9465 }   /* marcado */
-    .dot.no{ background:#d04c4c; border-color:#a53b3b }   /* não marcado */
+    .dot.ok{ background:#31b57a; border-color:#2a9465 }
+    .dot.no{ background:#d04c4c; border-color:#a53b3b }
 
     /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
     #goalCurrentWrap { display: none !important; }
@@ -80,16 +81,16 @@
 
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+  <aside class="sidebar" aria-label="Navegação do Nível Ascensão">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Fundação</div>
+      <div class="nivel">Nível Ascensão</div>
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
-      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item active" href="./dicas-orientacoes.html">Dicas e Orientações</a>
       <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
-      <a class="sb-item active" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
@@ -98,17 +99,18 @@
 
   <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner Ascensão -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
     <!-- Card -->
     <section class="card">
-      <h2>Hábitos e Recompensas</h2>
+      <h2>Dicas e Orientações</h2>
       <p>
-        Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
-        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Fundação (60 dias).
+        Aqui você encontra orientações do <strong>Nível Ascensão</strong> para manter consistência, ajustar rotas e potencializar resultados ao longo dos 60 dias.
       </p>
 
+      <!-- Se esta página usa abas/conteúdos iguais aos da Fundação, mantive abaixo.
+           Caso não precise, você pode remover as seções extras. -->
       <div class="tabs">
         <button class="tab active" data-tab="rastreador">Hábitos</button>
         <button class="tab" data-tab="recompensas">Recompensas</button>
@@ -207,9 +209,12 @@
     </section>
   </main>
 
-  <script>window.NIVEL="fundacao-72a9c";</script>
+  <!-- Define o nível Ascensão (detecção automática ou fallback) -->
+  <script>
+    window.NIVEL = (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || "ascensao-9xxxx";
+  </script>
 
-  <!-- ===== Script PRINCIPAL (seu script que já funcionava) ===== -->
+  <!-- ===== Script PRINCIPAL (mantido, agora com chaves da Ascensão) ===== -->
   <script>
   // ===== Helpers =====
   const $ = (s, r = document) => r.querySelector(s);
@@ -222,8 +227,8 @@
   const iso = d => new Date(d).toISOString().slice(0,10);
   const todayISO = () => iso(new Date());
 
-  // Keys por nível
-  const LEVEL = window.NIVEL || "fundacao-72a9c";
+  // Keys por nível (ASCENSÃO)
+  const LEVEL = window.NIVEL || "ascensao-9xxxx";
   const K = {
     dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
     daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
@@ -419,7 +424,7 @@
   <!-- ===== Script adicional: Progresso / datas locais / snapshot / migração ===== -->
   <script>
   (function(){
-    const NIVEL = window.NIVEL || 'fundacao-72a9c';
+    const NIVEL = window.NIVEL || 'ascensao-9xxxx';
     const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
     const HABITS = [
       {id:'forca',label:'Treino de força / Musculação'},
