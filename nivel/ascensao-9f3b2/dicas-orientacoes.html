@@ -41,6 +41,16 @@
       overflow-wrap:anywhere;
       word-break:break-word;
     }
+
+    /* ====== Estilos ESCOPO do novo card (pra não conflitar com tabs existentes) ====== */
+    #sugestoes-alimentares .ntabs{display:flex;gap:8px;margin:12px 0}
+    #sugestoes-alimentares .ntab{
+      padding:8px 12px;border-radius:10px;border:1px solid var(--line);
+      background:#0f1318;cursor:pointer;white-space:nowrap
+    }
+    #sugestoes-alimentares .ntab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    #sugestoes-alimentares .npanel{display:none}
+    #sugestoes-alimentares .npanel.active{display:block}
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -80,6 +90,62 @@
       </div>
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
+
+    <!-- ====== NOVO CARD (adicionado): Sugestões de Estratégia Alimentar ====== -->
+    <section class="card" id="sugestoes-alimentares">
+      <h2>Sugestões de Estratégia Alimentar</h2>
+      <p>
+        A nutrição é o motor da evolução. Cada fase da Ascensão (90 dias) pede ajustes sutis entre energia,
+        foco e recuperação. Use estas sugestões como guia geral — o seu plano de treino continua sendo
+        o definido no app pela equipe Bella Prime.
+      </p>
+
+      <div class="ntabs">
+        <button type="button" class="ntab active" data-ntab="fase1">Fase 1 · Adaptação (1–30)</button>
+        <button type="button" class="ntab" data-ntab="fase2">Fase 2 · Otimização (31–60)</button>
+        <button type="button" class="ntab" data-ntab="fase3">Fase 3 · Consolidação (61–90)</button>
+      </div>
+
+      <!-- Fase 1 -->
+      <div class="npanel active" id="npanel-fase1">
+        <h3>Fase 1 · Adaptação (Dias 1–30)</h3>
+        <p>Organize o padrão alimentar e estabilize energia — sem extremos.</p>
+        <ul>
+          <li>Priorize <strong>proteínas magras</strong> em todas as refeições (ovos, frango, peixe, iogurte natural).</li>
+          <li>Garanta <strong>fibras e volume</strong> com verduras, legumes e frutas para saciedade e controle glicêmico.</li>
+          <li><strong>Hidratação constante</strong> ao longo do dia (água como hábito, não em “golões”).</li>
+          <li>Ajuste porções; evite “detox” ou restrições agressivas — consistência > radicalidade.</li>
+        </ul>
+        <p class="muted">Objetivo: criar previsibilidade metabólica e constância no padrão alimentar.</p>
+      </div>
+
+      <!-- Fase 2 -->
+      <div class="npanel" id="npanel-fase2">
+        <h3>Fase 2 · Otimização (Dias 31–60)</h3>
+        <p>Ajuste qualidade e estratégia energética mantendo um <strong>déficit leve e sustentável</strong>.</p>
+        <ul>
+          <li>Distribua <strong>carboidratos de qualidade</strong> perto do treino; reduza quando não precisa de tanta energia.</li>
+          <li>Inclua <strong>boas gorduras</strong> (azeite, abacate, castanhas) para estabilidade hormonal e saciedade.</li>
+          <li>Reforce <strong>micronutrientes</strong> com vegetais variados (verdes + coloridos) ao longo do dia.</li>
+          <li>Mantenha proteína alta para preservar massa magra durante o déficit.</li>
+        </ul>
+        <p class="muted">Objetivo: melhorar performance diária e resposta corporal sem “cortes” que sabotam o processo.</p>
+      </div>
+
+      <!-- Fase 3 -->
+      <div class="npanel" id="npanel-fase3">
+        <h3>Fase 3 · Consolidação (Dias 61–90)</h3>
+        <p>Lapide resultado e consolide o padrão — equilíbrio entre prazer e nutrição.</p>
+        <ul>
+          <li>Reavalie <strong>porções</strong> guiada por sinais de fome/saciedade e pelo espelho/medidas.</li>
+          <li>Inclua <strong>refeições de manutenção</strong> sem perder o controle do todo (80/20 funciona).</li>
+          <li>Preserve <strong>sono e hidratação</strong> como pilares da recuperação e do humor.</li>
+          <li>Se o peso estabilizou, ajuste suave de energia (±5–10%) e siga consistente.</li>
+        </ul>
+        <p class="muted">Objetivo: sustentar o resultado com autonomia e leveza, sem efeito sanfona.</p>
+      </div>
+    </section>
+    <!-- ====== FIM DO NOVO CARD ====== -->
 
     <!-- Calculadoras (mesmo layout padrão) -->
     <section class="card">
@@ -162,6 +228,23 @@
         activate([...tabs].find(t=>t.classList.contains('active')) || tabs[0]);
       }
     });
+
+    /* ===== Tabs ESCOPADAS do card “Sugestões de Estratégia Alimentar” ===== */
+    (function(){
+      const wrap = document.getElementById('sugestoes-alimentares');
+      if(!wrap) return;
+      const ntabs = wrap.querySelectorAll('.ntab');
+      const npanels = wrap.querySelectorAll('.npanel');
+      function activate(tab){
+        ntabs.forEach(b=>b.classList.remove('active'));
+        npanels.forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        const el = wrap.querySelector('#npanel-' + tab.dataset.ntab);
+        (el || npanels[0])?.classList.add('active');
+      }
+      ntabs.forEach(b=> b.addEventListener('click', ()=>activate(b)));
+      if(ntabs.length) activate(ntabs[0]);
+    })();
   </script>
 
   <!-- Drip + JS da página (ordem: drip antes) -->
