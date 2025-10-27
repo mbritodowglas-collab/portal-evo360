@@ -1,209 +1,211 @@
-// ============================
-// EVO360 · Ascensão
-// Página: Dicas e Orientações (JS completo)
-// ============================
+/*  Ascensão — Dicas & Orientações
+ *  Mantém o mesmo comportamento do Fundação:
+ *  - Drip de dicas lendo window.DATA_DICAS (JSON)
+ *  - Tabs únicas controladas por JS (sem fallback inline)
+ *  - Karvonen (208 - 0.7*idade) com tabela de zonas
+ *  - TMB (Mifflin-St Jeor) + necessidade calórica com FA
+ */
 
-// Helpers
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+(function () {
+  "use strict";
 
-function cacheBust(url){
-  try{
-    const u = new URL(url, location.href);
-    u.searchParams.set('cb', String(Date.now()));
-    return u.href;
-  }catch(_){ return url }
-}
+  // ---------- Utilidades ----------
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  const fmt = (n, d = 0) => Number(n).toFixed(d);
+  const storageKey = (k) => `evo360:${window.NIVEL || "ascensao"}:${k}`;
 
-// ---------- DRIP: Dica do dia ----------
-(async function dicaDrip() {
-  try {
-    const LEVEL_ID = window.NIVEL
-      || (location.pathname.match(/ascensao-[\w-]+/)||[])[0]
-      || 'ascensao-9xxxx';
+  // Cache-bust para JSON (evita stale)
+  const jsonURL = (() => {
+    const base = window.DATA_DICAS || "../../data/ascensao.json";
+    const sep = base.includes("?") ? "&" : "?";
+    return `${base}${sep}cb=${Date.now()}`;
+  })();
 
-    const DRIP_ID  = 'card1_dicas_orientacoes';
+  // ---------- DRIP de Dicas ----------
+  let dicas = [];
+  let idx = 0;
 
-    const startISO = (typeof Drip !== 'undefined')
-      ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
-      : (new Date()).toISOString().slice(0,10);
-
-    async function load(url) {
-      try {
-        if (!url) return null;
-        const r = await fetch(cacheBust(url), { cache: 'no-store' });
-        if (!r.ok) throw 0;
-        return await r.json();
-      } catch {
-        return null;
-      }
+  async function loadDicas() {
+    try {
+      const res = await fetch(jsonURL, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("JSON não é array");
+      dicas = data;
+      // Recupera progresso local se existir
+      const saved = localStorage.getItem(storageKey("dicaIndex"));
+      idx = saved ? clamp(parseInt(saved, 10), 0, dicas.length - 1) : 0;
+      renderDica();
+    } catch (err) {
+      console.error("[Dicas] Falha ao carregar JSON:", err);
+      $("#dicaTexto").textContent = "Não consegui carregar as dicas agora. Verifica o caminho do JSON.";
+      $("#dicaMeta").textContent = String(err);
     }
-
-    // tenta caminho informado; se falhar, tenta fallback absoluto
-    let raw = await load(window.DATA_DICAS);
-    if (!raw && window.DATA_DICAS !== '/data/ascensao.json') {
-      raw = await load('/data/ascensao.json');
-    }
-
-    const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-    if (!data || data.length === 0) {
-      $('#dica-meta')?.textContent  = 'Dia —';
-      $('#dica-texto')?.textContent = 'Dica indisponível.';
-      return;
-    }
-
-    const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
-
-    const meta  = $('#dica-meta');
-    const texto = $('#dica-texto');
-    const prev  = $('#btnPrev');
-    const next  = $('#btnNext');
-
-    if (texto) {
-      texto.style.whiteSpace   = 'normal';
-      texto.style.overflowWrap = 'anywhere';
-      texto.style.wordBreak    = 'break-word';
-      texto.style.lineHeight   = '1.6';
-      texto.style.marginTop    = '6px';
-    }
-
-    const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-    const LS = {
-      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
-
-    let day = LS.get(VIEW_KEY, todayIdx);
-
-    function render() {
-      const cap = Math.max(1, todayIdx);
-      day = Math.max(1, Math.min(day, cap));
-      const item = data[day - 1];
-
-      if (item) {
-        const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
-
-        meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`);
-
-        const blocoHTML = (item.conceito || item.orientacao)
-          ? `
-            <div class="dica-bloco">
-              ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-              ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
-            </div>
-            `
-          : `<p style="margin:0">${item.texto || ''}</p>`;
-
-        texto && (texto.innerHTML = blocoHTML);
-      } else {
-        meta  && (meta.textContent  = `Dia ${day} de ${MAX_DAYS}`);
-        texto && (texto.textContent = 'Dica indisponível.');
-      }
-
-      prev && (prev.disabled = day <= 1);
-      next && (next.disabled = day >= cap);
-      LS.set(VIEW_KEY, day);
-    }
-
-    prev?.addEventListener('click', () => { day--; render(); });
-    next?.addEventListener('click', () => { day++; render(); });
-    render();
-  } catch (e) {
-    console.warn('drip init falhou:', e);
-  }
-})();
-
-// ---------- Abas (Calculadoras) ----------
-(function tabs() {
-  const tabs = $$('.tabs .tab');
-  const panels = $$('.panel');
-  if (!tabs.length || !panels.length) return;
-
-  function activate(tabEl) {
-    tabs.forEach(x => x.classList.remove('active'));
-    panels.forEach(p => p.classList.remove('active'));
-    tabEl.classList.add('active');
-    const key = tabEl.dataset.tab;
-    const panel = key ? document.getElementById('panel-' + key) : null;
-    (panel || panels[0])?.classList.add('active');
   }
 
-  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
-  activate(tabs.find(t=>t.classList.contains('active')) || tabs[0]);
-})();
-
-// ---------- Calculadora · FC de Reserva (Karvonen) ----------
-(function karvonen() {
-  const idade = $('#k_idade');
-  const fcr   = $('#k_fcr');
-  const out   = $('#k_out');
-  const table = $('#k_table');
-  const btn   = $('#k_calcBtn');
-  const clr   = $('#k_clearBtn');
-  if (!idade || !fcr || !out || !table || !btn || !clr) return;
-
-  const hrMax = (age) => 208 - 0.7*age; // fórmula atualizada
-  const target = (hmax, fcrep, frac) => Math.round(((hmax - fcrep) * frac) + fcrep);
-
-  function construirTabela(hmax, fcrep){
-    const pcts = [50,55,60,65,70,75,80];
-    return pcts.map(p=>{
-      const thr = target(hmax, fcrep, p/100);
-      return `<div class="row" style="justify-content:space-between"><span>${p}% da FC de reserva</span><strong>${thr} bpm</strong></div>`;
-    }).join('');
+  function renderDica() {
+    if (!dicas.length) return;
+    const item = dicas[idx];
+    $("#dicaTexto").textContent = item?.texto || "—";
+    $("#dicaIndex").textContent = `${idx + 1}/${dicas.length}`;
+    $("#dicaMeta").textContent = item?.tag ? `Tema: ${item.tag}` : "";
+    localStorage.setItem(storageKey("dicaIndex"), String(idx));
   }
 
-  function calcular() {
-    const a = parseFloat(idade.value);
-    const r = parseFloat(fcr.value);
-    if (!Number.isFinite(a) || !Number.isFinite(r) || a<10 || a>100 || r<30 || r>120){
-      out.textContent = 'Preencha idade (10–100) e FC de repouso (30–120).';
-      table.innerHTML = '';
-      return;
-    }
-    const hmax = hrMax(a);
-    const lo = target(hmax, r, 0.50);
-    const hi = target(hmax, r, 0.65);
-    out.innerHTML = `FC máx. (estimada): <strong>${Math.round(hmax)} bpm</strong><br><span class="small muted">Faixa sugerida (Ascensão): ${lo}–${hi} bpm</span>`;
-    table.innerHTML = construirTabela(hmax, r);
+  function bindDrip() {
+    $("#btnPrev")?.addEventListener("click", () => {
+      if (!dicas.length) return;
+      idx = (idx - 1 + dicas.length) % dicas.length;
+      renderDica();
+    });
+    $("#btnNext")?.addEventListener("click", () => {
+      if (!dicas.length) return;
+      idx = (idx + 1) % dicas.length;
+      renderDica();
+    });
   }
 
-  function limpar(){
-    idade.value=''; fcr.value='';
-    out.textContent='Informe idade e FC de repouso e clique em Calcular.';
-    table.innerHTML='';
+  // ---------- Tabs ----------
+  function bindTabs() {
+    const buttons = $$(".tab-btn");
+    const panels = $$(".tab-panel");
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetSel = btn.getAttribute("data-tab-target");
+        if (!targetSel) return;
+
+        // desmarca tudo
+        buttons.forEach((b) => b.setAttribute("aria-selected", "false"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        // ativa atual
+        btn.setAttribute("aria-selected", "true");
+        const panel = $(targetSel);
+        panel?.classList.add("active");
+      });
+    });
   }
 
-  btn.addEventListener('click', calcular);
-  clr.addEventListener('click', limpar);
-  [idade,fcr].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); calcular(); }}));
-})();
-
-// ---------- Calculadora · TMB ----------
-(function tmb() {
-  const peso = $('#t_peso');
-  const alt  = $('#t_altura');
-  const ida  = $('#t_idade');
-  const sex  = $('#t_sexo');
-  const out  = $('#t_out');
-  if (!peso || !alt || !ida || !sex || !out) return;
-
-  function calc() {
-    const p = parseFloat(peso.value);
-    const h = parseFloat(alt.value);
-    const i = parseFloat(ida.value);
-    const s = (sex.value||'f').toLowerCase();
-    if (![p,h,i].every(Number.isFinite)) { out.textContent='Preencha peso, altura e idade.'; return; }
-    const base = (10*p) + (6.25*h) - (5*i);
-    const tmb  = Math.round(s==='m' ? base + 5 : base - 161);
-    out.innerHTML = `Sua TMB estimada: <strong>${tmb} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+  // ---------- Karvonen ----------
+  function fcMax208(age) {
+    return 208 - 0.7 * age;
   }
-  ['input','change'].forEach(ev=>{ peso.addEventListener(ev,calc); alt.addEventListener(ev,calc); ida.addEventListener(ev,calc); sex.addEventListener(ev,calc); });
-  calc();
+
+  function karvonen(age, fcr, intensity) {
+    const fmax = fcMax208(age);
+    return ((fmax - fcr) * intensity) + fcr;
+  }
+
+  function renderKarvonenTable(age, fcr) {
+    const table = $("#k_table");
+    const out = $("#k_out");
+    const tbody = $("#k_table tbody");
+
+    const zonas = [
+      { nome: "Recuperação", i0: 0.50, i1: 0.60 },
+      { nome: "Aeróbio leve", i0: 0.60, i1: 0.70 },
+      { nome: "Aeróbio moderado", i0: 0.70, i1: 0.80 },
+      { nome: "Limiar/forte", i0: 0.80, i1: 0.90 },
+      { nome: "Alta intensidade", i0: 0.90, i1: 0.95 },
+    ];
+
+    const fmax = fcMax208(age);
+    out.style.display = "block";
+    out.innerHTML = `FC<sub>máx</sub> estimada: <b>${fmt(fmax, 0)} bpm</b>`;
+
+    tbody.innerHTML = zonas.map(z => {
+      const lo = karvonen(age, fcr, z.i0);
+      const hi = karvonen(age, fcr, z.i1);
+      return `<tr>
+        <td>${z.nome}</td>
+        <td>${fmt(z.i0*100,0)}–${fmt(z.i1*100,0)}%</td>
+        <td>${fmt(lo,0)}–${fmt(hi,0)} bpm</td>
+      </tr>`;
+    }).join("");
+
+    table.style.display = "table";
+  }
+
+  function bindKarvonen() {
+    const idade = $("#k_idade");
+    const fcr = $("#k_fcr");
+    const btn = $("#k_calcBtn");
+    const clr = $("#k_clearBtn");
+    const table = $("#k_table");
+    const out = $("#k_out");
+
+    btn?.addEventListener("click", () => {
+      const a = clamp(parseInt(idade.value, 10), 10, 90);
+      const r = clamp(parseInt(fcr.value, 10), 30, 120);
+      if (Number.isNaN(a) || Number.isNaN(r)) return;
+      renderKarvonenTable(a, r);
+    });
+
+    clr?.addEventListener("click", () => {
+      idade.value = "";
+      fcr.value = "";
+      table.style.display = "none";
+      out.style.display = "none";
+      $("#k_table tbody").innerHTML = "";
+    });
+  }
+
+  // ---------- TMB ----------
+  function tmbMifflin({ sexo, peso, altura, idade }) {
+    // peso(kg), altura(cm), idade(anos)
+    const base = 10 * peso + 6.25 * altura - 5 * idade;
+    return sexo === "M" ? base + 5 : base - 161;
+  }
+
+  function bindTMB() {
+    const sexo = $("#t_sexo");
+    const idade = $("#t_idade");
+    const altura = $("#t_altura");
+    const peso = $("#t_peso");
+    const atv = $("#t_atividade");
+    const btn = $("#t_calcBtn");
+    const clr = $("#t_clearBtn");
+    const out = $("#t_out");
+
+    btn?.addEventListener("click", () => {
+      const s = sexo.value;
+      const i = clamp(parseInt(idade.value, 10), 10, 90);
+      const h = clamp(parseFloat(altura.value), 120, 250);
+      const p = clamp(parseFloat(peso.value), 30, 250);
+      const fa = parseFloat(atv.value || "1.2");
+
+      if ([s,i,h,p,fa].some(v => Number.isNaN(v))) return;
+
+      const tmb = tmbMifflin({ sexo: s, peso: p, altura: h, idade: i });
+      const tdee = tmb * fa;
+
+      out.style.display = "block";
+      out.innerHTML = `
+        <b>TMB</b>: ${fmt(tmb,0)} kcal/dia<br/>
+        <b>Necessidade estimada (com atividade)</b>: ${fmt(tdee,0)} kcal/dia
+      `;
+    });
+
+    clr?.addEventListener("click", () => {
+      sexo.value = "F";
+      idade.value = "";
+      altura.value = "";
+      peso.value = "";
+      atv.value = "1.2";
+      out.style.display = "none";
+      out.innerHTML = "";
+    });
+  }
+
+  // ---------- Init ----------
+  document.addEventListener("DOMContentLoaded", () => {
+    bindDrip();
+    bindTabs();
+    bindKarvonen();
+    bindTMB();
+    loadDicas();
+  });
 })();
