@@ -35,6 +35,14 @@
     .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
     .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
     .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
+
+    /* microajustes visuais do card novo (sem afetar layout global) */
+    .bullets { display:grid; gap:8px; }
+    .mini { font-size:.95rem; }
+    .tag { display:inline-block; padding:.15rem .5rem; border:1px solid var(--line); border-radius:999px; margin-right:.35rem; }
+    .meal { padding:.6rem .75rem; border:1px solid var(--line); border-radius:10px; background:#0f1318; }
+    .meal h3 { margin:.15rem 0 .35rem; font-size:1rem; color:var(--emerald); }
+    .why { font-size:.9rem; color: var(--ink-2, #9fb3c8); }
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -73,6 +81,75 @@
         <button class="btn" id="btnNext">Próxima</button>
       </div>
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
+    </section>
+
+    <!-- NOVO: Sugestão de Plano Alimentar — Ascensão -->
+    <section class="card" id="plano-alimentar">
+      <h2>Plano alimentar — Ascensão (déficit calórico)</h2>
+      <p class="mini">Baseado no <strong>Guia Nutricional · Nível Ascensão</strong>. Objetivo: promover redução de gordura mantendo performance e saciedade. Inicie com <strong>déficit de 10–20%</strong> do gasto energético diário e ajuste semanalmente conforme resposta (peso, medidas, energia, humor).</p>
+
+      <div class="grid-2">
+        <div>
+          <h3 class="mini" style="color:var(--emerald);margin:.25rem 0 .5rem;">Como definir metas (passo a passo)</h3>
+          <div class="bullets">
+            <div><span class="tag">1</span>Estime a <strong>TMB</strong> na aba “TMB”.</div>
+            <div><span class="tag">2</span>Calcule sua <strong>TDEE</strong> ≈ TMB × fator de atividade (1.2 sedentário · 1.375 leve · 1.55 moderado).</div>
+            <div><span class="tag">3</span>Defina o <strong>déficit</strong>: comece por <strong>−15%</strong> da TDEE (ajustável entre −10% e −20%).</div>
+            <div><span class="tag">4</span><strong>Proteína</strong>: 1.6–2.2 g/kg/dia (prioridade para preservar massa magra).</div>
+            <div><span class="tag">5</span><strong>Gorduras</strong>: 0.8–1.0 g/kg/dia (hormonal/saciedade). Não descer muito disso.</div>
+            <div><span class="tag">6</span><strong>Carboidratos</strong>: o restante das calorias (suporte ao treino e recuperação).</div>
+          </div>
+        </div>
+        <div>
+          <h3 class="mini" style="color:var(--emerald);margin:.25rem 0 .5rem;">Princípios do nível Ascensão</h3>
+          <div class="bullets">
+            <div>• <strong>Alto volume & fibra</strong>: 25–35 g/dia de fibras; vegetais & frutas em cada refeição.</div>
+            <div>• <strong>Hidratação</strong>: ~30–35 ml/kg/dia; ajustar por clima e treino.</div>
+            <div>• <strong>80/20</strong>: 80% alimentos in natura/minimamente processados; 20% margem flexível.</div>
+            <div>• <strong>Timing</strong> (ex.: dias de treino): pré 1–3h com carbo+proteína; pós até 1–2h com proteína 0,3 g/kg e carbo.</div>
+            <div>• <strong>Refeed leve</strong> (opcional, 1×/sem): subir carbo no dia mais pesado de treino se sinais de baixa energia/adesão.</div>
+            <div>• <strong>Monitorar</strong>: peso (média semanal), desempenho, sono, humor. Déficit >25% tende a piorar adesão/performance.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="mini" style="color:var(--emerald);margin:12px 0 6px;">Exemplo de dia (modelo didático)</h3>
+      <div class="grid-2">
+        <div class="meal">
+          <h3>Café da manhã</h3>
+          <div><strong>Alimentos</strong>: Omelete (2–3 ovos) com espinafre e tomate + 1 fruta + 1 fatia de pão integral.</div>
+          <div class="why"><em>Por quê?</em> Proteína de alta saciedade; vegetais para fibra/micronutrientes; carbo moderado para energia.</div>
+        </div>
+        <div class="meal">
+          <h3>Lanche</h3>
+          <div><strong>Alimentos</strong>: Iogurte natural + frutas vermelhas + aveia/chia.</div>
+          <div class="why"><em>Por quê?</em> Proteína + fibra aumentam saciedade no intervalo.</div>
+        </div>
+        <div class="meal">
+          <h3>Almoço</h3>
+          <div><strong>Alimentos</strong>: Filé de frango/peixe magro + arroz integral/batatadoce + salada grande com azeite medido.</div>
+          <div class="why"><em>Por quê?</em> Prato de corte: ½ vegetais, ¼ proteína, ¼ carbo — energia com controle calórico.</div>
+        </div>
+        <div class="meal">
+          <h3>Pré-treino</h3>
+          <div><strong>Alimentos</strong>: Banana + pão/fatia integral com pasta de amendoim (fina) ou mel.</div>
+          <div class="why"><em>Por quê?</em> Carbo de fácil digestão para treino; gordura baixa/moderada para não pesar.</div>
+        </div>
+        <div class="meal">
+          <h3>Pós-treino/Jantar</h3>
+          <div><strong>Alimentos</strong>: Carne magra/ovos/tofu + arroz/batata + legumes salteados.</div>
+          <div class="why"><em>Por quê?</em> Proteína ~0,3 g/kg e carbo para recuperar glicogênio e reparar tecidos.</div>
+        </div>
+        <div class="meal">
+          <h3>Ceia (opcional)</h3>
+          <div><strong>Alimentos</strong>: Queijo cottage/iogurte grego + fruta ou mix de castanhas (pequena porção).</div>
+          <div class="why"><em>Por quê?</em> Proteína lenta/saciante; ajuda a controlar fome noturna.</div>
+        </div>
+      </div>
+
+      <p class="mini" style="margin-top:10px">
+        <strong>Ajuste fino:</strong> use sua TMB/TDEE e metas de proteína/gordura para calibrar porções. Suba ou desça carbo conforme volume de treino e sinais de fadiga. Revise semanalmente (0,3–0,7% do peso corporal/sem de perda é uma faixa comum).
+      </p>
     </section>
 
     <!-- Calculadoras -->
