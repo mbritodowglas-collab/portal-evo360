@@ -6,7 +6,6 @@
   <title>EVO360 · Ascensão</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <!-- Se tiver um tema próprio da Ascensão, troque a linha abaixo pelo arquivo do tema -->
   <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
   <meta name="theme-color" content="#063527">
 
@@ -14,7 +13,7 @@
     /* Texto justificado */
     .content p, .content li { text-align: justify; }
 
-    /* Banner – verde esmeralda (usa sua imagem + overlay) */
+    /* Banner – verde esmeralda */
     .banner-full{
       width:100%; height:240px; margin:0 0 24px 0;
       background:
@@ -50,6 +49,18 @@
       html,body{ overflow-x:hidden !important; }
       .banner-full{ height:220px; }
     }
+
+    /* Bloco da calculadora */
+    .calc-card{
+      border:1px solid var(--line);
+      background:#0f1318;
+      border-radius:12px;
+      padding:12px;
+      margin-top:12px;
+    }
+    .calc-card h3{ color:#00b37e; margin:0 0 8px 0; }
+    .calc-card input{ width:140px; margin-left:8px; }
+    .calc-card .muted{ margin-top:8px; display:block; }
   </style>
 </head>
 
@@ -111,12 +122,21 @@
       <ul class="criteria">
         <li><strong>Consistência:</strong> cumprir pelo menos <strong>12 semanas regulares</strong> de treino, com presença mínima de <strong>80%</strong>.</li>
         <li><strong>Técnica e segurança:</strong> executar movimentos multiarticulares com controle, estabilidade e sem dor.</li>
-        <li><strong>Força:</strong> atingir indicadores básicos (referenciais): agacho ~<strong>1×</strong> o peso corporal e supino ~<strong>0,75×</strong>.</li>
+        <li><strong>Força:</strong> atingir as zonas referenciais: agachamento <strong>0,60–0,90×</strong>, supino <strong>0,35–0,60×</strong> e puxada/remada <strong>0,45–0,75×</strong> do peso corporal.</li>
         <li><strong>Composição corporal:</strong> redução média de <strong>3–6 kg</strong> ou melhora visível de medidas, postura e tônus.</li>
         <li><strong>Capacidade de treino:</strong> realizar rotinas no formato <strong>ABCDE</strong> sem queda importante de rendimento ou fadiga excessiva.</li>
       </ul>
 
-      <p class="muted">
+      <div class="calc-card">
+        <h3>Calculadora rápida de zonas</h3>
+        <p class="muted">Digite seu peso (kg) para ver as faixas de carga estimadas.</p>
+        <label>Peso (kg)
+          <input id="zona_peso" type="number" step="0.1" min="20" max="200" placeholder="ex.: 65">
+        </label>
+        <div id="zona_out" class="muted">Agachamento: 0,60–0,90× · Supino: 0,35–0,60× · Puxada/Remada: 0,45–0,75×</div>
+      </div>
+
+      <p class="muted" style="margin-top:10px">
         <em>O Domínio representa maturidade física e mental. Ao chegar lá, você estará pronta para elevar o padrão
         do corpo e da mente com segurança e constância.</em>
       </p>
@@ -161,7 +181,30 @@
     </section>
   </main>
 
-  <!-- Troque pelo código real do nível, ex.: ascensao-9f3b2 -->
-  <script> window.NIVEL = "ascensao-9xxxx"; </script>
+  <!-- Script da calculadora -->
+  <script>
+  (function(){
+    const peso = document.getElementById('zona_peso');
+    const out  = document.getElementById('zona_out');
+    function f(n){ return (Math.round(n*2)/2).toFixed(1).replace('.',','); } // arredonda de 0,5 em 0,5
+    function calc(){
+      const p = parseFloat(peso.value||'');
+      if(!p || p<20){ 
+        out.textContent = 'Agachamento: 0,60–0,90× · Supino: 0,35–0,60× · Puxada/Remada: 0,45–0,75×';
+        return;
+      }
+      const agMin=p*0.60, agMax=p*0.90;
+      const spMin=p*0.35, spMax=p*0.60;
+      const puMin=p*0.45, puMax=p*0.75;
+      out.innerHTML = 
+        `Agachamento: <strong>${f(agMin)}–${f(agMax)} kg</strong> · ` +
+        `Supino: <strong>${f(spMin)}–${f(spMax)} kg</strong> · ` +
+        `Puxada/Remada: <strong>${f(puMin)}–${f(puMax)} kg</strong>`;
+    }
+    peso?.addEventListener('input', calc);
+  })();
+  </script>
+
+  <script> window.NIVEL = "ascensao-9f3b2"; </script>
 </body>
 </html>
