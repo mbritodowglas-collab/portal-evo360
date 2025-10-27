@@ -1,0 +1,106 @@
+{
+  "semanais": [
+    {
+      "titulo": "Semana 1 · Leitura corporal e autopercepção",
+      "conceito": "Dominar o corpo começa por entender os sinais dele. Energia, fome, sono e humor contam uma história — e você aprende a traduzir.",
+      "orientacao": "Antes de reagir, observe. Anote sensações simples ao longo do dia. Quando o corpo se sente ouvido, ele coopera.",
+      "tarefas": [
+        "Crie um código rápido no celular: E=energia, F=fome, D=descanso. Use 2–3x ao dia.",
+        "Registre 3 momentos em que o corpo pediu algo (pausa, água, comida real).",
+        "Anote como se sentiu antes e depois de atender (ou não) ao pedido do corpo."
+      ]
+    },
+    {
+      "titulo": "Semana 2 · Ciclo feminino e autogestão",
+      "conceito": "Seu ciclo influencia disposição, apetite e foco. Não é falha — é fisiologia. Ajustar o plano ao ciclo é inteligência.",
+      "orientacao": "Mapeie em qual fase está e ajuste intensidade: folicular tende a render mais; lútea pede mais gentileza.",
+      "tarefas": [
+        "Identifique a fase atual do ciclo e descreva energia/sono em 2 linhas.",
+        "Adapte o treino da semana (um pouco mais ou um pouco menos) e registre a sensação.",
+        "Crie um mantra para dias de baixa: “Hoje faço o possível. Consistência me leva.”"
+      ]
+    },
+    {
+      "titulo": "Semana 3 · Desafiando pensamentos automáticos",
+      "conceito": "Pensamento não é ordem. TCC na veia: notar, questionar, substituir. Você comanda o tom da conversa interna.",
+      "orientacao": "Quando a mente vier com ‘não vai dar’, devolva com uma versão realista e gentil.",
+      "tarefas": [
+        "Liste 3 pensamentos sabotadores comuns (ex.: “tô lenta, melhor pular”).",
+        "Escreva a resposta racional para cada um (ex.: “faço o básico com qualidade”).",
+        "Use as frases durante o treino — fale baixinho, mas firme."
+      ]
+    },
+    {
+      "titulo": "Semana 4 · Experimentos comportamentais",
+      "conceito": "A melhor resposta para a mente é dado real. Teste hipóteses e veja o que funciona no seu corpo, hoje.",
+      "orientacao": "Pequenos testes com pré-treino, horário ou volume revelam o que rende de verdade.",
+      "tarefas": [
+        "Teste treinar mesmo com leve cansaço (10–15 min). Avalie desempenho real.",
+        "Experimente 2 opções simples de pré-treino em dias diferentes e compare energia.",
+        "Anote resultado objetivo (carga, repetições, RPE) e sentimento pós-treino."
+      ]
+    },
+    {
+      "titulo": "Semana 5 · Regulação emocional na prática",
+      "conceito": "Entre emoção e ação existe uma escolha. Treinamos esse espaço com respiração e nomeação da emoção.",
+      "orientacao": "Quando vier o impulso (comer por ansiedade, pular treino), respire, nomeie e escolha a menor boa ação possível.",
+      "tarefas": [
+        "Use respiração 4-4-6 por 2 minutos sempre que sentir urgência emocional.",
+        "Escreva: ‘O que estou sentindo agora?’ (raiva, cansaço, tédio).",
+        "Escolha a microação coerente (ex.: aquecimento de 5 min, água, fruta + proteína)."
+      ]
+    },
+    {
+      "titulo": "Semana 6 · Sono, recuperação e cortisol",
+      "conceito": "Dormir é treino invisível. Hormônios, apetite e foco agradecem. Sem sono, o resto vira subida.",
+      "orientacao": "Proteja uma rotina noturna simples: menos tela, luz mais baixa, um fechamento do dia no papel.",
+      "tarefas": [
+        "Defina um horário de ‘desligar’ telas e cumpra 5 dias na semana.",
+        "Crie um mini-ritual de 10–15 min (banho morno, chá, escrita curta).",
+        "No dia seguinte, registre humor e energia (0–10) e compare com a véspera."
+      ]
+    },
+    {
+      "titulo": "Semana 7 · Identidade e coerência",
+      "conceito": "Você age como quem acredita ser. Quando a identidade muda, o esforço cai e a coerência sobe.",
+      "orientacao": "Vista a identidade de quem cuida do corpo todos os dias, mesmo nos dias comuns.",
+      "tarefas": [
+        "Escreva: ‘Quem eu sou hoje no meu processo?’ e ‘Quem estou me tornando?’.",
+        "Escolha 1 ação diária que confirma essa identidade (ex.: proteína em todas as refeições).",
+        "Repita sua frase-identidade pela manhã em voz alta."
+      ]
+    },
+    {
+      "titulo": "Semana 8 · Autonomia e propósito",
+      "conceito": "Domínio é unir corpo, mente e intenção. Você não depende de motivação — depende do seu propósito.",
+      "orientacao": "Feche o ciclo com consciência: o que aprendeu, o que mantém e o que ajusta para o próximo nível.",
+      "tarefas": [
+        "Revise sua trajetória (Fundação → Ascensão → Domínio) em 10 linhas.",
+        "Liste 3 lições-chave sobre corpo, mente e rotina.",
+        "Crie um ritual de encerramento simbólico (playlist, treino solo, carta para si)."
+      ]
+    }
+  ],
+  "micros": [
+    { "titulo": "Bloco 1 · Escaneie a mente", "texto": "Ao acordar, observe o primeiro pensamento do dia. Ele dita o tom. Se for pesado, mude a trilha mental com uma frase de propósito." },
+    { "titulo": "Bloco 2 · Diário de gatilhos", "texto": "Durante o dia, anote 1 situação que despertou ansiedade, vontade de comer ou desistir. Nomear o gatilho é o primeiro passo do controle." },
+    { "titulo": "Bloco 3 · Respiração de regulação", "texto": "Use o ciclo 4-4-6 em três momentos do dia. Reensine o cérebro que calma também é segurança." },
+    { "titulo": "Bloco 4 · Check-in corporal", "texto": "A cada 4 horas, pause e pergunte: ‘Como está meu corpo agora?’. Tensão, fome, sede ou sono? Responder é autorrespeito." },
+    { "titulo": "Bloco 5 · Reescreva o pensamento", "texto": "Pegue um pensamento sabotador e reescreva no papel, transformando em algo funcional. ‘Estou falhando’ → ‘Estou aprendendo o meu ritmo’." },
+    { "titulo": "Bloco 6 · Mini-desafio de foco", "texto": "Durante o treino, escolha 1 exercício e faça com atenção total — respiração, contração e ritmo. É treino mental, não só físico." },
+    { "titulo": "Bloco 7 · Nutrição consciente", "texto": "Durante uma refeição, observe mastigação e prazer real. A mente saciada evita excessos depois." },
+    { "titulo": "Bloco 8 · Reação alternativa", "texto": "Quando o impulso surgir (comer, discutir, desistir), conte até 10 e escolha outra resposta. Você não reage: você escolhe." },
+    { "titulo": "Bloco 9 · Ancoragem positiva", "texto": "Antes do treino, ouça uma música que desperte confiança. Associe-a ao seu estado de presença. Use esse ritual nos dias difíceis." },
+    { "titulo": "Bloco 10 · Voz de mentora", "texto": "Escreva o que diria para uma amiga que está desanimada — e leia como se fosse pra você." },
+    { "titulo": "Bloco 11 · Alimentação emocional", "texto": "Perceba: o que você sente antes de comer sem fome? Anote. O corpo fala emoções não resolvidas pela comida." },
+    { "titulo": "Bloco 12 · Rotina de excelência", "texto": "Escolha 1 hábito simples (organizar roupa, anotar treino, hidratar) e execute com presença total. Excelência começa no básico." },
+    { "titulo": "Bloco 13 · Círculo de energia", "texto": "Liste 3 pessoas, hábitos ou lugares que drenam energia — e 3 que recarregam. Faça 1 ajuste hoje." },
+    { "titulo": "Bloco 14 · Tolerância ao desconforto", "texto": "Durante o treino, quando o desconforto vier, diga mentalmente: ‘Isso é só energia em movimento’. Fique mais 10 segundos." },
+    { "titulo": "Bloco 15 · Presença sem controle", "texto": "Em um momento de caos, respire fundo e apenas observe. Domínio também é não reagir." },
+    { "titulo": "Bloco 16 · Redirecionamento", "texto": "Quando algo frustrar, desvie o foco para uma ação útil em 2 minutos. Energia redirecionada é energia preservada." },
+    { "titulo": "Bloco 17 · Sono restaurador", "texto": "Uma hora antes de dormir, desligue telas e luzes fortes. Leia algo leve. O cérebro precisa desse sinal para reduzir cortisol." },
+    { "titulo": "Bloco 18 · Comunicação interna", "texto": "Durante o treino, observe seu diálogo interno. Está se cobrando ou se guiando? Reescreva o tom em voz de parceira, não de inimiga." },
+    { "titulo": "Bloco 19 · Revisão racional", "texto": "Revise o dia e destaque 1 acerto real. Reforce o progresso, não a falta. O cérebro aprende com o que você valida." },
+    { "titulo": "Bloco 20 · Ritual de encerramento", "texto": "Ao final do ciclo, escreva: ‘O que o Domínio me ensinou sobre mim?’. Guarde esse registro como prova de quem você se tornou." }
+  ]
+}
