@@ -12,14 +12,12 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
-    // Detecta o nível pela URL; fallback para ascensao-9xxxx
     const LEVEL_ID = window.NIVEL
       || (location.pathname.match(/ascensao-[\w-]+/)||[])[0]
       || 'ascensao-9xxxx';
 
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
-    // pode não existir se drip.js não carregar, por isso o try/catch
     const startISO = (typeof Drip !== 'undefined')
       ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
       : (new Date()).toISOString().slice(0,10);
@@ -36,20 +34,14 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     }
 
     const raw = await load(window.DATA_DICAS);
-
-    // Aceita _data como array direto OU como { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
-    // Se não houver dados válidos, mostra fallback e sai
     if (!data || data.length === 0) {
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      if (meta)  meta.textContent  = 'Dia —';
-      if (texto) texto.textContent = 'Dica indisponível.';
+      $('#dica-meta')?.textContent  = 'Dia —';
+      $('#dica-texto')?.textContent = 'Dica indisponível.';
       return;
     }
 
-    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
     const MAX_DAYS = Math.min(60, data.length);
     const todayIdx = (typeof Drip !== 'undefined')
       ? Drip.getTodayIndex(startISO, MAX_DAYS)
@@ -60,7 +52,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
 
-    // garante que textos longos quebrem dentro do card
     if (texto) {
       texto.style.whiteSpace   = 'normal';
       texto.style.overflowWrap = 'anywhere';
@@ -87,10 +78,8 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
                      : (item.categoria === 'nutricao' ? 'Nutrição'
                      : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
 
-        // título no meta (mantendo padrão anterior)
-        if (meta) meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`);
 
-        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
         const blocoHTML = (item.conceito || item.orientacao)
           ? `
             <div class="dica-bloco">
@@ -100,14 +89,14 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
             `
           : `<p style="margin:0">${item.texto || ''}</p>`;
 
-        if (texto) texto.innerHTML = blocoHTML;
+        texto && (texto.innerHTML = blocoHTML);
       } else {
-        if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
-        if (texto) texto.textContent = 'Dica indisponível.';
+        meta  && (meta.textContent  = `Dia ${day} de ${MAX_DAYS}`);
+        texto && (texto.textContent = 'Dica indisponível.');
       }
 
-      if (prev) prev.disabled = (day <= 1);
-      if (next) next.disabled = (day >= cap);
+      prev && (prev.disabled = day <= 1);
+      next && (next.disabled = day >= cap);
       LS.set(VIEW_KEY, day);
     }
 
@@ -121,32 +110,21 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 // ---------- Abas (Calculadoras) ----------
 (function tabs() {
-  const tabs = $$('.tab');
+  const tabs = $$('.tabs .tab');
   const panels = $$('.panel');
-
   if (!tabs.length || !panels.length) return;
 
-  // ajuda a ativar a primeira aba caso nada esteja ativo
   function activate(tabEl) {
     tabs.forEach(x => x.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
     tabEl.classList.add('active');
-
-    const key = tabEl.dataset.tab;                   // ex.: "karvonen" ou "tmb"
-    const target = key ? `#panel-${key}` : null;     // ex.: "#panel-karvonen"
-    const panel = target ? $(target) : null;
-
-    // fallback: se não achar pelo data-tab, mantém a atual
+    const key = tabEl.dataset.tab;
+    const panel = key ? document.getElementById('panel-' + key) : null;
     (panel || panels[0])?.classList.add('active');
   }
 
-  tabs.forEach(tb => {
-    tb.addEventListener('click', () => activate(tb));
-  });
-
-  // garante estado inicial válido
-  const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-  activate(anyActive);
+  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
+  activate(tabs.find(t=>t.classList.contains('active')) || tabs[0]);
 })();
 
 // ---------- Calculadora · FC de Reserva (Karvonen) ----------
@@ -157,64 +135,43 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const table = $('#k_table');
   const btn   = $('#k_calcBtn');
   const clr   = $('#k_clearBtn');
-
   if (!idade || !fcr || !out || !table || !btn || !clr) return;
 
-  function karvonenTarget(fcMax, fcRep, frac) {
-    return Math.round(((fcMax - fcRep) * frac) + fcRep);
-  }
+  const hrMax = (age) => 208 - 0.7*age; // fórmula atualizada
+  const target = (hmax, fcrep, frac) => Math.round(((hmax - fcrep) * frac) + fcrep);
 
-  function construirTabela(fcMax, fcRep) {
-    const linhas = [];
-    for (let pct = 50; pct <= 80; pct += 5) {
-      const frac = pct / 100;
-      const alvo = karvonenTarget(fcMax, fcRep, frac);
-      linhas.push(
-        `<div class="row" style="justify-content:space-between">
-          <span>${pct}% da FC de reserva</span>
-          <strong>${alvo} bpm</strong>
-        </div>`
-      );
-    }
-    return linhas.join('');
+  function construirTabela(hmax, fcrep){
+    const pcts = [50,55,60,65,70,75,80];
+    return pcts.map(p=>{
+      const thr = target(hmax, fcrep, p/100);
+      return `<div class="row" style="justify-content:space-between"><span>${p}%</span><strong>${thr} bpm</strong></div>`;
+    }).join('');
   }
 
   function calcular() {
-    const a = +idade.value || 0;
-    const r = +fcr.value   || 0;
-
-    if (a <= 0 || r <= 0) {
-      out.textContent = 'Informe idade e FC de repouso.';
+    const a = parseFloat(idade.value);
+    const r = parseFloat(fcr.value);
+    if (!Number.isFinite(a) || !Number.isFinite(r) || a<10 || a>100 || r<30 || r>120){
+      out.textContent = 'Preencha idade (10–100) e FC de repouso (30–120).';
       table.innerHTML = '';
       return;
     }
-
-    const fcMax = 220 - a; // estimativa
-    const alvo50 = karvonenTarget(fcMax, r, 0.50);
-    const alvo65 = karvonenTarget(fcMax, r, 0.65);
-
-    out.innerHTML = `
-      FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-      <span class="small muted">Faixa sugerida (Ascensão): ${alvo50}–${alvo65} bpm</span>
-    `;
-    table.innerHTML = construirTabela(fcMax, r);
+    const hmax = hrMax(a);
+    const lo = target(hmax, r, 0.50);
+    const hi = target(hmax, r, 0.65);
+    out.innerHTML = `HRmáx ≈ <strong>${Math.round(hmax)} bpm</strong><br><span class="small muted">Faixa sugerida (Ascensão): ${lo}–${hi} bpm</span>`;
+    table.innerHTML = construirTabela(hmax, r);
   }
 
-  function limpar() {
-    idade.value = '';
-    fcr.value   = '';
-    out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
-    table.innerHTML = '';
+  function limpar(){
+    idade.value=''; fcr.value='';
+    out.textContent='Informe idade e FC de repouso e clique em Calcular.';
+    table.innerHTML='';
   }
 
   btn.addEventListener('click', calcular);
   clr.addEventListener('click', limpar);
-
-  [idade, fcr].forEach(el => {
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); calcular(); }
-    });
-  });
+  [idade,fcr].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); calcular(); }}));
 })();
 
 // ---------- Calculadora · TMB ----------
@@ -224,30 +181,19 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const ida  = $('#t_idade');
   const sex  = $('#t_sexo');
   const out  = $('#t_out');
-
   if (!peso || !alt || !ida || !sex || !out) return;
 
   function calc() {
-    const p = +peso.value || 0;
-    const h = +alt.value  || 0;
-    const i = +ida.value  || 0;
-    const s = sex.value || 'f';
-
-    if (p > 0 && h > 0 && i > 0) {
-      const base = Math.round((10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5));
-      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
-        <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
-    } else {
-      out.textContent = 'Preencha peso, altura e idade.';
-    }
+    const p = parseFloat(peso.value);
+    const h = parseFloat(alt.value);
+    const i = parseFloat(ida.value);
+    const s = (sex.value||'f').toLowerCase();
+    if (![p,h,i].every(Number.isFinite)) { out.textContent='Preencha peso, altura e idade.'; return; }
+    const base = (10*p) + (6.25*h) - (5*i);
+    const tmb  = Math.round(s==='m' ? base + 5 : base - 161);
+    out.innerHTML = `Sua TMB estimada: <strong>${tmb} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
   }
-
-  ['input','change'].forEach(ev=>{
-    peso.addEventListener(ev, calc);
-    alt.addEventListener(ev, calc);
-    ida.addEventListener(ev, calc);
-    sex.addEventListener(ev, calc);
-  });
+  ['input','change'].forEach(ev=>{ peso.addEventListener(ev,calc); alt.addEventListener(ev,calc); ida.addEventListener(ev,calc); sex.addEventListener(ev,calc); });
   calc();
 })();
 </script>
