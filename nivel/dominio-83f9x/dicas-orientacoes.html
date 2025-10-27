@@ -114,59 +114,93 @@
       </div>
     </section>
 
-    <!-- Plano alimentar -->
+    <!-- Plano alimentar (COM DESCRIÇÕES) -->
     <section class="card" id="plano-alimentar">
       <h2>Plano alimentar — Domínio (performance e manutenção)</h2>
 
       <p class="mini">
-        Objetivo: <strong>melhorar performance e composição corporal</strong> ajustando a nutrição ao alto rendimento.
+        Nesta fase, seu corpo já entende o jogo: responde melhor, recupera mais rápido e pede energia de qualidade.
+        O foco agora é sustentar <strong>performance</strong> e <strong>composição corporal</strong>, mantendo o metabolismo ativo
+        e o rendimento alto nos treinos.
       </p>
 
-      <h3 class="mini" style="color:var(--ruby);margin:.25rem 0 .5rem;">Como fazer (passo a passo)</h3>
+      <h3 class="mini" style="color:var(--ruby);margin:.25rem 0 .5rem;">Como aplicar</h3>
       <div class="bullets">
-        <div><span class="tag">1</span>Na aba <strong>TMB</strong>, preencha peso, altura, idade e sexo.</div>
-        <div><span class="tag">2</span>Escolha o <strong>fator de atividade</strong> e o <strong>objetivo</strong> abaixo (déficit ou superávit).</div>
-        <div><span class="tag">3</span>Monte o prato: ½ <strong>vegetais</strong>, 1 <strong>palma</strong> de <strong>proteína</strong>, 1 <strong>punho</strong> de <strong>carbo</strong> e 1 <strong>polegar</strong> de <strong>gordura boa</strong>.</div>
+        <div><span class="tag">1</span>Calcule sua <strong>TMB</strong> na aba acima e escolha o <strong>fator de atividade</strong> e o <strong>objetivo</strong> (déficit ou superávit leve).</div>
+        <div><span class="tag">2</span>Monte o prato equilibrando os quatro pilares: <strong>proteína, carboidrato, gordura boa e vegetais</strong>.</div>
+        <div><span class="tag">3</span>Use o cálculo para ajustar quantidades, mas mantenha o foco em <strong>qualidade e constância</strong>.</div>
       </div>
 
-      <!-- Metas automáticas (vinculadas à TMB) -->
-      <div class="metas" id="pf_metas">
-        <div class="row">
-          <label>Atividade:
-            <select id="pf_atividade">
-              <option value="1.375">Leve (1.375)</option>
-              <option value="1.55" selected>Moderada (1.55)</option>
-              <option value="1.725">Alta (1.725)</option>
-              <option value="1.9">Atleta (1.9)</option>
-            </select>
-          </label>
-          <label>Objetivo:
-            <select id="pf_objetivo">
-              <option value="-0.10">Déficit (10%)</option>
-              <option value="-0.05">Déficit leve (5%)</option>
-              <option value="0">Manutenção</option>
-              <option value="0.05">Superávit leve (5%)</option>
-              <option value="0.10" selected>Superávit (10%)</option>
-            </select>
-          </label>
+      <h3 class="mini" style="color:var(--ruby);margin-top:12px;">A lógica por trás do seu prato</h3>
+
+      <div class="grid-2" style="margin-top:8px">
+        <div class="meal">
+          <h3>1. Proteína — o tijolo da performance</h3>
+          <p>É o que mantém seu corpo firme, preserva massa magra e acelera a recuperação muscular.
+          Nesta fase, seu corpo precisa de uma dose maior (cerca de <strong>2,0 g/kg</strong>) para sustentar força e definição.</p>
+          <div class="why"><em>Fontes:</em> ovos, peixes, frango, carne magra, iogurte natural, whey, grão-de-bico.</div>
+          <div class="why"><em>Benefício:</em> ajuda a manter o metabolismo alto e reduz a fome entre as refeições.</div>
         </div>
 
-        <div class="grid">
-          <div class="kv"><span>TMB (estimada)</span><b id="pf_tmb">— kcal</b></div>
-          <div class="kv"><span>TDEE (manutenção)</span><b id="pf_tdee">— kcal</b></div>
-          <div class="kv"><span>Alvo diário</span><b id="pf_kcal">— kcal</b></div>
-          <div class="kv"><span>Proteína</span><b id="pf_prot">— g</b><div class="hint">padrão 2,0 g/kg</div></div>
-          <div class="kv"><span>Gorduras</span><b id="pf_gord">— g</b><div class="hint">padrão 1,0 g/kg</div></div>
-          <div class="kv"><span>Carboidratos</span><b id="pf_carb">— g</b><div class="hint">restante das kcal</div></div>
+        <div class="meal">
+          <h3>2. Carboidrato — o combustível inteligente</h3>
+          <p>Sem energia, o desempenho cai e o corpo quebra músculo para gerar força.
+          O carboidrato aqui é o combustível certo para aguentar o treino e estabilizar os hormônios de estresse.</p>
+          <div class="why"><em>Fontes:</em> batata-doce, arroz integral, mandioca, frutas, aveia, pão integral.</div>
+          <div class="why"><em>Benefício:</em> melhora foco, força e evita quedas de energia durante o dia.</div>
+        </div>
+
+        <div class="meal">
+          <h3>3. Gorduras boas — o equilíbrio hormonal</h3>
+          <p>São essenciais para regular os hormônios femininos e manter pele, cabelo e humor equilibrados.
+          Cortar gordura demais nesta fase pode afetar seu ciclo e recuperação.</p>
+          <div class="why"><em>Fontes:</em> azeite, castanhas, abacate, sementes, peixes gordos.</div>
+          <div class="why"><em>Benefício:</em> aumenta saciedade e favorece a liberação hormonal adequada.</div>
+        </div>
+
+        <div class="meal">
+          <h3>4. Vegetais e fibras — o sistema de sustentação</h3>
+          <p>Ricos em micronutrientes, eles controlam inflamação, melhoram digestão e mantêm seu intestino ativo —
+          essencial para metabolizar bem os nutrientes.</p>
+          <div class="why"><em>Fontes:</em> folhas verdes, legumes coloridos, frutas ricas em fibra, leguminosas.</div>
+          <div class="why"><em>Benefício:</em> ajudam o corpo a aproveitar melhor a proteína e os carboidratos.</div>
         </div>
       </div>
 
-      <p class="mini" style="margin-top:10px">
-        <strong>Orientação:</strong>  
-        Escolha o caminho que combina com seu momento:  
-        <em>Déficit</em> para lapidar e reduzir gordura,  
-        <em>superávit</em> para ganhar performance e firmeza.  
-        O cálculo se ajusta automaticamente.
+      <h3 class="mini" style="color:var(--ruby);margin-top:16px;">Distribuição ideal do dia</h3>
+      <p class="mini">
+        O ideal é ter proteína em todas as refeições e ajustar o carboidrato conforme o momento do treino:
+        <em>mais carboidrato no pré e pós-treino</em>, e <em>menos nas refeições distantes da atividade</em>.
+        Gorduras boas e vegetais aparecem em todos os momentos.
+      </p>
+
+      <div class="grid-2" style="margin-top:10px">
+        <div class="meal">
+          <h3>Café da manhã</h3>
+          <p>Omelete com legumes + fruta + aveia.</p>
+          <div class="why"><em>Por quê?</em> repõe glicogênio e fornece proteína logo cedo para manter energia e foco mental.</div>
+        </div>
+        <div class="meal">
+          <h3>Pré-treino</h3>
+          <p>Banana + pão integral com pasta de amendoim.</p>
+          <div class="why"><em>Por quê?</em> energia rápida, sem pesar. Evita queda de rendimento no treino.</div>
+        </div>
+        <div class="meal">
+          <h3>Pós-treino</h3>
+          <p>Frango + arroz + legumes ou shake proteico + fruta.</p>
+          <div class="why"><em>Por quê?</em> recupera energia, repara músculos e reduz inflamação pós-exercício.</div>
+        </div>
+        <div class="meal">
+          <h3>Jantar</h3>
+          <p>Peixe + vegetais salteados + azeite.</p>
+          <div class="why"><em>Por quê?</em> leve, digestivo e rico em gorduras boas que ajudam na recuperação noturna.</div>
+        </div>
+      </div>
+
+      <p class="mini" style="margin-top:12px">
+        <strong>Resumo:</strong>
+        No Domínio, você alimenta o corpo para <strong>performar melhor, treinar com mais energia e manter o físico firme</strong>.
+        A constância e o equilíbrio entre proteína, carboidrato, gordura e vegetais são o segredo da manutenção elegante — sem extremos.
       </p>
     </section>
   </main>
@@ -179,68 +213,5 @@
 
   <script src="../../assets/js/drip.js?v=22" defer></script>
   <script src="./dicas-orientacoes.js?v=22" defer></script>
-
-  <!-- Script de cálculo automático das metas -->
-  <script>
-  (function(){
-    const $ = (s,r=document)=>r.querySelector(s);
-
-    const peso   = $('#t_peso');
-    const altura = $('#t_altura');
-    const idade  = $('#t_idade');
-    const sexo   = $('#t_sexo');
-
-    const fa  = $('#pf_atividade');
-    const obj = $('#pf_objetivo');
-
-    const outTMB  = $('#pf_tmb');
-    const outTDEE = $('#pf_tdee');
-    const outAlvo = $('#pf_kcal');
-    const outProt = $('#pf_prot');
-    const outGord = $('#pf_gord');
-    const outCarb = $('#pf_carb');
-
-    const num   = v => isFinite(+v) ? +v : 0;
-    const round = v => Math.round(v);
-
-    function recalc(){
-      const p  = num(peso?.value);
-      const h  = num(altura?.value);
-      const i  = num(idade?.value);
-      const sx = (sexo?.value || 'f').toLowerCase();
-      const fator = num(fa?.value) || 1.55;
-      const objetivo = num(obj?.value) || 0;
-      const gProt = 2.0;
-      const gGord = 1.0;
-
-      if(!(p>0 && h>0 && i>0)){
-        [outTMB,outTDEE,outAlvo,outProt,outGord,outCarb].forEach(o=>o.textContent='—');
-        return;
-      }
-
-      const tmb = round((10*p) + (6.25*h) - (5*i) + (sx==='f' ? -161 : 5));
-      const tdee = round(tmb * fator);
-      const alvo = round(tdee * (1 + objetivo));
-
-      const prot = round(gProt * p);
-      const gord = round(gGord * p);
-      const kcalProt = prot * 4;
-      const kcalGord = gord * 9;
-      const carb = Math.max(0, round((alvo - kcalProt - kcalGord) / 4));
-
-      outTMB.textContent  = tmb + ' kcal';
-      outTDEE.textContent = tdee + ' kcal';
-      outAlvo.textContent = alvo + ' kcal';
-      outProt.textContent = prot + ' g';
-      outGord.textContent = gord + ' g';
-      outCarb.textContent = carb + ' g';
-    }
-
-    ['input','change'].forEach(ev=>{
-      [peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc));
-    });
-    recalc();
-  })();
-  </script>
 </body>
 </html>
