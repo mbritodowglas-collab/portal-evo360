@@ -75,6 +75,13 @@
 
     /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
     #goalCurrentWrap { display: none !important; }
+
+    /* ===== Overrides solicitados: títulos ruby ===== */
+    :root { --ruby:#ff5e5e; }
+    .content h1, .content h2, .content h3,
+    .card h1, .card h2, .card h3,
+    .content .card h1, .content .card h2, .content .card h3,
+    .habits-title { color: var(--ruby) !important; }
   </style>
 </head>
 
@@ -98,8 +105,8 @@
 
   <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner (trocado para Domínio, conforme pedido) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-dominio-hero.jpg')" aria-hidden="true"></header>
 
     <!-- Card -->
     <section class="card">
