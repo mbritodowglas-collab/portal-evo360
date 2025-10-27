@@ -23,6 +23,11 @@
       box-shadow:0 6px 24px rgba(0,0,0,.25);
     }
 
+    /* ===== Cor dos títulos (Ascensão) ===== */
+    :root{ --asc-emerald:#00b37e; }
+    .content h2, .content h3,
+    .card h2, .card h3 { color: var(--asc-emerald); }
+
     /* Grade dos cards */
     .tiles.tiles-modern{ display:grid; gap:18px; grid-template-columns:1fr; }
     @media (min-width:720px){ .tiles.tiles-modern{ grid-template-columns:repeat(2,1fr);} }
@@ -189,14 +194,14 @@
     function f(n){ return (Math.round(n*2)/2).toFixed(1).replace('.',','); } // arredonda de 0,5 em 0,5
     function calc(){
       const p = parseFloat(peso.value||'');
-      if(!p || p<20){ 
+      if(!p || p<20){
         out.textContent = 'Agachamento: 0,60–0,90× · Supino: 0,35–0,60× · Puxada/Remada: 0,45–0,75×';
         return;
       }
       const agMin=p*0.60, agMax=p*0.90;
       const spMin=p*0.35, spMax=p*0.60;
       const puMin=p*0.45, puMax=p*0.75;
-      out.innerHTML = 
+      out.innerHTML =
         `Agachamento: <strong>${f(agMin)}–${f(agMax)} kg</strong> · ` +
         `Supino: <strong>${f(spMin)}–${f(spMax)} kg</strong> · ` +
         `Puxada/Remada: <strong>${f(puMin)}–${f(puMax)} kg</strong>`;
