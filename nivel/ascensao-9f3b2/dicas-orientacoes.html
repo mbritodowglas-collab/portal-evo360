@@ -4,6 +4,7 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Ascensão · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
+  <!-- Layout do Fundação (intacto) -->
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
@@ -11,10 +12,9 @@
     /* texto justificado nesta página */
     .content p, .content li { text-align: justify; }
 
-    /* abas e painéis */
+    /* abas e painéis (mantidos) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;color:#ccc;transition:.3s}
-    .tab.active{border-color:#00b37e;background:#10211b;color:#00b37e;font-weight:600}
     .panel{display:none}
     .panel.active{display:block}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -22,57 +22,19 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* Verde esmeralda aplicado aos títulos */
-    h2 {
-      color:#00b37e;
-    }
-
-    /* Labels dos blocos de dica */
-    .dica-label {
-      font-weight:700;
-      color:#00b37e !important;
-      margin:6px 0 2px;
-    }
-
-    /* Botões */
-    .btn {
-      background:#00b37e;
-      border:none;
-      color:#fff;
-      transition:.3s;
-    }
-    .btn:hover {
-      background:#00c78f;
-    }
-    .btn.ghost {
-      background:transparent;
-      border:1px solid #00b37e;
-      color:#00b37e;
-    }
-    .btn.ghost:hover {
-      background:#00b37e;
-      color:#fff;
-    }
-
     /* --- Garantir quebra de texto nos cards --- */
-    #dica-meta{
-      display:block;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.35;
-    }
-    #dica-texto{
-      margin-top:6px;
-      white-space:pre-wrap;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.55;
-    }
-    .card p, .card small{
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
+    #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
+    #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
+    .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
+
+    /* ===== Overrides mínimos: verde esmeralda (sem mexer no layout) ===== */
+    :root{ --emerald:#00b37e; }
+    .content h2, .card h2, .content .card h2{ color:var(--emerald) !important; }
+    .content h2 *, .card h2 *{ color:var(--emerald) !important; }
+    .tab.active{ border-color:rgba(0,179,126,.35) !important; color:var(--emerald) !important; background:#10211b !important; }
+    .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
+    .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
+    .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -94,10 +56,10 @@
   </aside>
 
   <main class="content">
-    <!-- Banner -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner (só troca o arquivo; adiciona cache-bust para evitar imagem antiga) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22')" aria-hidden="true"></header>
 
-    <!-- Dica do dia -->
+    <!-- Dica do dia (gotejamento) -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -124,14 +86,11 @@
           <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
           <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado/intenso)</div>
         </div>
-
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-
         <div class="row-actions">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
-
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
@@ -151,12 +110,14 @@
     </section>
   </main>
 
+  <!-- Definições globais -->
   <script>
     window.NIVEL = "ascensao-9f3b2";
     window.DATA_DICAS = "../../data/ascensao.json";
   </script>
 
-  <script src="../../assets/js/drip.js?v=21" defer></script>
-  <script src="./dicas-orientacoes.js?v=21" defer></script>
+  <!-- Ordem: drip antes; v=22 para cache-bust -->
+  <script src="../../assets/js/drip.js?v=22" defer></script>
+  <script src="./dicas-orientacoes.js?v=22" defer></script>
 </body>
 </html>
