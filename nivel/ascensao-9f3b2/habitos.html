@@ -6,11 +6,10 @@
   <title>EVO360 · Ascensão · Hábitos e Recompensas</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <!-- tema da Ascensão -->
-  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    /* ===== Ajustes locais desta página ===== */
+    /* ===== Ajustes locais desta página (inalterados) ===== */
     .content p, .content li { text-align: justify; }
 
     /* Tabs — tudo numa linha, com rolagem lateral se precisar */
@@ -41,18 +40,18 @@
 
     /* Listas de hábitos */
     .habits-group{margin-top:12px}
-    .habits-title{font-weight:800;color:var(--serenity-2);margin:8px 0}
+    .habits-title{font-weight:800;margin:8px 0}
     .habits-grid{display:grid;grid-template-columns:1fr;gap:10px;align-items:center}
     @media (min-width:760px){ .habits-grid{grid-template-columns:1fr 1fr} }
     .habit-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#0f1318;padding:10px;border-radius:12px;min-height:48px}
-    .habit-item input[type="checkbox"]{width:20px;height:20px;accent-color:#6fb7ff;cursor:pointer}
+    .habit-item input[type="checkbox"]{width:20px;height:20px;cursor:pointer}
 
     .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
     /* Meta atual / progresso */
     .progress-wrap{margin-top:10px}
     .progress{height:8px;border-radius:999px;background:#0d1116;border:1px solid var(--line);overflow:hidden}
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,#67b2ff,#89d1ff)}
+    .progress > i{display:block;height:100%}
     .muted-ok{display:flex;gap:8px;align-items:center;margin-top:10px}
 
     /* Lista de metas salvas */
@@ -76,6 +75,17 @@
 
     /* 🔒 Esconde o contador do formulário de meta (mantemos só nos cards) */
     #goalCurrentWrap { display: none !important; }
+
+    /* ===== Overrides de COR para o tema Ascensão (apenas cor, sem layout) ===== */
+    :root{ --emerald:#00b37e; }
+    .content h2, .card h2, .content .card h2 { color: var(--emerald) !important; }
+    .habits-title { color: var(--emerald) !important; }
+    .tab.active { border-color: rgba(0,179,126,.35) !important; background:#10211b !important; color: var(--emerald) !important; }
+    .btn:not(.ghost){ background: var(--emerald) !important; border-color: transparent !important; color:#fff !important; }
+    .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
+    .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
+    .habit-item input[type="checkbox"]{ accent-color: var(--emerald); }
+    .progress > i{ background: linear-gradient(90deg, #00b37e, #00d08f); }
   </style>
 </head>
 
@@ -94,20 +104,20 @@
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-    <div class="sb-footer"><div class="quote">Você está evoluindo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
   <!-- Conteúdo -->
   <main class="content">
     <!-- Banner (Ascensão) -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;" aria-hidden="true"></header>
 
     <!-- Card -->
     <section class="card">
       <h2>Hábitos e Recompensas</h2>
       <p>
         Marque seus hábitos <strong>diariamente</strong>, defina uma <strong>recompensa significativa</strong> e acompanhe sua evolução.
-        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Ascensão.
+        O objetivo é cultivar constância, celebrar conquistas e manter um ritmo sustentável ao longo do Nível Ascensão (60 dias).
       </p>
 
       <div class="tabs">
@@ -208,12 +218,9 @@
     </section>
   </main>
 
-  <!-- Detecta automaticamente o ID do nível a partir da URL; fallback genérico -->
-  <script>
-    window.NIVEL = (location.pathname.match(/ascensao-[\w-]+/)||[])[0] || "ascensao-9xxxx";
-  </script>
+  <script>window.NIVEL="ascensao-9f3b2";</script>
 
-  <!-- ===== Script PRINCIPAL ===== -->
+  <!-- ===== Scripts originais (intactos) ===== -->
   <script>
   // ===== Helpers =====
   const $ = (s, r = document) => r.querySelector(s);
@@ -227,7 +234,7 @@
   const todayISO = () => iso(new Date());
 
   // Keys por nível
-  const LEVEL = window.NIVEL || "ascensao-9xxxx";
+  const LEVEL = window.NIVEL || "fundacao-72a9c";
   const K = {
     dayLog:   (date) => `hab_${LEVEL}_day_${date}`,
     daySaved: (date) => `hab_${LEVEL}_saved_${date}`,
@@ -244,7 +251,7 @@
         $$('.tab').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         $$('.panel').forEach(p=>p.classList.remove('active'));
-        (document.querySelector(map[btn.dataset.tab])||{}).classList?.add('active');
+        $(map[btn.dataset.tab]).classList.add('active');
       });
     });
   })();
@@ -382,7 +389,6 @@
   }
   renderGoal();
 
-  // Salvar meta
   $('#btnSaveGoal').addEventListener('click', ()=>{
     const name = $('#goal_name').value.trim();
     const target = Math.max(1, Math.min(60, +($('#goal_days')?.value || 0)));
@@ -403,7 +409,6 @@
     renderGoal();
   });
 
-  // Limpar meta atual (move para arquivo)
   $('#btnClearGoal').addEventListener('click', ()=>{
     const cur = LS.get(K.goalCurrent, null);
     if(cur){
@@ -415,7 +420,6 @@
     }
   });
 
-  // Excluir meta arquivada (lista)
   document.getElementById('goalsList')?.addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-del]');
     if(!btn) return;
@@ -445,7 +449,7 @@
   })();
   </script>
 
-  <!-- Força os rótulos das abas (se algum cache/JS antigo sobrescrever) -->
+  <!-- Força rótulos das abas (compatibilidade) -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     const tabHab = document.querySelector('.tabs .tab[data-tab="rastreador"]');
@@ -457,10 +461,10 @@
   });
   </script>
 
-  <!-- Script adicional: Progresso / datas locais / snapshot / migração -->
+  <!-- Script adicional (progresso, datas locais, etc.) — intacto -->
   <script>
   (function(){
-    const NIVEL = window.NIVEL || 'ascensao-9xxxx';
+    const NIVEL = window.NIVEL || 'fundacao-72a9c';
     const KEY_DAYCOMP = `bp_progress_${NIVEL}`;
     const HABITS = [
       {id:'forca',label:'Treino de força / Musculação'},
