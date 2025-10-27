@@ -28,25 +28,10 @@ function cacheBust(url){
   return u.href;
 }
 
-function repoRoot() {
-  const path = location.pathname;
-  const i = path.indexOf('/nivel/');
-  const base = i > -1 ? path.slice(0, i + 1) : '/';
-  return base || '/';
-}
-
 async function fetchJson(url){
   const res = await fetch(cacheBust(url), { cache: 'no-store' });
   if (!res.ok) throw new Error(String(res.status));
   return await res.json();
-}
-
-async function tryMany(urls){
-  for (const url of urls){
-    if (!url) continue;
-    try { return await fetchJson(url); } catch(_) {}
-  }
-  return null;
 }
 
 // ---------- Drip fallback ----------
@@ -81,19 +66,15 @@ if (typeof window.Drip === 'undefined') {
 // ---------- Gotejamento ----------
 (async function dripPlano() {
   try {
-    // 🔁 Nível padrão: Ascensão
     const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
-
     const SEM_ID  = 'card2_tarefas_semanais';
     const MIC_ID  = 'card2_microtarefas';
     const SEM_MAX = 8;
     const MIC_MAX = 20;
 
-    // datas iniciais (marcam o "dia 1" de cada stream)
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
     const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
-    // índices (1-based): semana = cada 7 dias; micro = cada 3 dias
     const semIdx = Math.max(1, Math.min(
       SEM_MAX,
       Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
@@ -103,50 +84,12 @@ if (typeof window.Drip === 'undefined') {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // -------- Carregamento dos dados (unificado -> separado) --------
-    const ROOT = repoRoot();
+    // -------- Carregamento unificado --------
+    const PLANO_URL = "../../data/ascensao-tarefas.json";
+    const planoRaw = await fetchJson(PLANO_URL);
 
-    // 1) Unificado (se existir)
-    const PLANO_CFG = window.DATA_PLANO || `${ROOT}data/plano-ascensao.json`;
-    const planoRaw = await tryMany([
-      PLANO_CFG,
-      `${ROOT}_data/plano-ascensao.json`,
-      `${ROOT}_data/plano.json` // fallback extra
-    ]);
-
-    let semanais = null;
-    let micros   = null;
-
-    if (planoRaw && Array.isArray(planoRaw.semanais) && Array.isArray(planoRaw.micros)) {
-      semanais = planoRaw.semanais;
-      micros   = planoRaw.micros;
-    } else {
-      // 2) Separados (prioriza nomes da Ascensão)
-      const semCfg = window.DATA_TAREFAS_SEMANAIS
-        || `${ROOT}data/tarefas-semanais-ascensao.json`;
-      const micCfg = window.DATA_MICRO_TAREFAS
-        || `${ROOT}data/microtarefas-ascensao-3d.json`;
-
-      const semanaisRaw = await tryMany([
-        semCfg,
-        `${ROOT}_data/ascensao/tarefas-semanais-ascensao.json`,
-        `${ROOT}_data/tarefas-semanais-ascensao.json`,
-        `${ROOT}_data/tarefas-semanais.json` // último fallback
-      ]);
-
-      const microsRaw = await tryMany([
-        micCfg,
-        `${ROOT}_data/ascensao/microtarefas-ascensao-3d.json`,
-        `${ROOT}_data/microtarefas-ascensao-3d.json`,
-        `${ROOT}_data/microtarefas.json`,
-        `${ROOT}_data/micro-tarefas.json`
-      ]);
-
-      semanais = Array.isArray(semanaisRaw) ? semanaisRaw
-               : (semanaisRaw && Array.isArray(semanaisRaw.items) ? semanaisRaw.items : []);
-      micros   = Array.isArray(microsRaw) ? microsRaw
-               : (microsRaw && Array.isArray(microsRaw.items) ? microsRaw.items : []);
-    }
+    const semanais = (planoRaw && Array.isArray(planoRaw.semanais)) ? planoRaw.semanais : [];
+    const micros   = (planoRaw && Array.isArray(planoRaw.micros))   ? planoRaw.micros   : [];
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
@@ -164,12 +107,12 @@ if (typeof window.Drip === 'undefined') {
     let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
     function renderSem() {
-      if (!Array.isArray(semanais) || semanais.length === 0) {
-        semMeta && (semMeta.textContent = 'Semana —');
-        semTit  && (semTit.textContent  = 'Conteúdo indisponível');
-        semTxt  && (semTxt.textContent  = '—');
-        if (semPrev) semPrev.disabled = true;
-        if (semNext) semNext.disabled = true;
+      if (!semanais.length) {
+        semMeta.textContent = 'Semana —';
+        semTit.textContent  = 'Conteúdo indisponível';
+        semTxt.textContent  = '—';
+        semPrev.disabled = true;
+        semNext.disabled = true;
         return;
       }
       const cap = semIdx;
@@ -178,19 +121,16 @@ if (typeof window.Drip === 'undefined') {
 
       semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
       semTit.textContent  = item.titulo || '—';
-
-      // bloco: conceito + orientação + lista (se houver)
       semTxt.innerHTML =
         (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
         (item.orientacao ? `<div style="margin-bottom:8px">${item.orientacao}</div>` : '') +
         (Array.isArray(item.tarefas) && item.tarefas.length
           ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
           : '');
-
       if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
 
-      if (semPrev) semPrev.disabled = (semDay <= 1);
-      if (semNext) semNext.disabled = (semDay >= cap);
+      semPrev.disabled = (semDay <= 1);
+      semNext.disabled = (semDay >= cap);
       LS.set(SEM_VIEW_KEY, semDay);
     }
 
@@ -209,12 +149,12 @@ if (typeof window.Drip === 'undefined') {
     let micDay = LS.get(MIC_VIEW_KEY, micIdx);
 
     function renderMic() {
-      if (!Array.isArray(micros) || micros.length === 0) {
-        micMeta && (micMeta.textContent = 'Bloco —');
-        micTit  && (micTit.textContent  = 'Conteúdo indisponível');
-        micTxt  && (micTxt.textContent  = '—');
-        if (micPrev) micPrev.disabled = true;
-        if (micNext) micNext.disabled = true;
+      if (!micros.length) {
+        micMeta.textContent = 'Bloco —';
+        micTit.textContent  = 'Conteúdo indisponível';
+        micTxt.textContent  = '—';
+        micPrev.disabled = true;
+        micNext.disabled = true;
         return;
       }
       const cap = micIdx;
@@ -225,8 +165,8 @@ if (typeof window.Drip === 'undefined') {
       micTit.textContent  = item.titulo || '—';
       micTxt.textContent  = (item.texto || '').trim() || '—';
 
-      if (micPrev) micPrev.disabled = (micDay <= 1);
-      if (micNext) micNext.disabled = (micDay >= cap);
+      micPrev.disabled = (micDay <= 1);
+      micNext.disabled = (micDay >= cap);
       LS.set(MIC_VIEW_KEY, micDay);
     }
 
