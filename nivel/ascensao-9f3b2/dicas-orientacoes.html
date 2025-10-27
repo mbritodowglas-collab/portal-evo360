@@ -56,8 +56,12 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (só troca o arquivo; adiciona cache-bust para evitar imagem antiga) -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22')" aria-hidden="true"></header>
+    <!-- Banner (FORÇADO com !important, sem alterar layout) -->
+    <header
+      class="banner-full"
+      style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;"
+      aria-hidden="true">
+    </header>
 
     <!-- Dica do dia (gotejamento) -->
     <section class="card" id="dica-dia">
