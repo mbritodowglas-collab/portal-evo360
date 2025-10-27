@@ -115,34 +115,26 @@
   <!-- Config do nível + caminho do JSON -->
   <script>
     window.NIVEL = "ascensao-9f3b2";
-    /* Caminho RELATIVO (funciona no GitHub Pages no mesmo repo) */
     window.DATA_DICAS = "../../data/ascensao.json";
   </script>
 
-  <!-- Fallback leve para abas (caso o JS principal não inicialize por algum motivo) -->
+  <!-- Fallback simples das tabs (SE o JS global não fizer o bind) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const tabs = document.querySelectorAll('.tabs .tab');
       const panels = document.querySelectorAll('.panel');
       if (!tabs.length || !panels.length) return;
-      // Se nenhuma troca acontecer em 300ms, fazemos o bind básico
-      setTimeout(() => {
-        let bound = false;
-        tabs.forEach(t => {
-          const evs = getEventListeners ? getEventListeners(t) : null;
-          if (!evs || !evs.click || !evs.click.length) bound = true;
-        });
-        if (bound) {
-          const activate = (tb) => {
-            tabs.forEach(x=>x.classList.remove('active'));
-            panels.forEach(p=>p.classList.remove('active'));
-            tb.classList.add('active');
-            const el = document.getElementById('panel-' + tb.dataset.tab);
-            (el||panels[0]).classList.add('active');
-          };
-          tabs.forEach(t=> t.addEventListener('click', ()=>activate(t)));
-        }
-      }, 300);
+
+      const activate = (tb) => {
+        tabs.forEach(x=>x.classList.remove('active'));
+        panels.forEach(p=>p.classList.remove('active'));
+        tb.classList.add('active');
+        const el = document.getElementById('panel-' + tb.dataset.tab);
+        (el||panels[0]).classList.add('active');
+      };
+
+      tabs.forEach(t=> t.addEventListener('click', ()=>activate(t)));
+      // não força nada aqui; o JS global continuará funcionando normalmente
     });
   </script>
 
