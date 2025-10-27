@@ -1,211 +1,225 @@
-/*  Ascensão — Dicas & Orientações
- *  Mantém o mesmo comportamento do Fundação:
- *  - Drip de dicas lendo window.DATA_DICAS (JSON)
- *  - Tabs únicas controladas por JS (sem fallback inline)
- *  - Karvonen (208 - 0.7*idade) com tabela de zonas
- *  - TMB (Mifflin-St Jeor) + necessidade calórica com FA
- */
+// ============================
+// EVO360 · Fundação
+// Página: Dicas e Orientações (JS completo e corrigido)
+// ============================
 
-(function () {
-  "use strict";
+(() => {
+  // Helpers locais (NÃO poluem o global)
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  // ---------- Utilidades ----------
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
-  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
-  const fmt = (n, d = 0) => Number(n).toFixed(d);
-  const storageKey = (k) => `evo360:${window.NIVEL || "ascensao"}:${k}`;
+  // ---------- DRIP: Dica do dia ----------
+  (async function dicaDrip() {
+    try {
+      const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+      const DRIP_ID  = 'card1_dicas_orientacoes';
+      const startISO = (typeof Drip !== 'undefined')
+        ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
+        : new Date().toISOString().slice(0, 10);
 
-  // Cache-bust para JSON (evita stale)
-  const jsonURL = (() => {
-    const base = window.DATA_DICAS || "../../data/ascensao.json";
-    const sep = base.includes("?") ? "&" : "?";
-    return `${base}${sep}cb=${Date.now()}`;
+      const dataPathBase = window.DATA_DICAS || '../../data/fundacao.json';
+      const dataPath = `${dataPathBase}${dataPathBase.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+
+      async function load(url) {
+        try {
+          const r = await fetch(url, { cache: 'no-store' });
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return await r.json();
+        } catch (err) {
+          console.warn('[Dica] Falha ao carregar JSON:', err);
+          return null;
+        }
+      }
+
+      const raw = await load(dataPath);
+      const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
+
+      const meta  = $('#dica-meta');
+      const texto = $('#dica-texto');
+      const prev  = $('#btnPrev');
+      const next  = $('#btnNext');
+
+      if (!data || !data.length) {
+        meta && (meta.textContent = 'Dia —');
+        texto && (texto.textContent = 'Dica indisponível.');
+        return;
+      }
+
+      const MAX_DAYS = Math.min(60, data.length);
+      const todayIdx = (typeof Drip !== 'undefined')
+        ? Drip.getTodayIndex(startISO, MAX_DAYS)
+        : 1;
+
+      const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
+      const LS = {
+        get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
+        set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+      };
+
+      let day = LS.get(VIEW_KEY, todayIdx);
+
+      function render() {
+        const cap = Math.max(1, todayIdx);
+        day = Math.max(1, Math.min(day, cap));
+        const item = data[day - 1];
+
+        if (item) {
+          const rotulo = item.categoria === 'treino' ? 'Treino'
+                       : (item.categoria === 'nutricao' ? 'Nutrição'
+                       : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+
+          meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`);
+
+          const blocoHTML = (item.conceito || item.orientacao)
+            ? `
+              <div class="dica-bloco">
+                ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
+                ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
+              </div>`
+            : `<p style="margin:0">${item.texto || ''}</p>`;
+
+          if (texto) {
+            texto.innerHTML = blocoHTML;
+            texto.style.whiteSpace   = 'normal';
+            texto.style.overflowWrap = 'anywhere';
+            texto.style.wordBreak    = 'break-word';
+            texto.style.lineHeight   = '1.6';
+            texto.style.marginTop    = '6px';
+          }
+        } else {
+          meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS}`);
+          texto && (texto.textContent = 'Dica indisponível.');
+        }
+
+        prev && (prev.disabled = day <= 1);
+        next && (next.disabled = day >= cap);
+        LS.set(VIEW_KEY, day);
+      }
+
+      prev?.addEventListener('click', () => { day--; render(); });
+      next?.addEventListener('click', () => { day++; render(); });
+      render();
+    } catch (e) {
+      console.warn('drip init falhou:', e);
+    }
   })();
 
-  // ---------- DRIP de Dicas ----------
-  let dicas = [];
-  let idx = 0;
+  // ---------- Abas (Calculadoras) ----------
+  (function tabs() {
+    const tabs = $$('.tab');
+    const panels = $$('.panel');
+    if (!tabs.length || !panels.length) return;
 
-  async function loadDicas() {
-    try {
-      const res = await fetch(jsonURL, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("JSON não é array");
-      dicas = data;
-      // Recupera progresso local se existir
-      const saved = localStorage.getItem(storageKey("dicaIndex"));
-      idx = saved ? clamp(parseInt(saved, 10), 0, dicas.length - 1) : 0;
-      renderDica();
-    } catch (err) {
-      console.error("[Dicas] Falha ao carregar JSON:", err);
-      $("#dicaTexto").textContent = "Não consegui carregar as dicas agora. Verifica o caminho do JSON.";
-      $("#dicaMeta").textContent = String(err);
+    function activate(tabEl) {
+      tabs.forEach(x => x.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tabEl.classList.add('active');
+
+      const key = tabEl.dataset.tab;
+      const target = key ? `#panel-${key}` : null;
+      const panel = target ? $(target) : null;
+      (panel || panels[0])?.classList.add('active');
     }
-  }
 
-  function renderDica() {
-    if (!dicas.length) return;
-    const item = dicas[idx];
-    $("#dicaTexto").textContent = item?.texto || "—";
-    $("#dicaIndex").textContent = `${idx + 1}/${dicas.length}`;
-    $("#dicaMeta").textContent = item?.tag ? `Tema: ${item.tag}` : "";
-    localStorage.setItem(storageKey("dicaIndex"), String(idx));
-  }
+    tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
+    const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+    activate(anyActive);
+  })();
 
-  function bindDrip() {
-    $("#btnPrev")?.addEventListener("click", () => {
-      if (!dicas.length) return;
-      idx = (idx - 1 + dicas.length) % dicas.length;
-      renderDica();
-    });
-    $("#btnNext")?.addEventListener("click", () => {
-      if (!dicas.length) return;
-      idx = (idx + 1) % dicas.length;
-      renderDica();
-    });
-  }
+  // ---------- Calculadora · FC de Reserva (Karvonen) ----------
+  (function karvonen() {
+    const idade = $('#k_idade');
+    const fCR   = $('#k_fcr');
+    const out   = $('#k_out');
+    const table = $('#k_table');
+    const btn   = $('#k_calcBtn');
+    const clr   = $('#k_clearBtn');
+    if (!idade || !fCR || !out || !table || !btn || !clr) return;
 
-  // ---------- Tabs ----------
-  function bindTabs() {
-    const buttons = $$(".tab-btn");
-    const panels = $$(".tab-panel");
+    function karvonenTarget(fcMax, fcRep, frac) {
+      return Math.round(((fcMax - fcRep) * frac) + fcRep);
+    }
 
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const targetSel = btn.getAttribute("data-tab-target");
-        if (!targetSel) return;
+    function construirTabela(fcMax, fcRep) {
+      const linhas = [];
+      for (let pct = 50; pct <= 80; pct += 5) {
+        const frac = pct / 100;
+        const alvo = karvonenTarget(fcMax, fcRep, frac);
+        linhas.push(
+          `<div class="row" style="justify-content:space-between">
+            <span>${pct}% da FC de reserva</span>
+            <strong>${alvo} bpm</strong>
+          </div>`
+        );
+      }
+      return linhas.join('');
+    }
 
-        // desmarca tudo
-        buttons.forEach((b) => b.setAttribute("aria-selected", "false"));
-        panels.forEach((p) => p.classList.remove("active"));
+    function calcular() {
+      const a = +idade.value || 0;
+      const r = +fCR.value   || 0;
+      if (a <= 0 || r <= 0) {
+        out.textContent = 'Informe idade e FC de repouso.';
+        table.innerHTML = '';
+        return;
+      }
+      const fcMax = 220 - a; // Fundação mantém 220 - idade
+      const alvo50 = karvonenTarget(fcMax, r, 0.50);
+      const alvo65 = karvonenTarget(fcMax, r, 0.65);
 
-        // ativa atual
-        btn.setAttribute("aria-selected", "true");
-        const panel = $(targetSel);
-        panel?.classList.add("active");
+      out.innerHTML = `
+        FC máx. estimada: <strong>${fcMax} bpm</strong><br>
+        <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>
+      `;
+      table.innerHTML = construirTabela(fcMax, r);
+    }
+
+    function limpar() {
+      idade.value = '';
+      fCR.value   = '';
+      out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
+      table.innerHTML = '';
+    }
+
+    btn.addEventListener('click', calcular);
+    clr.addEventListener('click', limpar);
+    [idade, fCR].forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); calcular(); }
       });
     });
-  }
+  })();
 
-  // ---------- Karvonen ----------
-  function fcMax208(age) {
-    return 208 - 0.7 * age;
-  }
+  // ---------- Calculadora · TMB ----------
+  (function tmb() {
+    const peso = $('#t_peso');
+    const alt  = $('#t_altura');
+    const ida  = $('#t_idade');
+    const sex  = $('#t_sexo');
+    const out  = $('#t_out');
+    if (!peso || !alt || !ida || !sex || !out) return;
 
-  function karvonen(age, fcr, intensity) {
-    const fmax = fcMax208(age);
-    return ((fmax - fcr) * intensity) + fcr;
-  }
+    function calc() {
+      const p = +peso.value || 0;
+      const h = +alt.value  || 0;
+      const i = +ida.value  || 0;
+      const s = (sex.value || 'f').toLowerCase();
 
-  function renderKarvonenTable(age, fcr) {
-    const table = $("#k_table");
-    const out = $("#k_out");
-    const tbody = $("#k_table tbody");
+      if (p > 0 && h > 0 && i > 0) {
+        const base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
+        out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
+          <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+      } else {
+        out.textContent = 'Preencha peso, altura e idade.';
+      }
+    }
 
-    const zonas = [
-      { nome: "Recuperação", i0: 0.50, i1: 0.60 },
-      { nome: "Aeróbio leve", i0: 0.60, i1: 0.70 },
-      { nome: "Aeróbio moderado", i0: 0.70, i1: 0.80 },
-      { nome: "Limiar/forte", i0: 0.80, i1: 0.90 },
-      { nome: "Alta intensidade", i0: 0.90, i1: 0.95 },
-    ];
-
-    const fmax = fcMax208(age);
-    out.style.display = "block";
-    out.innerHTML = `FC<sub>máx</sub> estimada: <b>${fmt(fmax, 0)} bpm</b>`;
-
-    tbody.innerHTML = zonas.map(z => {
-      const lo = karvonen(age, fcr, z.i0);
-      const hi = karvonen(age, fcr, z.i1);
-      return `<tr>
-        <td>${z.nome}</td>
-        <td>${fmt(z.i0*100,0)}–${fmt(z.i1*100,0)}%</td>
-        <td>${fmt(lo,0)}–${fmt(hi,0)} bpm</td>
-      </tr>`;
-    }).join("");
-
-    table.style.display = "table";
-  }
-
-  function bindKarvonen() {
-    const idade = $("#k_idade");
-    const fcr = $("#k_fcr");
-    const btn = $("#k_calcBtn");
-    const clr = $("#k_clearBtn");
-    const table = $("#k_table");
-    const out = $("#k_out");
-
-    btn?.addEventListener("click", () => {
-      const a = clamp(parseInt(idade.value, 10), 10, 90);
-      const r = clamp(parseInt(fcr.value, 10), 30, 120);
-      if (Number.isNaN(a) || Number.isNaN(r)) return;
-      renderKarvonenTable(a, r);
+    ['input','change'].forEach(ev=>{
+      peso.addEventListener(ev, calc);
+      alt.addEventListener(ev, calc);
+      ida.addEventListener(ev, calc);
+      sex.addEventListener(ev, calc);
     });
-
-    clr?.addEventListener("click", () => {
-      idade.value = "";
-      fcr.value = "";
-      table.style.display = "none";
-      out.style.display = "none";
-      $("#k_table tbody").innerHTML = "";
-    });
-  }
-
-  // ---------- TMB ----------
-  function tmbMifflin({ sexo, peso, altura, idade }) {
-    // peso(kg), altura(cm), idade(anos)
-    const base = 10 * peso + 6.25 * altura - 5 * idade;
-    return sexo === "M" ? base + 5 : base - 161;
-  }
-
-  function bindTMB() {
-    const sexo = $("#t_sexo");
-    const idade = $("#t_idade");
-    const altura = $("#t_altura");
-    const peso = $("#t_peso");
-    const atv = $("#t_atividade");
-    const btn = $("#t_calcBtn");
-    const clr = $("#t_clearBtn");
-    const out = $("#t_out");
-
-    btn?.addEventListener("click", () => {
-      const s = sexo.value;
-      const i = clamp(parseInt(idade.value, 10), 10, 90);
-      const h = clamp(parseFloat(altura.value), 120, 250);
-      const p = clamp(parseFloat(peso.value), 30, 250);
-      const fa = parseFloat(atv.value || "1.2");
-
-      if ([s,i,h,p,fa].some(v => Number.isNaN(v))) return;
-
-      const tmb = tmbMifflin({ sexo: s, peso: p, altura: h, idade: i });
-      const tdee = tmb * fa;
-
-      out.style.display = "block";
-      out.innerHTML = `
-        <b>TMB</b>: ${fmt(tmb,0)} kcal/dia<br/>
-        <b>Necessidade estimada (com atividade)</b>: ${fmt(tdee,0)} kcal/dia
-      `;
-    });
-
-    clr?.addEventListener("click", () => {
-      sexo.value = "F";
-      idade.value = "";
-      altura.value = "";
-      peso.value = "";
-      atv.value = "1.2";
-      out.style.display = "none";
-      out.innerHTML = "";
-    });
-  }
-
-  // ---------- Init ----------
-  document.addEventListener("DOMContentLoaded", () => {
-    bindDrip();
-    bindTabs();
-    bindKarvonen();
-    bindTMB();
-    loadDicas();
-  });
-})();
+    calc();
+  })();
+})(); // ← fecha o wrapper e evita colisão no escopo global
