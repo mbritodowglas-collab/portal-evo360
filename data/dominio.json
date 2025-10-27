@@ -1,0 +1,363 @@
+[
+  {
+    "dia": 1,
+    "categoria": "Treino",
+    "titulo": "Você já chegou até aqui — agora é hora de refinar",
+    "texto": "O nível Domínio não é sobre fazer mais. É sobre fazer melhor. A base já está construída; agora o foco é execução, ritmo e intenção em cada movimento. Um corpo forte nasce da repetição consciente, não da pressa."
+  },
+  {
+    "dia": 2,
+    "categoria": "Nutrição",
+    "titulo": "Comer bem é treinar bem",
+    "texto": "Seu treino só rende quando o corpo tem combustível. Não é sobre cortar, é sobre equilibrar. Inclua boas fontes de energia — frutas, arroz, batata — e mantenha proteínas magras a cada refeição. A leveza vem da constância, não da restrição."
+  },
+  {
+    "dia": 3,
+    "categoria": "Mindset",
+    "titulo": "Você não precisa provar nada pra ninguém",
+    "texto": "A comparação é uma armadilha. Cada corpo tem um tempo. O seu progresso não se mede no espelho dos outros. Celebre o que conquistou, e siga. A disciplina silenciosa é mais poderosa que qualquer aplauso."
+  },
+  {
+    "dia": 4,
+    "categoria": "Treino",
+    "titulo": "Falha técnica é o seu novo limite",
+    "texto": "Não treine até a exaustão. Treine até o ponto em que ainda faz o movimento com qualidade. Isso é domínio: parar antes de se machucar, mas depois de evoluir. A diferença entre força e ego é o controle."
+  },
+  {
+    "dia": 5,
+    "categoria": "Nutrição",
+    "titulo": "Carboidrato é aliado, não inimigo",
+    "texto": "O carbo é a gasolina do seu treino. Se tirar demais, o corpo desacelera, o humor despenca e o desempenho cai. Ajuste, não elimine. Comer bem é sinal de cuidado, não de culpa."
+  },
+  {
+    "dia": 6,
+    "categoria": "Neurociência",
+    "titulo": "O cérebro ama novidade",
+    "texto": "Platô não é fracasso — é o cérebro economizando energia. Mude o estímulo: troque o horário do treino, a ordem dos exercícios ou o ritmo da música. Pequenas mudanças reacendem a motivação e ativam a neuroplasticidade."
+  },
+  {
+    "dia": 7,
+    "categoria": "Treino",
+    "titulo": "Tempo sob tensão: desacelere para evoluir",
+    "texto": "Descer o peso devagar é um treino de paciência. Um movimento controlado vale mais que dez apressados. Concentre-se em sentir o músculo — o corpo responde melhor à atenção do que à força bruta."
+  },
+  {
+    "dia": 8,
+    "categoria": "Mindset",
+    "titulo": "Autoconfiança também se treina",
+    "texto": "Toda vez que você cumpre o que prometeu a si mesma, seu cérebro registra vitória. E quanto mais vitórias, mais confiança. Você não precisa ser perfeita — só precisa manter o acordo com quem mais importa: você."
+  },
+  {
+    "dia": 9,
+    "categoria": "Nutrição",
+    "titulo": "Hidratar é cuidar da energia mental",
+    "texto": "A desidratação leve já reduz o foco e o humor. Deixe uma garrafa por perto durante o dia. Seu cérebro e seus músculos funcionam com água — e sua pele agradece também."
+  },
+  {
+    "dia": 10,
+    "categoria": "Treino",
+    "titulo": "Métodos avançados com sabedoria",
+    "texto": "Dropset, bi-set, rest-pause — tudo isso funciona quando o corpo está preparado. Use com moderação, uma ou duas vezes por semana, para dar novos estímulos. Domínio é saber dosar intensidade e recuperação."
+  },
+  {
+    "dia": 11,
+    "categoria": "Neurociência",
+    "titulo": "O treino começa na mente",
+    "texto": "Antes de levantar o peso, feche os olhos e imagine o movimento perfeito. Seu cérebro ativa os mesmos circuitos neurais da ação real. Visualizar é ensaiar o sucesso — e o corpo só executa o que a mente acredita ser possível."
+  },
+  {
+    "dia": 12,
+    "categoria": "Nutrição",
+    "titulo": "Comer devagar é um treino de presença",
+    "texto": "Mastigar com calma ajuda na digestão e envia ao cérebro o sinal de saciedade. A pressa alimenta a ansiedade. Saborear o que você come é uma forma de mindfulness — e de respeito ao próprio corpo."
+  },
+  {
+    "dia": 13,
+    "categoria": "Mindset",
+    "titulo": "Não se cobre tanto",
+    "texto": "Você já faz muito. Às vezes, descansar é mais corajoso do que insistir. Permita-se dias leves. O corpo cresce no descanso, e a mente clareia no silêncio."
+  },
+  {
+    "dia": 14,
+    "categoria": "Treino",
+    "titulo": "Postura é poder",
+    "texto": "Um corpo ereto comunica força e confiança. Mantenha a coluna alinhada nos exercícios — e na vida. A postura certa protege, define e te lembra quem você está se tornando."
+  },
+  {
+    "dia": 15,
+    "categoria": "Nutrição",
+    "titulo": "Seu corpo é inteligente",
+    "texto": "Ele avisa quando está com fome, com sede, cansado. Escute mais e reaja menos. Em vez de seguir dietas cegamente, aprenda o que o seu corpo pede. Autoconhecimento é o plano alimentar mais eficaz que existe."
+  },
+  {
+    "dia": 16,
+    "categoria": "Treino",
+    "titulo": "Ajuste fino: intensidade com leveza",
+    "texto": "Dominar é encontrar equilíbrio. Treine forte, mas sem se punir. O treino não é castigo — é um presente. Cuidar do corpo com respeito é a verdadeira força feminina."
+  },
+  {
+    "dia": 17,
+    "categoria": "Neurociência",
+    "titulo": "Atenção plena no movimento",
+    "texto": "Durante o exercício, traga o foco para o músculo que está trabalhando. Isso aumenta o recrutamento de fibras e reduz o risco de lesão. Corpo e mente precisam conversar — e essa conversa é o que transforma o treino em arte."
+  },
+  {
+    "dia": 18,
+    "categoria": "Nutrição",
+    "titulo": "Pequenos ajustes, grandes resultados",
+    "texto": "Não precisa mudar tudo. Às vezes, reduzir o açúcar do café, dormir melhor e comer mais proteínas já muda completamente o jogo. O segredo do Domínio é o acúmulo de boas escolhas simples."
+  },
+  {
+    "dia": 19,
+    "categoria": "Mindset",
+    "titulo": "A comparação te faz esquecer o seu caminho",
+    "texto": "Você não precisa seguir o ritmo de ninguém. Quando olha para o lado, perde a direção da própria jornada. Olhe pra frente, um passo de cada vez — o progresso continua, mesmo quando parece lento."
+  },
+  {
+    "dia": 20,
+    "categoria": "Treino",
+    "titulo": "Recuperar também é progresso",
+    "texto": "Musculatura cansada precisa de tempo. O descanso certo é o que transforma esforço em resultado. Dormir bem, alongar e se alimentar direito fazem parte do treino — e quem domina entende isso."
+  },
+  {
+    "dia": 21,
+    "categoria": "Neurociência",
+    "titulo": "Seu cérebro aprende por repetição",
+    "texto": "Cada treino reforça conexões neurais. É por isso que, depois de um tempo, o movimento flui com naturalidade. Você está literalmente redesenhando seu cérebro para a força e a disciplina."
+  },
+  {
+    "dia": 22,
+    "categoria": "Nutrição",
+    "titulo": "Proteína em todas as refeições",
+    "texto": "A proteína é o material de reconstrução do seu corpo. Coloque uma fonte em todas as refeições — ovo, peixe, frango, carne magra ou vegetal. Seu corpo te devolve em firmeza, energia e saciedade."
+  },
+  {
+    "dia": 23,
+    "categoria": "Mindset",
+    "titulo": "Você não é o resultado da balança",
+    "texto": "Peso é dado, não identidade. Seu valor não se mede em números. O espelho mostra parte da história, mas o que realmente importa é como você se sente no próprio corpo. Dominar é viver em paz dentro de si."
+  },
+  {
+    "dia": 24,
+    "categoria": "Treino",
+    "titulo": "Técnica acima de tudo",
+    "texto": "A carga vem depois da consciência corporal. Um movimento bem feito constrói mais músculo e evita lesões. Lembre-se: quem domina o básico, domina tudo."
+  },
+  {
+    "dia": 25,
+    "categoria": "Nutrição",
+    "titulo": "Planejar é autocuidado",
+    "texto": "Separar suas refeições da semana não é rigidez — é amor próprio. Isso te poupa tempo, decisões e deslizes. Mulheres ocupadas precisam de praticidade, não de culpa."
+  },
+  {
+    "dia": 26,
+    "categoria": "Neurociência",
+    "titulo": "Cuidar da mente é performance",
+    "texto": "Ansiedade e excesso de cobrança drenam energia. Medite, respire fundo, faça pausas. Um cérebro calmo treina melhor, dorme melhor e reage melhor ao estresse físico."
+  },
+  {
+    "dia": 27,
+    "categoria": "Mindset",
+    "titulo": "Você já é o corpo que deseja",
+    "texto": "A transformação não acontece quando o corpo muda — ela começa quando você passa a se tratar como quem já conquistou. Vista a confiança agora, e o resto vem junto."
+  },
+  {
+    "dia": 28,
+    "categoria": "Treino",
+    "titulo": "Dominar é sentir prazer no processo",
+    "texto": "Chega um momento em que o treino deixa de ser obrigação e vira prazer. Quando isso acontece, você entendeu tudo: o corpo é consequência de uma mente em paz com o esforço."
+  },
+  {
+    "dia": 29,
+    "categoria": "Nutrição",
+    "titulo": "Café, sono e cortisol",
+    "texto": "Café é ótimo, mas em excesso aumenta o cortisol e atrapalha o sono. Use com estratégia: evite depois das 16h. A energia que vem do descanso é sempre mais poderosa que a da cafeína."
+  },
+  {
+    "dia": 30,
+    "categoria": "Mindset",
+    "titulo": "Domínio é viver em equilíbrio",
+    "texto": "Treinar forte, comer bem, descansar e ainda ter espaço para viver — esse é o verdadeiro Domínio. Corpo e mente em harmonia, sem culpa, sem pressa, com propósito."
+  },
+
+  {
+    "dia": 31,
+    "categoria": "Treino",
+    "titulo": "O ritmo do seu treino é único",
+    "texto": "Não copie o ritmo de ninguém. Seu corpo tem seu próprio tempo de resposta. A força que você busca já está aí — só precisa de paciência e consistência para aparecer."
+  },
+  {
+    "dia": 32,
+    "categoria": "Nutrição",
+    "titulo": "Fome emocional existe — e dá pra lidar com ela",
+    "texto": "Às vezes, a vontade de comer não é fome, é carência. Quando sentir isso, respire e pergunte: 'O que estou precisando de verdade?'. O corpo fala, mas nem sempre é com o estômago."
+  },
+  {
+    "dia": 33,
+    "categoria": "Mindset",
+    "titulo": "Ser constante é mais sexy do que ser perfeita",
+    "texto": "A mulher que não desiste, mesmo cansada, é a que mais evolui. A beleza está na disciplina silenciosa, não na pressa. A constância constrói o que o espelho ainda não mostra."
+  },
+  {
+    "dia": 34,
+    "categoria": "Treino",
+    "titulo": "Treinar no ciclo certo",
+    "texto": "Durante a menstruação, reduza intensidade se precisar. Na fase folicular, aproveite o pico de energia e evolua. Entender seu ciclo é dominar sua fisiologia — e respeitar o próprio ritmo é força, não fraqueza."
+  },
+  {
+    "dia": 35,
+    "categoria": "Nutrição",
+    "titulo": "Chocolate? Sim, com consciência",
+    "texto": "Não existe alimento proibido. O segredo está na quantidade e no contexto. Um pedaço de chocolate amargo pode ser prazer, não sabotagem. Comer com culpa faz mais mal do que o próprio doce."
+  },
+  {
+    "dia": 36,
+    "categoria": "Neurociência",
+    "titulo": "Repetição molda quem você se torna",
+    "texto": "Todo hábito deixa uma marca no cérebro. Cada treino, cada refeição equilibrada, cada vez que você escolhe continuar... está redesenhando quem você é. A neuroplasticidade é a sua melhor aliada."
+  },
+  {
+    "dia": 37,
+    "categoria": "Treino",
+    "titulo": "Alongar é uma forma de gratidão",
+    "texto": "Seu corpo trabalha por você todos os dias. Alongar é agradecer. Dedique alguns minutos para relaxar, respirar e devolver o cuidado que o corpo te entrega em forma de força."
+  },
+  {
+    "dia": 38,
+    "categoria": "Nutrição",
+    "titulo": "Equilíbrio hormonal vem do prato",
+    "texto": "Coma colorido. As vitaminas e minerais das frutas e legumes ajudam a regular hormônios como cortisol, serotonina e estrogênio. Cuidar do que você come é cuidar da sua mente também."
+  },
+  {
+    "dia": 39,
+    "categoria": "Mindset",
+    "titulo": "Treinar é um ato de amor próprio",
+    "texto": "Não é castigo, é um lembrete de que você merece se sentir bem. Cada gota de suor é uma escolha por si mesma — uma mulher que se cuida inspira o mundo sem precisar dizer uma palavra."
+  },
+  {
+    "dia": 40,
+    "categoria": "Treino",
+    "titulo": "Sinta o músculo, não o peso",
+    "texto": "A carga importa, mas o controle importa mais. Preste atenção em como o músculo contrai, em como respira. Quanto mais presente você estiver no treino, mais resultado ele te devolve."
+  },
+  {
+    "dia": 41,
+    "categoria": "Neurociência",
+    "titulo": "O corpo segue a mente",
+    "texto": "Quando a mente está cansada, o corpo trava. Quando a mente está alinhada, o corpo flui. Domínio é conseguir acalmar o cérebro antes de exigir do corpo."
+  },
+  {
+    "dia": 42,
+    "categoria": "Nutrição",
+    "titulo": "Proteína e sono: dupla da recuperação",
+    "texto": "À noite, o corpo reconstrói o que o treino quebrou. Comer proteína e dormir bem é o verdadeiro anabolizante natural. Quem dorme bem acorda mais bonita, mais forte e mais leve."
+  },
+  {
+    "dia": 43,
+    "categoria": "Mindset",
+    "titulo": "A força de uma mulher calma",
+    "texto": "Calma não é fraqueza. É controle. Quem mantém a serenidade enquanto tudo aperta, domina não só o corpo, mas a própria energia. Treine a paciência — ela é a força mais rara."
+  },
+  {
+    "dia": 44,
+    "categoria": "Treino",
+    "titulo": "Você já é atleta da sua rotina",
+    "texto": "A disciplina que você aplica no treino é a mesma que constrói uma vida forte. Você não treina só o corpo — treina sua capacidade de seguir mesmo quando ninguém está vendo."
+  },
+  {
+    "dia": 45,
+    "categoria": "Nutrição",
+    "titulo": "Cuidado com o exagero de suplementos",
+    "texto": "Whey, creatina, BCAA — tudo tem seu papel, mas nenhum substitui comida de verdade. Use o que for necessário, não o que está na moda. A base do corpo bonito ainda é arroz, feijão e disciplina."
+  },
+  {
+    "dia": 46,
+    "categoria": "Neurociência",
+    "titulo": "Prazer e resultado andam juntos",
+    "texto": "Seu cérebro libera mais dopamina quando o treino é prazeroso. Escolha músicas que te animem, roupas que te empoderem e ambientes que te façam bem. Motivação não é força — é química bem usada."
+  },
+  {
+    "dia": 47,
+    "categoria": "Mindset",
+    "titulo": "Você é inspiração — mesmo quando não percebe",
+    "texto": "Alguém te observa, se inspira e recomeça por causa da sua constância. O que pra você é rotina, pra outra é coragem. Continue — o impacto é maior do que imagina."
+  },
+  {
+    "dia": 48,
+    "categoria": "Treino",
+    "titulo": "Cardio consciente, resultado consistente",
+    "texto": "O cardio não serve pra punir o corpo, e sim pra fazê-lo respirar melhor. Use como ferramenta de equilíbrio, não castigo. Caminhar, dançar ou pedalar leve pode ser o momento de limpar a mente e reforçar o amor pelo movimento."
+  },
+  {
+    "dia": 49,
+    "categoria": "Nutrição",
+    "titulo": "Ouça o corpo antes de comer",
+    "texto": "Nem toda vontade é fome. Respire fundo e pergunte: 'Estou com fome física ou emocional?'. Esse pequeno ato devolve o controle e te ensina a se alimentar com consciência, não por impulso."
+  },
+  {
+    "dia": 50,
+    "categoria": "Mindset",
+    "titulo": "Você é o resultado do que sustenta",
+    "texto": "Não é o que você faz um dia que muda seu corpo, e sim o que faz todos os dias. Consistência é o filtro que separa o desejo da conquista. Continue — mesmo quando ninguém estiver aplaudindo."
+  },
+  {
+    "dia": 51,
+    "categoria": "Treino",
+    "titulo": "Seu corpo entende o que você sente",
+    "texto": "O estresse alto trava a evolução. Se o treino estiver pesado demais mentalmente, reduza. Um treino leve feito com prazer vale mais que um treino forçado com exaustão."
+  },
+  {
+    "dia": 52,
+    "categoria": "Nutrição",
+    "titulo": "Refeições sem culpa",
+    "texto": "Sair da rotina faz parte da vida. Uma sobremesa ou jantar fora não apagam seu progresso. O segredo está no retorno, não na culpa. Quem domina, volta naturalmente para o eixo."
+  },
+  {
+    "dia": 53,
+    "categoria": "Neurociência",
+    "titulo": "Seu cérebro também precisa de treino",
+    "texto": "Aprender coisas novas estimula o mesmo mecanismo de evolução que o treino. Leia, estude, se desafie. Mente ativa = corpo desperto. A força começa na cabeça."
+  },
+  {
+    "dia": 54,
+    "categoria": "Mindset",
+    "titulo": "Menos autocrítica, mais amor próprio",
+    "texto": "Olhe pra si com gentileza. O corpo muda mais fácil quando a mente para de lutar contra ele. Você não precisa se punir pra evoluir — só precisa se respeitar enquanto caminha."
+  },
+  {
+    "dia": 55,
+    "categoria": "Treino",
+    "titulo": "Treinar o que não gosta te completa",
+    "texto": "Os músculos que você evita são os que mais precisam de atenção. Fortalecer o que é fraco é o que te equilibra. Desafiar o desconforto é o verdadeiro sinal de domínio."
+  },
+  {
+    "dia": 56,
+    "categoria": "Nutrição",
+    "titulo": "O prato colorido é o seu espelho interno",
+    "texto": "Comer cores diferentes é alimentar todas as partes de você: energia, imunidade, humor e vitalidade. Quanto mais vibrante o prato, mais vivo o corpo e mais leve a mente."
+  },
+  {
+    "dia": 57,
+    "categoria": "Neurociência",
+    "titulo": "A mente molda o corpo todos os dias",
+    "texto": "O cérebro não distingue o que você imagina do que realmente vive. Visualize o seu treino ideal, o corpo que quer construir, o equilíbrio que deseja sentir. O corpo só segue a direção da mente."
+  },
+  {
+    "dia": 58,
+    "categoria": "Mindset",
+    "titulo": "Ser disciplinada é ser livre",
+    "texto": "A rotina não te prende — te liberta. Quando o treino e a alimentação se tornam parte natural do seu dia, o esforço dá lugar à leveza. A verdadeira liberdade vem do autocontrole."
+  },
+  {
+    "dia": 59,
+    "categoria": "Treino",
+    "titulo": "Dominar é entender o próprio corpo",
+    "texto": "Depois de tanto tempo, você já conhece seus limites. Agora o desafio é respeitá-los. O domínio começa quando você não precisa mais que ninguém te diga o que fazer — você simplesmente sente."
+  },
+  {
+    "dia": 60,
+    "categoria": "Encerramento",
+    "titulo": "Você dominou corpo e mente",
+    "texto": "Foram 60 dias de constância, ajustes, quedas e vitórias. Agora você entende que dominar não é controlar, é fluir. Continue escolhendo o que te fortalece — o corpo é apenas o reflexo da mulher poderosa que você já é."
+  }
+]
