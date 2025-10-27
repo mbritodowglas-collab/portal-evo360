@@ -43,6 +43,15 @@
     .meal { padding:.6rem .75rem; border:1px solid var(--line); border-radius:10px; background:#0f1318; }
     .meal h3 { margin:.15rem 0 .35rem; font-size:1rem; color:var(--emerald); }
     .why { font-size:.9rem; color: var(--ink-2, #9fb3c8); }
+
+    .metas { margin-top:10px; border:1px solid var(--line); border-radius:10px; background:#0f1318; padding:10px; }
+    .metas .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; }
+    .metas .row select { background:#0f1318; border:1px solid var(--line); border-radius:8px; padding:6px 8px; color:#cfe3f7; }
+    .metas .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+    @media (max-width:780px){ .metas .grid{ grid-template-columns:1fr; } }
+    .kv { padding:10px; border:1px solid var(--line); border-radius:10px; background:#0d1116; }
+    .kv b { display:block; font-size:1.1rem; color:#e8f4ff; }
+    .hint { font-size:.85rem; color: var(--ink-2, #9fb3c8); margin-top:6px;}
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -83,72 +92,90 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- NOVO: Sugestão de Plano Alimentar — Ascensão -->
+    <!-- NOVO: Sugestão de Plano Alimentar — Ascensão (versão simples + metas automáticas) -->
     <section class="card" id="plano-alimentar">
       <h2>Plano alimentar — Ascensão (déficit calórico)</h2>
-      <p class="mini">Baseado no <strong>Guia Nutricional · Nível Ascensão</strong>. Objetivo: promover redução de gordura mantendo performance e saciedade. Inicie com <strong>déficit de 10–20%</strong> do gasto energético diário e ajuste semanalmente conforme resposta (peso, medidas, energia, humor).</p>
 
-      <div class="grid-2">
-        <div>
-          <h3 class="mini" style="color:var(--emerald);margin:.25rem 0 .5rem;">Como definir metas (passo a passo)</h3>
-          <div class="bullets">
-            <div><span class="tag">1</span>Estime a <strong>TMB</strong> na aba “TMB”.</div>
-            <div><span class="tag">2</span>Calcule sua <strong>TDEE</strong> ≈ TMB × fator de atividade (1.2 sedentário · 1.375 leve · 1.55 moderado).</div>
-            <div><span class="tag">3</span>Defina o <strong>déficit</strong>: comece por <strong>−15%</strong> da TDEE (ajustável entre −10% e −20%).</div>
-            <div><span class="tag">4</span><strong>Proteína</strong>: 1.6–2.2 g/kg/dia (prioridade para preservar massa magra).</div>
-            <div><span class="tag">5</span><strong>Gorduras</strong>: 0.8–1.0 g/kg/dia (hormonal/saciedade). Não descer muito disso.</div>
-            <div><span class="tag">6</span><strong>Carboidratos</strong>: o restante das calorias (suporte ao treino e recuperação).</div>
-          </div>
+      <p class="mini">
+        Objetivo: <strong>secar gordura</strong> sem perder força. Faremos com um leve
+        <strong>déficit de 10–15%</strong> e escolhas que dão <strong>saciedade</strong>.
+      </p>
+
+      <h3 class="mini" style="color:var(--emerald);margin:.25rem 0 .5rem;">Como fazer (passo a passo)</h3>
+      <div class="bullets">
+        <div><span class="tag">1</span>Na aba <strong>TMB</strong>, preencha peso, altura, idade e sexo.</div>
+        <div><span class="tag">2</span>Escolha o <strong>fator de atividade</strong> e o <strong>déficit</strong> abaixo.</div>
+        <div><span class="tag">3</span>Monte o prato: ½ <strong>vegetais</strong>, 1 <strong>palma</strong> de <strong>proteína</strong>, 1 <strong>punho</strong> de <strong>carbo</strong> e 1 <strong>polegar</strong> de <strong>gordura boa</strong>.</div>
+      </div>
+
+      <!-- Metas automáticas (ligadas aos inputs da TMB) -->
+      <div class="metas" id="pf_metas">
+        <div class="row">
+          <label>Atividade:
+            <select id="pf_atividade">
+              <option value="1.2">Pouco ativo (1.2)</option>
+              <option value="1.375">Leve (1.375)</option>
+              <option value="1.55" selected>Moderado (1.55)</option>
+              <option value="1.725">Alto (1.725)</option>
+            </select>
+          </label>
+          <label>Déficit:
+            <select id="pf_deficit">
+              <option value="0.10">10%</option>
+              <option value="0.125">12,5%</option>
+              <option value="0.15" selected>15%</option>
+              <option value="0.20">20%</option>
+            </select>
+          </label>
         </div>
-        <div>
-          <h3 class="mini" style="color:var(--emerald);margin:.25rem 0 .5rem;">Princípios do nível Ascensão</h3>
-          <div class="bullets">
-            <div>• <strong>Alto volume & fibra</strong>: 25–35 g/dia de fibras; vegetais & frutas em cada refeição.</div>
-            <div>• <strong>Hidratação</strong>: ~30–35 ml/kg/dia; ajustar por clima e treino.</div>
-            <div>• <strong>80/20</strong>: 80% alimentos in natura/minimamente processados; 20% margem flexível.</div>
-            <div>• <strong>Timing</strong> (ex.: dias de treino): pré 1–3h com carbo+proteína; pós até 1–2h com proteína 0,3 g/kg e carbo.</div>
-            <div>• <strong>Refeed leve</strong> (opcional, 1×/sem): subir carbo no dia mais pesado de treino se sinais de baixa energia/adesão.</div>
-            <div>• <strong>Monitorar</strong>: peso (média semanal), desempenho, sono, humor. Déficit >25% tende a piorar adesão/performance.</div>
-          </div>
+
+        <div class="grid">
+          <div class="kv"><span>TMB (estimada)</span><b id="pf_tmb">— kcal</b></div>
+          <div class="kv"><span>TDEE (manutenção)</span><b id="pf_tdee">— kcal</b></div>
+          <div class="kv"><span>Alvo do dia</span><b id="pf_kcal">— kcal</b></div>
+          <div class="kv"><span>Proteína</span><b id="pf_prot">— g</b><div class="hint">padrão 1,8 g/kg</div></div>
+          <div class="kv"><span>Gorduras</span><b id="pf_gord">— g</b><div class="hint">padrão 0,9 g/kg</div></div>
+          <div class="kv"><span>Carboidratos</span><b id="pf_carb">— g</b><div class="hint">restante das kcal</div></div>
         </div>
       </div>
 
-      <h3 class="mini" style="color:var(--emerald);margin:12px 0 6px;">Exemplo de dia (modelo didático)</h3>
+      <h3 class="mini" style="color:var(--emerald);margin:12px 0 6px;">Exemplo de dia (modelo simples)</h3>
       <div class="grid-2">
         <div class="meal">
           <h3>Café da manhã</h3>
-          <div><strong>Alimentos</strong>: Omelete (2–3 ovos) com espinafre e tomate + 1 fruta + 1 fatia de pão integral.</div>
-          <div class="why"><em>Por quê?</em> Proteína de alta saciedade; vegetais para fibra/micronutrientes; carbo moderado para energia.</div>
+          Omelete (2 ovos) + 1 fruta + 1 fatia integral.
+          <div class="why"><em>Por quê?</em> Proteína segura a fome; carbo dá energia.</div>
         </div>
         <div class="meal">
           <h3>Lanche</h3>
-          <div><strong>Alimentos</strong>: Iogurte natural + frutas vermelhas + aveia/chia.</div>
-          <div class="why"><em>Por quê?</em> Proteína + fibra aumentam saciedade no intervalo.</div>
+          Iogurte natural + aveia ou chia.
+          <div class="why"><em>Por quê?</em> Proteína + fibra = mais saciedade.</div>
         </div>
         <div class="meal">
           <h3>Almoço</h3>
-          <div><strong>Alimentos</strong>: Filé de frango/peixe magro + arroz integral/batatadoce + salada grande com azeite medido.</div>
-          <div class="why"><em>Por quê?</em> Prato de corte: ½ vegetais, ¼ proteína, ¼ carbo — energia com controle calórico.</div>
+          ½ saladas/legumes + 1 palma de proteína + 1 punho de carbo + 1 polegar de azeite.
+          <div class="why"><em>Por quê?</em> Controla calorias sem passar fome.</div>
         </div>
         <div class="meal">
           <h3>Pré-treino</h3>
-          <div><strong>Alimentos</strong>: Banana + pão/fatia integral com pasta de amendoim (fina) ou mel.</div>
-          <div class="why"><em>Por quê?</em> Carbo de fácil digestão para treino; gordura baixa/moderada para não pesar.</div>
+          Banana + pão integral com pasta de amendoim fina.
+          <div class="why"><em>Por quê?</em> Carbo fácil para render no treino.</div>
         </div>
         <div class="meal">
           <h3>Pós-treino/Jantar</h3>
-          <div><strong>Alimentos</strong>: Carne magra/ovos/tofu + arroz/batata + legumes salteados.</div>
-          <div class="why"><em>Por quê?</em> Proteína ~0,3 g/kg e carbo para recuperar glicogênio e reparar tecidos.</div>
+          Proteína + carbo + legumes.
+          <div class="why"><em>Por quê?</em> Recupera energia e músculo.</div>
         </div>
         <div class="meal">
           <h3>Ceia (opcional)</h3>
-          <div><strong>Alimentos</strong>: Queijo cottage/iogurte grego + fruta ou mix de castanhas (pequena porção).</div>
-          <div class="why"><em>Por quê?</em> Proteína lenta/saciante; ajuda a controlar fome noturna.</div>
+          Cottage/iogurte grego + fruta ou pequenas castanhas.
+          <div class="why"><em>Por quê?</em> Evita beliscar à noite.</div>
         </div>
       </div>
 
       <p class="mini" style="margin-top:10px">
-        <strong>Ajuste fino:</strong> use sua TMB/TDEE e metas de proteína/gordura para calibrar porções. Suba ou desça carbo conforme volume de treino e sinais de fadiga. Revise semanalmente (0,3–0,7% do peso corporal/sem de perda é uma faixa comum).
+        <strong>Ajuste fino:</strong> se o peso não cair em 2 semanas, reduza ~100–150 kcal/dia.
+        Se cair rápido demais (>1%/semana), adicione um pouco.
       </p>
     </section>
 
@@ -200,5 +227,65 @@
   <!-- Ordem: drip antes; v=22 para cache-bust -->
   <script src="../../assets/js/drip.js?v=22" defer></script>
   <script src="./dicas-orientacoes.js?v=22" defer></script>
+
+  <!-- VÍNCULO DAS CALCULADORAS COM AS METAS DO PLANO (não altera o restante) -->
+  <script>
+  (function(){
+    const $ = (s,r=document)=>r.querySelector(s);
+    const peso = $('#t_peso'), alt=$('#t_altura'), ida=$('#t_idade'), sex=$('#t_sexo');
+    const fa = $('#pf_atividade'), def = $('#pf_deficit');
+    const outTMB = $('#pf_tmb'), outTDEE = $('#pf_tdee'), outKcal = $('#pf_kcal');
+    const outProt = $('#pf_prot'), outGord = $('#pf_gord'), outCarb = $('#pf_carb');
+
+    function num(x){ return isFinite(+x) ? +x : 0; }
+    function round(x){ return Math.round(x); }
+
+    function recalc(){
+      const p = num(peso?.value), h=num(alt?.value), i=num(ida?.value);
+      const s = (sex?.value||'f').toLowerCase();
+      const fator = num(fa?.value)||1.55;
+      const deficit = num(def?.value)||0.15;
+
+      if(!(p>0 && h>0 && i>0)){ // campos faltando
+        outTMB.textContent = '— kcal';
+        outTDEE.textContent = '— kcal';
+        outKcal.textContent = '— kcal';
+        outProt.textContent = '— g';
+        outGord.textContent = '— g';
+        outCarb.textContent = '— g';
+        return;
+      }
+
+      // Mifflin-St Jeor
+      const tmb = round((10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5));
+      const tdee = round(tmb * fator);
+      const alvo = round(tdee * (1 - deficit));
+
+      // metas (padrões simples)
+      const prot = round(1.8 * p); // g
+      const gord = round(0.9 * p); // g
+      const kcalProt = prot * 4;
+      const kcalGord = gord * 9;
+      const carb = Math.max(0, round((alvo - kcalProt - kcalGord) / 4)); // g
+
+      outTMB.textContent  = tmb + ' kcal';
+      outTDEE.textContent = tdee + ' kcal';
+      outKcal.textContent = alvo + ' kcal';
+      outProt.textContent = prot + ' g';
+      outGord.textContent = gord + ' g';
+      outCarb.textContent = carb + ' g';
+    }
+
+    ['input','change'].forEach(ev=>{
+      peso?.addEventListener(ev,recalc);
+      alt?.addEventListener(ev,recalc);
+      ida?.addEventListener(ev,recalc);
+      sex?.addEventListener(ev,recalc);
+      fa?.addEventListener(ev,recalc);
+      def?.addEventListener(ev,recalc);
+    });
+    recalc();
+  })();
+  </script>
 </body>
 </html>
