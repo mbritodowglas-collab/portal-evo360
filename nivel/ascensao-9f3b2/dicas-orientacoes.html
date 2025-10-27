@@ -13,8 +13,8 @@
 
     /* abas e painéis */
     .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;color:#ccc;transition:.3s}
+    .tab.active{border-color:#00b37e;background:#10211b;color:#00b37e;font-weight:600}
     .panel{display:none}
     .panel.active{display:block}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -22,7 +22,39 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* --- AJUSTE: garantir que a dica inteira apareça no card --- */
+    /* Verde esmeralda aplicado aos títulos */
+    h2 {
+      color:#00b37e;
+    }
+
+    /* Labels dos blocos de dica */
+    .dica-label {
+      font-weight:700;
+      color:#00b37e !important;
+      margin:6px 0 2px;
+    }
+
+    /* Botões */
+    .btn {
+      background:#00b37e;
+      border:none;
+      color:#fff;
+      transition:.3s;
+    }
+    .btn:hover {
+      background:#00c78f;
+    }
+    .btn.ghost {
+      background:transparent;
+      border:1px solid #00b37e;
+      color:#00b37e;
+    }
+    .btn.ghost:hover {
+      background:#00b37e;
+      color:#fff;
+    }
+
+    /* --- Garantir quebra de texto nos cards --- */
     #dica-meta{
       display:block;
       white-space:normal;
@@ -32,7 +64,7 @@
     }
     #dica-texto{
       margin-top:6px;
-      white-space:pre-wrap;     /* preserva \n das dicas */
+      white-space:pre-wrap;
       overflow-wrap:anywhere;
       word-break:break-word;
       line-height:1.55;
@@ -62,10 +94,10 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (apenas imagem) -->
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
-    <!-- Dica do dia (gotejamento) -->
+    <!-- Dica do dia -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -85,7 +117,7 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen (lista 50% a 80% por 5%) -->
+      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
@@ -93,16 +125,13 @@
           <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado/intenso)</div>
         </div>
 
-        <!-- Resumo -->
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
 
-        <!-- Ações -->
         <div class="row-actions">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
 
-        <!-- Tabela de zonas (50% a 80% por 5%) -->
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
@@ -123,12 +152,10 @@
   </main>
 
   <script>
-    /* Configurações da Ascensão */
     window.NIVEL = "ascensao-9f3b2";
     window.DATA_DICAS = "../../data/ascensao.json";
   </script>
 
-  <!-- Drip + JS da página (ordem: drip antes) -->
   <script src="../../assets/js/drip.js?v=21" defer></script>
   <script src="./dicas-orientacoes.js?v=21" defer></script>
 </body>
