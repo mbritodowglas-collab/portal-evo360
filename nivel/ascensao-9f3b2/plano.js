@@ -1,6 +1,5 @@
-<script>
 // ============================
-// EVO360 · Ascensão · plano.js
+// EVO360 · Ascensão · plano.js (v23 robusto)
 // Tarefas semanais + Microtarefas (gotejamento)
 // ============================
 
@@ -10,26 +9,65 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- Tabs ----------
 (function tabs() {
   const tabs = $$('.tab');
-  tabs.forEach(tb => {
-    tb.addEventListener('click', () => {
-      tabs.forEach(x => x.classList.remove('active'));
-      tb.classList.add('active');
-      $$('.panel').forEach(p => p.classList.remove('active'));
-      $('#panel-' + tb.dataset.tab)?.classList.add('active');
-    });
-  });
+  if (!tabs.length) return;
+  function activate(tb){
+    tabs.forEach(x => x.classList.remove('active'));
+    tb.classList.add('active');
+    $$('.panel').forEach(p => p.classList.remove('active'));
+    $('#panel-' + tb.dataset.tab)?.classList.add('active');
+  }
+  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
+  activate(tabs.find(t=>t.classList.contains('active')) || tabs[0]);
 })();
 
 // ---------- Utils ----------
 function cacheBust(url){
-  const u = new URL(url, location.href);
-  u.searchParams.set('cb', String(Date.now()));
-  return u.href;
+  if(!url) return url;
+  try {
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', String(Date.now()));
+    return u.href;
+  } catch { return url; }
 }
+
+function repoRoot() {
+  // devolve prefixo até a raiz do repo (ex.: "/")
+  // e NÃO corta errado quando path começa em /nivel/...
+  const parts = location.pathname.split('/').filter(Boolean);
+  // ex: ["nivel","ascensao-9f3b2","plano.html"]
+  // raiz do site é "/"
+  return '/';
+}
+
 async function fetchJson(url){
   const res = await fetch(cacheBust(url), { cache: 'no-store' });
-  if (!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
+  if (!res.ok) throw new Error(String(res.status));
   return await res.json();
+}
+
+async function tryMany(urls){
+  for (const url of urls){
+    if (!url) continue;
+    try {
+      const data = await fetchJson(url);
+      console.info('[plano] carregado:', url);
+      return data;
+    } catch (e) {
+      console.warn('[plano] falhou:', url, e?.message||e);
+    }
+  }
+  return null;
+}
+
+function showError(msg){
+  const semTit  = $('#sem-titulo');
+  const semTxt  = $('#sem-texto');
+  const micTit  = $('#mic-titulo');
+  const micTxt  = $('#mic-texto');
+  if (semTit) semTit.textContent = 'Conteúdo indisponível';
+  if (micTit) micTit.textContent = 'Conteúdo indisponível';
+  if (semTxt) semTxt.innerHTML = `<span class="muted">${msg}</span>`;
+  if (micTxt) micTxt.textContent = '—';
 }
 
 // ---------- Drip fallback ----------
@@ -39,9 +77,9 @@ if (typeof window.Drip === 'undefined') {
       const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     };
-    const parseISO   = (s)=>new Date(`${s}T12:00:00`);
-    const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-    const todayISO   = ()=>localISO(new Date());
+    const parseISO = (s)=>new Date(`${s}T12:00:00`);
+    const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const todayISO = ()=>localISO(new Date());
     const LS = {
       get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
       set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
@@ -83,23 +121,28 @@ if (typeof window.Drip === 'undefined') {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // -------- Carregamento dos dados (único arquivo) --------
-    // Respeita window.DATA_PLANO se vier do HTML; senão usa caminho fixo relativo à página.
-    const PLANO_URL = window.DATA_PLANO || "../../data/ascensao-tarefas.json";
+    // -------- Carregamento dos dados --------
+    const ROOT = repoRoot();
+    const hinted = window.DATA_PLANO; // prioridade
 
-    let semanais = [];
-    let micros   = [];
-    try {
-      const raw = await fetchJson(PLANO_URL);
-      if (raw && Array.isArray(raw.semanais) && Array.isArray(raw.micros)) {
-        semanais = raw.semanais;
-        micros   = raw.micros;
-      } else {
-        console.warn('[plano] JSON sem chaves {semanais, micros}', raw);
-      }
-    } catch (err) {
-      console.error('[plano] Falha ao carregar', err);
+    const candidates = [
+      hinted,                                               // ex.: "../../data/ascensao-tarefas.json"
+      `${ROOT}data/ascensao-tarefas.json`,
+      `${ROOT}data/tarefas-ascensao.json`,
+      `${ROOT}data/plano-ascensao.json`,
+      `${ROOT}_data/ascensao-tarefas.json`,
+      `${ROOT}_data/tarefas-ascensao.json`,
+      `${ROOT}_data/plano-ascensao.json`,
+    ];
+
+    const planoRaw = await tryMany(candidates);
+    if (!planoRaw) {
+      showError('Não foi possível carregar as tarefas (verifique o arquivo em /data).');
+      return;
     }
+
+    const semanais = Array.isArray(planoRaw.semanais) ? planoRaw.semanais : [];
+    const micros   = Array.isArray(planoRaw.micros)   ? planoRaw.micros   : [];
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
@@ -117,7 +160,7 @@ if (typeof window.Drip === 'undefined') {
     let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
     function renderSem() {
-      if (!Array.isArray(semanais) || !semanais.length) {
+      if (!semanais.length) {
         semMeta && (semMeta.textContent = 'Semana —');
         semTit  && (semTit.textContent  = 'Conteúdo indisponível');
         semTxt  && (semTxt.textContent  = '—');
@@ -137,8 +180,8 @@ if (typeof window.Drip === 'undefined') {
         (Array.isArray(item.tarefas) && item.tarefas.length
           ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
           : '');
-
       if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
+
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
       LS.set(SEM_VIEW_KEY, semDay);
@@ -159,7 +202,7 @@ if (typeof window.Drip === 'undefined') {
     let micDay = LS.get(MIC_VIEW_KEY, micIdx);
 
     function renderMic() {
-      if (!Array.isArray(micros) || !micros.length) {
+      if (!micros.length) {
         micMeta && (micMeta.textContent = 'Bloco —');
         micTit  && (micTit.textContent  = 'Conteúdo indisponível');
         micTxt  && (micTxt.textContent  = '—');
@@ -186,6 +229,6 @@ if (typeof window.Drip === 'undefined') {
 
   } catch (e) {
     console.warn('dripPlano falhou:', e);
+    showError('Erro ao inicializar o módulo.');
   }
 })();
-</script>
