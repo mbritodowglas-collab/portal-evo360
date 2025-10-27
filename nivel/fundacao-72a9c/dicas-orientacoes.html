@@ -1,241 +1,135 @@
-// ============================
-// EVO360 · Ascensão
-// Página: Dicas e Orientações (JS completo)
-// ============================
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Fundação · Dicas e Orientações</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    /* texto justificado nesta página */
+    .content p, .content li { text-align: justify; }
 
-// Helpers
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    /* abas e painéis */
+    .tabs{display:flex;gap:8px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}
+    .panel.active{display:block}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
+    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-// ---------- DRIP: Dica do dia ----------
-(async function dicaDrip() {
-  try {
-    const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
-    const DRIP_ID  = 'card1_dicas_orientacoes';
-
-    // pode não existir se drip.js não carregar, por isso o try/catch
-    const startISO = (typeof Drip !== 'undefined')
-      ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
-      : (new Date()).toISOString().slice(0,10);
-
-    async function load(url) {
-      const urlFinal = url || 'data/ascensao.json'; // << fallback ajustado
-      try {
-        const r = await fetch(urlFinal, { cache: 'no-store' });
-        if (!r.ok) throw 0;
-        return await r.json();
-      } catch {
-        return null;
-      }
+    /* --- AJUSTE: garantir que a dica inteira apareça no card --- */
+    #dica-meta{
+      display:block;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.35;
     }
-
-    const raw = await load(window.DATA_DICAS);
-
-    // Aceita _data como array direto OU como { dicas: [...] }
-    const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-    // Se não houver dados válidos, mostra fallback e sai
-    if (!data || data.length === 0) {
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      if (meta)  meta.textContent  = 'Dia —';
-      if (texto) texto.textContent = 'Dica indisponível.';
-      return;
+    #dica-texto{
+      margin-top:6px;
+      white-space:pre-wrap;     /* preserva \n das dicas */
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.55;
     }
-
-    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
-    const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
-
-    const meta  = $('#dica-meta');
-    const texto = $('#dica-texto');
-    const prev  = $('#btnPrev');
-    const next  = $('#btnNext');
-
-    // garante que textos longos quebrem dentro do card
-    if (texto) {
-      texto.style.whiteSpace   = 'normal';
-      texto.style.overflowWrap = 'anywhere';
-      texto.style.wordBreak    = 'break-word';
-      texto.style.lineHeight   = '1.6';
-      texto.style.marginTop    = '6px';
+    .card p, .card small{
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
+  </style>
+</head>
+<body class="layout-with-sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
+      <div class="nivel">Nível Fundação</div>
+    </div>
+    <nav class="sb-nav">
+      <a class="sb-item" href="./">Início</a>
+      <a class="sb-item active" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item" href="./suporte.html">Suporte</a>
+    </nav>
+    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+  </aside>
 
-    const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-    const LS = {
-      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
+  <main class="content">
+    <!-- Banner (apenas imagem) -->
+    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
-    let day = LS.get(VIEW_KEY, todayIdx);
+    <!-- Dica do dia (gotejamento) -->
+    <section class="card" id="dica-dia">
+      <h2>Dica & orientação do dia</h2>
+      <div class="muted" id="dica-meta">Dia —</div>
+      <p id="dica-texto">Carregando…</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" id="btnPrev">Anterior</button>
+        <button class="btn" id="btnNext">Próxima</button>
+      </div>
+      <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
+    </section>
 
-    function render() {
-      const cap = Math.max(1, todayIdx);
-      day = Math.max(1, Math.min(day, cap));
-      const item = data[day - 1];
+    <!-- Calculadoras -->
+    <section class="card">
+      <h2>Calculadoras</h2>
+      <div class="tabs">
+        <button class="tab active" data-tab="karvonen">FC de Reserva (Karvonen)</button>
+        <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
+      </div>
 
-      if (item) {
-        const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+      <!-- Karvonen (lista 50% a 80% por 5%) -->
+      <div class="panel active" id="panel-karvonen">
+        <div class="grid-2">
+          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
+          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
+          <div class="small muted" style="align-self:end">Sugestão Fundação: 50–65% (cardio leve/moderado)</div>
+        </div>
 
-        // título no meta
-        if (meta) meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        <!-- Resumo -->
+        <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
 
-        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
-        const blocoHTML = (item.conceito || item.orientacao)
-          ? `
-            <div class="dica-bloco">
-              ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-              ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
-            </div>
-            `
-          : `<p style="margin:0">${item.texto || ''}</p>`;
+        <!-- Ações -->
+        <div class="row-actions">
+          <button class="btn" id="k_calcBtn">Calcular</button>
+          <button class="btn ghost" id="k_clearBtn">Limpar</button>
+        </div>
 
-        if (texto) texto.innerHTML = blocoHTML;
-      } else {
-        if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
-        if (texto) texto.textContent = 'Dica indisponível.';
-      }
+        <!-- Tabela de zonas (50% a 80% por 5%) -->
+        <div class="calc-out" id="k_table" aria-live="polite"></div>
+      </div>
 
-      if (prev) prev.disabled = (day <= 1);
-      if (next) next.disabled = (day >= cap);
-      LS.set(VIEW_KEY, day);
-    }
+      <!-- TMB -->
+      <div class="panel" id="panel-tmb">
+        <div class="grid-2">
+          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
+          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
+          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
+          <label>Sexo<br>
+            <select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select>
+          </label>
+        </div>
+        <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
+        <small class="muted">A TMB é o gasto energético em repouso — autoconhecimento, não plano alimentar.</small>
+      </div>
+    </section>
+  </main>
 
-    prev?.addEventListener('click', () => { day--; render(); });
-    next?.addEventListener('click', () => { day++; render(); });
-    render();
-  } catch (e) {
-    console.warn('drip init falhou:', e);
-  }
-})();
+  <script>
+    /* Gotejamento usa este caminho real do seu data */
+    window.NIVEL = "fundacao-72a9c";
+    window.DATA_DICAS = "/portal-evo360/data/fundacao.json";  // << único ajuste
+  </script>
 
-// ---------- Abas (Calculadoras) ----------
-(function tabs() {
-  const tabs = $$('.tab');
-  const panels = $$('.panel');
-
-  if (!tabs.length || !panels.length) return;
-
-  function activate(tabEl) {
-    tabs.forEach(x => x.classList.remove('active'));
-    panels.forEach(p => p.classList.remove('active'));
-    tabEl.classList.add('active');
-
-    const key = tabEl.dataset.tab;                   // ex.: "karvonen" ou "tmb"
-    const target = key ? `#panel-${key}` : null;     // ex.: "#panel-karvonen"
-    const panel = target ? $(target) : null;
-
-    (panel || panels[0])?.classList.add('active');
-  }
-
-  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
-
-  const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-  activate(anyActive);
-})();
-
-// ---------- Calculadora · FC de Reserva (Karvonen) ----------
-(function karvonen() {
-  const idade = $('#k_idade');
-  const fcr   = $('#k_fcr');
-  const out   = $('#k_out');
-  const table = $('#k_table');
-  const btn   = $('#k_calcBtn');
-  const clr   = $('#k_clearBtn');
-
-  if (!idade || !fcr || !out || !table || !btn || !clr) return;
-
-  function karvonenTarget(fcMax, fcRep, frac) {
-    return Math.round(((fcMax - fcRep) * frac) + fcRep);
-  }
-
-  function construirTabela(fcMax, fcRep) {
-    const linhas = [];
-    for (let pct = 50; pct <= 80; pct += 5) {
-      const frac = pct / 100;
-      const alvo = karvonenTarget(fcMax, fcRep, frac);
-      linhas.push(
-        `<div class="row" style="justify-content:space-between">
-          <span>${pct}% da FC de reserva</span>
-          <strong>${alvo} bpm</strong>
-        </div>`
-      );
-    }
-    return linhas.join('');
-  }
-
-  function calcular() {
-    const a = +idade.value || 0;
-    const r = +fcr.value   || 0;
-
-    if (a <= 0 || r <= 0) {
-      out.textContent = 'Informe idade e FC de repouso.';
-      table.innerHTML = '';
-      return;
-    }
-
-    const fcMax = 220 - a; // estimativa (mantido como no Fundação)
-    const alvo50 = karvonenTarget(fcMax, r, 0.50);
-    const alvo65 = karvonenTarget(fcMax, r, 0.65);
-
-    out.innerHTML = `
-      FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-      <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>
-    `;
-    table.innerHTML = construirTabela(fcMax, r);
-  }
-
-  function limpar() {
-    idade.value = '';
-    fcr.value   = '';
-    out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
-    table.innerHTML = '';
-  }
-
-  btn.addEventListener('click', calcular);
-  clr.addEventListener('click', limpar);
-
-  [idade, fcr].forEach(el => {
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); calcular(); }
-    });
-  });
-})();
-
-// ---------- Calculadora · TMB ----------
-(function tmb() {
-  const peso = $('#t_peso');
-  const alt  = $('#t_altura');
-  const ida  = $('#t_idade');
-  const sex  = $('#t_sexo');
-  const out  = $('#t_out');
-
-  if (!peso || !alt || !ida || !sex || !out) return;
-
-  function calc() {
-    const p = +peso.value || 0;
-    const h = +alt.value  || 0;
-    const i = +ida.value  || 0;
-    const s = sex.value || 'f';
-
-    if (p > 0 && h > 0 && i > 0) {
-      const base = Math.round((10*p) + (6.25*h) - (5*i) + (s==='f' ? -161 : 5));
-      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
-        <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
-    } else {
-      out.textContent = 'Preencha peso, altura e idade.';
-    }
-  }
-
-  ['input','change'].forEach(ev=>{
-    peso.addEventListener(ev, calc);
-    alt.addEventListener(ev, calc);
-    ida.addEventListener(ev, calc);
-    sex.addEventListener(ev, calc);
-  });
-  calc();
-})();
+  <!-- Drip + JS da página (ordem: drip antes) -->
+  <script src="../../assets/js/drip.js?v=18" defer></script>
+  <script src="./dicas-orientacoes.js?v=16" defer></script>
+</body>
+</html>
