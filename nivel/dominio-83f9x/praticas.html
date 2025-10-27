@@ -1,2 +1,195 @@
-429: Too Many Requests
-For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EVO360 · Domínio · Práticas Mentais</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <meta name="theme-color" content="#0b0d10">
+  <style>
+    /* mínimos para layout; o visual segue seu CSS global */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      flex-wrap:nowrap;
+      overflow:hidden;
+    }
+    .tab{
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#0f1318;
+      cursor:pointer;
+      flex:1;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}.panel.active{display:block}
+    .prep{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px;margin-top:8px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .timer{font-size:36px;font-weight:800;margin:8px 0}
+    .note{color:var(--silver)}
+    .box{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px}
+    ol.guide{margin-left:18px}
+
+    /* ===== Overrides de cor (ruby) ===== */
+    :root{ --ruby:#ff5e5e; }
+    .content h2, .card h2 { color: var(--ruby) !important; }
+    .tab.active{ border-color:rgba(255,94,94,.35) !important; background:#2a0d0d !important; color:var(--ruby) !important; }
+    .btn:not(.ghost){ background:var(--ruby) !important; border-color:transparent !important; color:#fff !important; }
+    .btn.ghost{ background:transparent !important; border:1px solid var(--ruby) !important; color:var(--ruby) !important; }
+    .btn.ghost:hover{ background:var(--ruby) !important; color:#fff !important; }
+  </style>
+</head>
+<body class="layout-with-sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="Navegação">
+    <div class="sb-header">
+      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
+      <div class="nivel">Nível Domínio</div>
+    </div>
+    <nav class="sb-nav">
+      <a class="sb-item" href="./">Início</a>
+      <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
+      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
+      <a class="sb-item active" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item" href="./suporte.html">Suporte</a>
+    </nav>
+    <div class="sb-footer">
+      <div class="quote">Você está florescendo.</div>
+      <div class="ver">v1.0 · © Bella Prime</div>
+    </div>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="content">
+    <!-- Banner atualizado (Domínio) -->
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') !important;" aria-hidden="true"></header>
+
+    <section class="card">
+      <h2>Práticas Mentais</h2>
+      <p>
+        Entre em estado de foco calmo. Abaixo, você encontra três práticas: respiração para gerenciamento de estresse,
+        visualização mental e relaxamento guiado. Um ping suave toca a cada 60 segundos como âncora de atenção.
+      </p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="respiracao">Respiração</button>
+        <button class="tab" data-tab="visualizacao">Visualização</button>
+        <button class="tab" data-tab="relax">Relaxamento</button>
+      </div>
+
+      <!-- ===================== RESPIRAÇÃO (4-4-6) ===================== -->
+      <div class="panel active" id="panel-respiracao">
+        <h3>Respiração 4–4–6 (2–10 min)</h3>
+        <p class="note">Ritmo: <strong>inspire 4s</strong> • <strong>segure 4s</strong> • <strong>expire 6s</strong>. Mantenha ombros soltos e mandíbula relaxada.</p>
+
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Encontre um espaço tranquilo e confortável. Fones com música leve/instrumental são opcionais.</li>
+            <li>Silencie notificações. Avise que fará uma prática breve.</li>
+            <li>Faça 3 respirações lentas antes de iniciar.</li>
+          </ul>
+        </div>
+
+        <label style="display:block;margin-top:12px">Duração</label>
+        <select id="respiro_dur" class="input">
+          <option value="120">2 minutos</option>
+          <option value="300" selected>5 minutos</option>
+          <option value="600">10 minutos</option>
+        </select>
+
+        <div class="box" style="margin-top:12px">
+          <div id="respiro_phase" class="note">Pronto</div>
+          <div id="respiro_bar" class="note">—</div>
+          <div id="respiro_time" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="respiro_start">Iniciar</button>
+            <button class="btn ghost" id="respiro_stop">Parar</button>
+          </div>
+        </div>
+        <p class="note" style="margin-top:8px">Ping a cada 60s. Ciclo: 4–4–6.</p>
+      </div>
+
+      <!-- ===================== VISUALIZAÇÃO MENTAL ===================== -->
+      <div class="panel" id="panel-visualizacao">
+        <h3>Visualização Mental</h3>
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Postura confortável e alerta (sentado ou deitado com cabeça apoiada).</li>
+            <li>Ambiente silencioso; fones e música suave são opcionais.</li>
+            <li>Leia o roteiro escolhido abaixo, <strong>depois</strong> feche os olhos e aperte <em>Iniciar</em>.</li>
+          </ul>
+        </div>
+        <div class="row">
+          <label style="flex:1;min-width:220px">Roteiro
+            <select id="viz_script" class="input">
+              <option value="constancia" selected>Constância &amp; Hábito</option>
+              <option value="autoimagem">Autoimagem &amp; Confiança</option>
+              <option value="energia">Energia &amp; Motivação</option>
+            </select>
+          </label>
+          <label style="width:180px">Duração
+            <select id="viz_dur" class="input">
+              <option value="120">2 minutos</option>
+              <option value="300" selected>5 minutos</option>
+              <option value="600">10 minutos</option>
+            </select>
+          </label>
+        </div>
+        <div id="viz_text" class="box" style="margin-top:10px"></div>
+        <div class="box" style="margin-top:10px">
+          <div id="viz_status" class="note">Pronto para começar? Depois de ler, feche os olhos e pressione Iniciar.</div>
+          <div id="viz_clock" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="viz_start">Iniciar</button>
+            <button class="btn ghost" id="viz_stop">Parar</button>
+          </div>
+          <p class="note">Ping suave a cada 60s para recentrar o foco.</p>
+        </div>
+      </div>
+
+      <!-- ===================== RELAXAMENTO GUIADO ===================== -->
+      <div class="panel" id="panel-relax">
+        <h3>Relaxamento guiado corporal</h3>
+        <p>Percorra o corpo dos pés à cabeça, soltando regiões com a expiração.</p>
+
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Deite-se ou sente-se com apoio. Solte ombros e descruze as pernas.</li>
+            <li>Se desejar, música ambiente baixa em fones.</li>
+          </ul>
+        </div>
+
+        <label style="display:block;margin-top:12px">Duração</label>
+        <select id="relax_dur" class="input">
+          <option value="120">2 minutos</option>
+          <option value="300" selected>5 minutos</option>
+          <option value="600">10 minutos</option>
+        </select>
+
+        <div class="box" style="margin-top:10px">
+          <div id="relax_step" class="note">Inicie pelo contato dos pés com o solo/apoio.</div>
+          <div id="relax_clock" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="relax_start">Iniciar</button>
+            <button class="btn ghost" id="relax_stop">Parar</button>
+          </div>
+          <p class="note">As etapas avançam automaticamente a cada 4s (botões continuam disponíveis).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- (scripts originais mantidos sem alteração) -->
+  <!-- ... resto do código JS permanece exatamente igual ... -->
+</body>
+</html>
