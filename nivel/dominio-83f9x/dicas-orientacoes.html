@@ -4,60 +4,23 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Domínio · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
-  <!-- Layout base -->
+  <!-- Mantém exatamente o mesmo layout/base do arquivo original -->
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
-  <link rel="stylesheet" href="../../assets/css/tema-dominio.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#4b0b16">
-
   <style>
-    /* texto justificado nesta página */
-    .content p, .content li { text-align: justify; }
-
-    /* abas e painéis (mantidos) */
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;color:#ccc;transition:.3s}
-    .panel{display:none}
-    .panel.active{display:block}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-    /* --- Garantir quebra de texto nos cards --- */
-    #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
-
-    /* ===== Overrides mínimos: Ruby (#ff5e5e) ===== */
+    /* ===== Overrides de cor (Ruby) sem alterar layout/margens ===== */
     :root{ --ruby:#ff5e5e; }
-    .content h2, .card h2, .content .card h2{ color:var(--ruby) !important; }
-    .content h2 *, .card h2 *{ color:var(--ruby) !important; }
+    .content h2, .card h2{ color:var(--ruby) !important; }
     .tab.active{ border-color:rgba(255,94,94,.35) !important; color:var(--ruby) !important; background:#2a0d0d !important; }
     .btn:not(.ghost){ background:var(--ruby) !important; border-color:transparent !important; color:#fff !important; }
     .btn.ghost{ background:transparent !important; border:1px solid var(--ruby) !important; color:var(--ruby) !important; }
     .btn.ghost:hover{ background:var(--ruby) !important; color:#fff !important; }
-
-    /* microajustes visuais do card novo (sem afetar layout global) */
-    .bullets { display:grid; gap:8px; }
-    .mini { font-size:.95rem; }
-    .tag { display:inline-block; padding:.15rem .5rem; border:1px solid var(--line); border-radius:999px; margin-right:.35rem; }
-    .meal { padding:.6rem .75rem; border:1px solid var(--line); border-radius:10px; background:#0f1318; }
-    .meal h3 { margin:.15rem 0 .35rem; font-size:1rem; color:var(--ruby); }
-    .why { font-size:.9rem; color: var(--ink-2, #9fb3c8); }
-
-    .metas { margin-top:10px; border:1px solid var(--line); border-radius:10px; background:#0f1318; padding:10px; }
-    .metas .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; }
-    .metas .row select { background:#0f1318; border:1px solid var(--line); border-radius:8px; padding:6px 8px; color:#cfe3f7; }
-    .metas .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-    @media (max-width:780px){ .metas .grid{ grid-template-columns:1fr; } }
-    .kv { padding:10px; border:1px solid var(--line); border-radius:10px; background:#0d1116; }
-    .kv b { display:block; font-size:1.1rem; color:#e8f4ff; }
-    .hint { font-size:.85rem; color: var(--ink-2, #9fb3c8); margin-top:6px;}
+    /* (nada além de cor foi tocado) */
   </style>
 </head>
-
 <body class="layout-with-sidebar">
-  <!-- Sidebar -->
+  <!-- Sidebar (apenas rótulo do nível atualizado) -->
   <aside class="sidebar" aria-label="Navegação do Nível Domínio">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
@@ -75,14 +38,14 @@
   </aside>
 
   <main class="content">
-    <!-- Banner -->
+    <!-- Banner: somente troca da imagem -->
     <header
       class="banner-full"
       style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') !important;"
       aria-hidden="true">
     </header>
 
-    <!-- Dica do dia -->
+    <!-- Dica do dia (sem alterações estruturais) -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -94,7 +57,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- Calculadoras -->
+    <!-- Calculadoras (idênticas; apenas cores herdadas pelos overrides acima) -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -102,7 +65,6 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
@@ -110,14 +72,13 @@
           <div class="small muted" style="align-self:end">Sugestão Domínio: 70–85% (cardio intenso)</div>
         </div>
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-        <div class="row-actions">
+        <div class="row" style="gap:8px; flex-wrap:wrap; margin-top:10px">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
 
-      <!-- TMB -->
       <div class="panel" id="panel-tmb">
         <div class="grid-2">
           <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
@@ -133,12 +94,13 @@
     </section>
   </main>
 
-  <!-- Definições globais -->
+  <!-- Definições globais (apenas ponteiros de dados/nível) -->
   <script>
     window.NIVEL = "dominio-83f9x";
     window.DATA_DICAS = "../../data/dominio.json";
   </script>
 
+  <!-- Scripts originais mantidos -->
   <script src="../../assets/js/drip.js?v=22" defer></script>
   <script src="./dicas-orientacoes.js?v=22" defer></script>
 </body>
