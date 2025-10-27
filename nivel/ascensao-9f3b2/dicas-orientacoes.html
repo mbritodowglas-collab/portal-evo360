@@ -84,8 +84,8 @@
       <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
-          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
-          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
+          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35" inputmode="numeric"></label>
+          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65" inputmode="numeric"></label>
           <div class="small muted" style="align-self:end">Sugestão Ascensão: 60–75% (cardio moderado) — ajuste com seu treinador.</div>
         </div>
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
@@ -99,9 +99,9 @@
       <!-- TMB -->
       <div class="panel" id="panel-tmb">
         <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
+          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68" inputmode="decimal"></label>
+          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165" inputmode="numeric"></label>
+          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35" inputmode="numeric"></label>
           <label>Sexo<br>
             <select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select>
           </label>
@@ -112,34 +112,22 @@
     </section>
   </main>
 
-  <!-- Config do nível + caminho do JSON -->
+  <!-- Config do nível + caminho do JSON (definido ANTES do JS principal) -->
   <script>
     window.NIVEL = "ascensao-9f3b2";
-    window.DATA_DICAS = "../../data/ascensao.json";
+    // Preferência: data/ascensao.json na raiz do repo; fallback relativo
+    window.DATA_DICAS = (function(){
+      const cands = [
+        "../../data/ascensao.json",
+        "/data/ascensao.json"
+      ];
+      // escolhe a primeira; o JS fará cache-bust e tentará carregar
+      return cands[0];
+    })();
   </script>
 
-  <!-- Fallback simples das tabs (SE o JS global não fizer o bind) -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const tabs = document.querySelectorAll('.tabs .tab');
-      const panels = document.querySelectorAll('.panel');
-      if (!tabs.length || !panels.length) return;
-
-      const activate = (tb) => {
-        tabs.forEach(x=>x.classList.remove('active'));
-        panels.forEach(p=>p.classList.remove('active'));
-        tb.classList.add('active');
-        const el = document.getElementById('panel-' + tb.dataset.tab);
-        (el||panels[0]).classList.add('active');
-      };
-
-      tabs.forEach(t=> t.addEventListener('click', ()=>activate(t)));
-      // não força nada aqui; o JS global continuará funcionando normalmente
-    });
-  </script>
-
-  <!-- Drip + JS global (ordem do Fundação) -->
+  <!-- Drip + JS global (ordem idêntica ao Fundação) -->
   <script src="../../assets/js/drip.js?v=18" defer></script>
-  <script src="./dicas-orientacoes.js?v=16" defer></script>
+  <script src="./dicas-orientacoes.js?v=22" defer></script>
 </body>
 </html>
