@@ -22,15 +22,13 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 // ---------- Utils ----------
 function cacheBust(url){
-  if(!url) return url;
   const u = new URL(url, location.href);
   u.searchParams.set('cb', String(Date.now()));
   return u.href;
 }
-
 async function fetchJson(url){
   const res = await fetch(cacheBust(url), { cache: 'no-store' });
-  if (!res.ok) throw new Error(String(res.status));
+  if (!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
   return await res.json();
 }
 
@@ -41,9 +39,9 @@ if (typeof window.Drip === 'undefined') {
       const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     };
-    const parseISO = (s)=>new Date(`${s}T12:00:00`);
-    const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-    const todayISO = ()=>localISO(new Date());
+    const parseISO   = (s)=>new Date(`${s}T12:00:00`);
+    const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const todayISO   = ()=>localISO(new Date());
     const LS = {
       get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
       set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
@@ -67,6 +65,7 @@ if (typeof window.Drip === 'undefined') {
 (async function dripPlano() {
   try {
     const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
+
     const SEM_ID  = 'card2_tarefas_semanais';
     const MIC_ID  = 'card2_microtarefas';
     const SEM_MAX = 8;
@@ -84,12 +83,23 @@ if (typeof window.Drip === 'undefined') {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // -------- Carregamento unificado --------
-    const PLANO_URL = "../../data/ascensao-tarefas.json";
-    const planoRaw = await fetchJson(PLANO_URL);
+    // -------- Carregamento dos dados (único arquivo) --------
+    // Respeita window.DATA_PLANO se vier do HTML; senão usa caminho fixo relativo à página.
+    const PLANO_URL = window.DATA_PLANO || "../../data/ascensao-tarefas.json";
 
-    const semanais = (planoRaw && Array.isArray(planoRaw.semanais)) ? planoRaw.semanais : [];
-    const micros   = (planoRaw && Array.isArray(planoRaw.micros))   ? planoRaw.micros   : [];
+    let semanais = [];
+    let micros   = [];
+    try {
+      const raw = await fetchJson(PLANO_URL);
+      if (raw && Array.isArray(raw.semanais) && Array.isArray(raw.micros)) {
+        semanais = raw.semanais;
+        micros   = raw.micros;
+      } else {
+        console.warn('[plano] JSON sem chaves {semanais, micros}', raw);
+      }
+    } catch (err) {
+      console.error('[plano] Falha ao carregar', err);
+    }
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
@@ -107,12 +117,12 @@ if (typeof window.Drip === 'undefined') {
     let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
     function renderSem() {
-      if (!semanais.length) {
-        semMeta.textContent = 'Semana —';
-        semTit.textContent  = 'Conteúdo indisponível';
-        semTxt.textContent  = '—';
-        semPrev.disabled = true;
-        semNext.disabled = true;
+      if (!Array.isArray(semanais) || !semanais.length) {
+        semMeta && (semMeta.textContent = 'Semana —');
+        semTit  && (semTit.textContent  = 'Conteúdo indisponível');
+        semTxt  && (semTxt.textContent  = '—');
+        if (semPrev) semPrev.disabled = true;
+        if (semNext) semNext.disabled = true;
         return;
       }
       const cap = semIdx;
@@ -127,10 +137,10 @@ if (typeof window.Drip === 'undefined') {
         (Array.isArray(item.tarefas) && item.tarefas.length
           ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
           : '');
-      if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
 
-      semPrev.disabled = (semDay <= 1);
-      semNext.disabled = (semDay >= cap);
+      if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
+      if (semPrev) semPrev.disabled = (semDay <= 1);
+      if (semNext) semNext.disabled = (semDay >= cap);
       LS.set(SEM_VIEW_KEY, semDay);
     }
 
@@ -149,12 +159,12 @@ if (typeof window.Drip === 'undefined') {
     let micDay = LS.get(MIC_VIEW_KEY, micIdx);
 
     function renderMic() {
-      if (!micros.length) {
-        micMeta.textContent = 'Bloco —';
-        micTit.textContent  = 'Conteúdo indisponível';
-        micTxt.textContent  = '—';
-        micPrev.disabled = true;
-        micNext.disabled = true;
+      if (!Array.isArray(micros) || !micros.length) {
+        micMeta && (micMeta.textContent = 'Bloco —');
+        micTit  && (micTit.textContent  = 'Conteúdo indisponível');
+        micTxt  && (micTxt.textContent  = '—');
+        if (micPrev) micPrev.disabled = true;
+        if (micNext) micNext.disabled = true;
         return;
       }
       const cap = micIdx;
@@ -165,8 +175,8 @@ if (typeof window.Drip === 'undefined') {
       micTit.textContent  = item.titulo || '—';
       micTxt.textContent  = (item.texto || '').trim() || '—';
 
-      micPrev.disabled = (micDay <= 1);
-      micNext.disabled = (micDay >= cap);
+      if (micPrev) micPrev.disabled = (micDay <= 1);
+      if (micNext) micNext.disabled = (micDay >= cap);
       LS.set(MIC_VIEW_KEY, micDay);
     }
 
