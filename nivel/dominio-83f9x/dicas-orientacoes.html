@@ -4,15 +4,12 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Domínio · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
-  <!-- Layout base mantido -->
+  <!-- Layout base -->
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#4b0b16">
   <style>
-    /* texto justificado nesta página */
     .content p, .content li { text-align: justify; }
-
-    /* abas e painéis (mantidos) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;color:#ccc;transition:.3s}
     .panel{display:none}
@@ -21,26 +18,20 @@
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-    /* Garantir quebra de texto nos cards */
     #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
     #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
     .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
-
-    /* ===== Overrides mínimos: Ruby (sem mexer layout) ===== */
     :root{ --ruby:#ff5e5e; }
-    .content h2, .card h2, .content .card h2{ color:var(--ruby) !important; }
-    .content h2 *, .card h2 *{ color:var(--ruby) !important; }
-    .tab.active{ border-color:rgba(255,94,94,.35) !important; color:var(--ruby) !important; background:#2a0d0d !important; }
-    .btn:not(.ghost){ background:var(--ruby) !important; border-color:transparent !important; color:#fff !important; }
-    .btn.ghost{ background:transparent !important; border:1px solid var(--ruby) !important; color:var(--ruby) !important; }
-    .btn.ghost:hover{ background:var(--ruby) !important; color:#fff !important; }
+    .content h2, .card h2{ color:var(--ruby)!important; }
+    .tab.active{ border-color:rgba(255,94,94,.35)!important; color:var(--ruby)!important; background:#2a0d0d!important; }
+    .btn:not(.ghost){ background:var(--ruby)!important; border-color:transparent!important; color:#fff!important; }
+    .btn.ghost{ background:transparent!important; border:1px solid var(--ruby)!important; color:var(--ruby)!important; }
+    .btn.ghost:hover{ background:var(--ruby)!important; color:#fff!important; }
     .meal h3 { color:var(--ruby); }
   </style>
 </head>
 <body class="layout-with-sidebar">
-  <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Domínio">
+  <aside class="sidebar">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
       <div class="nivel">Nível Domínio</div>
@@ -57,14 +48,9 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (Ruby / Domínio) -->
-    <header
-      class="banner-full"
-      style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') !important;"
-      aria-hidden="true">
-    </header>
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat!important;" aria-hidden="true"></header>
 
-    <!-- Dica do dia -->
+    <!-- DICA -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -76,7 +62,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- Calculadoras -->
+    <!-- CALCULADORAS -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -84,7 +70,6 @@
         <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
       </div>
 
-      <!-- Karvonen -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
@@ -96,150 +81,141 @@
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
-        <div class="calc-out" id="k_table" aria-live="polite"></div>
+        <div class="calc-out" id="k_table"></div>
       </div>
 
-      <!-- TMB -->
       <div class="panel" id="panel-tmb">
         <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
-          <label>Sexo<br>
-            <select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select>
-          </label>
+          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1"></label>
+          <label>Altura (cm)<br><input type="number" id="t_altura"></label>
+          <label>Idade (anos)<br><input type="number" id="t_idade"></label>
+          <label>Sexo<br><select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select></label>
         </div>
         <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
         <small class="muted">A TMB é o gasto energético em repouso — autoconhecimento, não plano alimentar.</small>
       </div>
     </section>
 
-    <!-- Plano alimentar -->
-    <section class="card" id="plano-alimentar">
-      <h2>Plano alimentar — Domínio (performance e manutenção)</h2>
+    <!-- AJUSTE CALÓRICO -->
+    <section class="card" id="ajuste-calorico">
+      <h2>Ajuste calórico personalizado</h2>
+      <p>Escolha o fator de atividade e o objetivo. O cálculo abaixo gera automaticamente seu plano base:</p>
+      <div class="row">
+        <label>Atividade:
+          <select id="pf_atividade">
+            <option value="1.375">Leve</option>
+            <option value="1.55" selected>Moderada</option>
+            <option value="1.725">Alta</option>
+            <option value="1.9">Atleta</option>
+          </select>
+        </label>
+        <label>Objetivo:
+          <select id="pf_objetivo">
+            <option value="-0.10">Déficit (10%)</option>
+            <option value="0">Manutenção</option>
+            <option value="0.10" selected>Superávit (10%)</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid">
+        <div class="kv"><span>TMB</span><b id="pf_tmb">— kcal</b></div>
+        <div class="kv"><span>TDEE</span><b id="pf_tdee">— kcal</b></div>
+        <div class="kv"><span>Alvo diário</span><b id="pf_kcal">— kcal</b></div>
+        <div class="kv"><span>Proteína</span><b id="pf_prot">— g</b></div>
+        <div class="kv"><span>Gorduras</span><b id="pf_gord">— g</b></div>
+        <div class="kv"><span>Carboidratos</span><b id="pf_carb">— g</b></div>
+      </div>
+      <small class="muted">Ajuste fino: se o peso cair mais de 1kg/semana, adicione 100 kcal; se subir mais de 0,5kg/semana, reduza 100 kcal.</small>
+    </section>
 
+    <!-- PLANO ALIMENTAR -->
+    <section class="card" id="plano-alimentar">
+      <h2>Plano alimentar — Domínio</h2>
       <p class="mini">
-        Objetivo: <strong>melhorar performance e composição corporal</strong> ajustando a nutrição ao alto rendimento.
+        Nesta fase, o corpo precisa de energia de qualidade e consistência nutricional para sustentar força, firmeza e rendimento.
       </p>
 
-      <h3 class="mini" style="color:var(--ruby);margin:.25rem 0 .5rem;">Como fazer (passo a passo)</h3>
-      <div class="bullets">
-        <div><span class="tag">1</span>Na aba <strong>TMB</strong>, preencha peso, altura, idade e sexo.</div>
-        <div><span class="tag">2</span>Escolha o <strong>fator de atividade</strong> e o <strong>objetivo</strong> abaixo (déficit ou superávit).</div>
-        <div><span class="tag">3</span>Monte o prato: ½ <strong>vegetais</strong>, 1 <strong>palma</strong> de <strong>proteína</strong>, 1 <strong>punho</strong> de <strong>carbo</strong> e 1 <strong>polegar</strong> de <strong>gordura boa</strong>.</div>
-      </div>
-
-      <!-- Metas automáticas (vinculadas à TMB) -->
-      <div class="metas" id="pf_metas">
-        <div class="row">
-          <label>Atividade:
-            <select id="pf_atividade">
-              <option value="1.375">Leve (1.375)</option>
-              <option value="1.55" selected>Moderada (1.55)</option>
-              <option value="1.725">Alta (1.725)</option>
-              <option value="1.9">Atleta (1.9)</option>
-            </select>
-          </label>
-          <label>Objetivo:
-            <select id="pf_objetivo">
-              <option value="-0.10">Déficit (10%)</option>
-              <option value="-0.05">Déficit leve (5%)</option>
-              <option value="0">Manutenção</option>
-              <option value="0.05">Superávit leve (5%)</option>
-              <option value="0.10" selected>Superávit (10%)</option>
-            </select>
-          </label>
+      <div class="grid-2">
+        <div class="meal">
+          <h3>Café da manhã</h3>
+          <p>Omelete com legumes + fruta + aveia.</p>
+          <div class="why"><em>Proteína:</em> mantém saciedade e inicia o metabolismo.</div>
+          <div class="why"><em>Carboidrato:</em> fornece energia e melhora foco mental.</div>
+          <div class="why"><em>Gordura boa:</em> estabiliza os níveis hormonais.</div>
         </div>
 
-        <div class="grid">
-          <div class="kv"><span>TMB (estimada)</span><b id="pf_tmb">— kcal</b></div>
-          <div class="kv"><span>TDEE (manutenção)</span><b id="pf_tdee">— kcal</b></div>
-          <div class="kv"><span>Alvo diário</span><b id="pf_kcal">— kcal</b></div>
-          <div class="kv"><span>Proteína</span><b id="pf_prot">— g</b><div class="hint">padrão 2,0 g/kg</div></div>
-          <div class="kv"><span>Gorduras</span><b id="pf_gord">— g</b><div class="hint">padrão 1,0 g/kg</div></div>
-          <div class="kv"><span>Carboidratos</span><b id="pf_carb">— g</b><div class="hint">restante das kcal</div></div>
+        <div class="meal">
+          <h3>Lanche da manhã</h3>
+          <p>Iogurte natural + castanhas + fruta pequena.</p>
+          <div class="why"><em>Função:</em> evitar quedas de energia e estabilizar a fome.</div>
+        </div>
+
+        <div class="meal">
+          <h3>Almoço</h3>
+          <p>Frango grelhado + arroz integral + salada colorida + azeite.</p>
+          <div class="why"><em>Proteína:</em> suporte à recuperação muscular.</div>
+          <div class="why"><em>Carboidrato:</em> repõe energia do treino matinal.</div>
+          <div class="why"><em>Vegetais:</em> controlam inflamação e otimizam digestão.</div>
+        </div>
+
+        <div class="meal">
+          <h3>Lanche pré-treino</h3>
+          <p>Banana + pasta de amendoim + pão integral.</p>
+          <div class="why"><em>Função:</em> energia rápida e sustentada.</div>
+        </div>
+
+        <div class="meal">
+          <h3>Pós-treino</h3>
+          <p>Shake proteico + fruta ou refeição sólida (frango + batata).</p>
+          <div class="why"><em>Função:</em> regenerar fibras musculares e reduzir fadiga.</div>
+        </div>
+
+        <div class="meal">
+          <h3>Jantar</h3>
+          <p>Peixe + vegetais cozidos + azeite.</p>
+          <div class="why"><em>Função:</em> leve, nutritivo e favorece recuperação noturna.</div>
+        </div>
+
+        <div class="meal">
+          <h3>Ceia (opcional)</h3>
+          <p>Iogurte + sementes de chia ou caseína.</p>
+          <div class="why"><em>Função:</em> evita catabolismo durante o sono.</div>
         </div>
       </div>
 
       <p class="mini" style="margin-top:10px">
-        <strong>Orientação:</strong>  
-        Escolha o caminho que combina com seu momento:  
-        <em>Déficit</em> para lapidar e reduzir gordura,  
-        <em>superávit</em> para ganhar performance e firmeza.  
-        O cálculo se ajusta automaticamente.
+        <strong>Dica prática:</strong> mantenha proteína em todas as refeições e varie fontes de carboidrato e vegetais a cada semana.
       </p>
     </section>
   </main>
 
-  <!-- Definições globais -->
   <script>
     window.NIVEL = "dominio-83f9x";
     window.DATA_DICAS = "../../data/dominio.json";
   </script>
-
   <script src="../../assets/js/drip.js?v=22" defer></script>
   <script src="./dicas-orientacoes.js?v=22" defer></script>
 
-  <!-- Script de cálculo automático das metas -->
   <script>
   (function(){
     const $ = (s,r=document)=>r.querySelector(s);
-
-    const peso   = $('#t_peso');
-    const altura = $('#t_altura');
-    const idade  = $('#t_idade');
-    const sexo   = $('#t_sexo');
-
-    const fa  = $('#pf_atividade');
-    const obj = $('#pf_objetivo');
-
-    const outTMB  = $('#pf_tmb');
-    const outTDEE = $('#pf_tdee');
-    const outAlvo = $('#pf_kcal');
-    const outProt = $('#pf_prot');
-    const outGord = $('#pf_gord');
-    const outCarb = $('#pf_carb');
-
-    const num   = v => isFinite(+v) ? +v : 0;
-    const round = v => Math.round(v);
-
+    const peso=$('#t_peso'),altura=$('#t_altura'),idade=$('#t_idade'),sexo=$('#t_sexo');
+    const fa=$('#pf_atividade'),obj=$('#pf_objetivo');
+    const outTMB=$('#pf_tmb'),outTDEE=$('#pf_tdee'),outAlvo=$('#pf_kcal'),outProt=$('#pf_prot'),outGord=$('#pf_gord'),outCarb=$('#pf_carb');
+    const num=v=>isFinite(+v)?+v:0; const round=v=>Math.round(v);
     function recalc(){
-      const p  = num(peso?.value);
-      const h  = num(altura?.value);
-      const i  = num(idade?.value);
-      const sx = (sexo?.value || 'f').toLowerCase();
-      const fator = num(fa?.value) || 1.55;
-      const objetivo = num(obj?.value) || 0;
-      const gProt = 2.0;
-      const gGord = 1.0;
-
-      if(!(p>0 && h>0 && i>0)){
-        [outTMB,outTDEE,outAlvo,outProt,outGord,outCarb].forEach(o=>o.textContent='—');
-        return;
-      }
-
-      const tmb = round((10*p) + (6.25*h) - (5*i) + (sx==='f' ? -161 : 5));
-      const tdee = round(tmb * fator);
-      const alvo = round(tdee * (1 + objetivo));
-
-      const prot = round(gProt * p);
-      const gord = round(gGord * p);
-      const kcalProt = prot * 4;
-      const kcalGord = gord * 9;
-      const carb = Math.max(0, round((alvo - kcalProt - kcalGord) / 4));
-
-      outTMB.textContent  = tmb + ' kcal';
-      outTDEE.textContent = tdee + ' kcal';
-      outAlvo.textContent = alvo + ' kcal';
-      outProt.textContent = prot + ' g';
-      outGord.textContent = gord + ' g';
-      outCarb.textContent = carb + ' g';
+      const p=num(peso?.value),h=num(altura?.value),i=num(idade?.value);
+      const sx=(sexo?.value||'f').toLowerCase(),fator=num(fa?.value)||1.55,objetivo=num(obj?.value)||0;
+      if(!(p>0&&h>0&&i>0)){[outTMB,outTDEE,outAlvo,outProt,outGord,outCarb].forEach(o=>o.textContent='—');return;}
+      const tmb=round((10*p)+(6.25*h)-(5*i)+(sx==='f'?-161:5));
+      const tdee=round(tmb*fator);
+      const alvo=round(tdee*(1+objetivo));
+      const prot=round(2.0*p),gord=round(1.0*p);
+      const carb=Math.max(0,round((alvo-(prot*4)-(gord*9))/4));
+      outTMB.textContent=tmb+' kcal'; outTDEE.textContent=tdee+' kcal'; outAlvo.textContent=alvo+' kcal';
+      outProt.textContent=prot+' g'; outGord.textContent=gord+' g'; outCarb.textContent=carb+' g';
     }
-
-    ['input','change'].forEach(ev=>{
-      [peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc));
-    });
-    recalc();
+    ['input','change'].forEach(ev=>[peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc)));
   })();
   </script>
 </body>
