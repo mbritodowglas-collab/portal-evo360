@@ -1,36 +1,55 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Ascensão · Tarefas e Neuro-Hábito</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EVO360 · Ascensão · Práticas Mentais</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=22">
-  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=22">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    .content p, .content li { text-align: justify; }
+    /* mínimos para layout; o visual segue seu CSS global */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:12px 0;
+      /* AJUSTE: tudo na mesma linha */
+      flex-wrap:nowrap;
+      overflow:hidden;
+    }
+    .tab{
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#0f1318;
+      cursor:pointer;
+      /* AJUSTE: largura uniforme e texto sem quebra */
+      flex:1;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .panel{display:none}.panel.active{display:block}
+    .prep{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px;margin-top:8px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .timer{font-size:36px;font-weight:800;margin:8px 0}
+    .note{color:var(--silver)}
+    .box{border:1px solid var(--line);background:#0f1318;border-radius:12px;padding:12px}
+    ol.guide{margin-left:18px}
 
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .tab.active{border-color:rgba(0,179,126,.35);background:#10211b;color:#00b37e}
-    .panel{display:none}
-    .panel.active{display:block}
-
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .meta{color:var(--ink-2);font-size:.95rem;margin-bottom:6px}
-    .note{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
-
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-
-    #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
+    /* ===== Overrides mínimos: tema Ascensão (somente cores) ===== */
+    :root{ --emerald:#00b37e; }
+    .content h2, .card h2 { color: var(--emerald) !important; }
+    .tab.active{ border-color:rgba(0,179,126,.35) !important; background:#10211b !important; color:var(--emerald) !important; }
+    .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
+    .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
+    .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
   </style>
 </head>
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Ascensão">
+  <aside class="sidebar" aria-label="Navegação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
       <div class="nivel">Nível Ascensão</div>
@@ -38,98 +57,339 @@
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
       <a class="sb-item" href="./dicas-orientacoes.html">Dicas e Orientações</a>
-      <a class="sb-item active" href="./plano.html">Tarefas e Neuro-Hábito</a>
+      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
       <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
-      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
+      <a class="sb-item active" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-    <div class="sb-footer"><div class="quote">Você está evoluindo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+    <div class="sb-footer">
+      <div class="quote">Você está florescendo.</div>
+      <div class="ver">v1.0 · © Bella Prime</div>
+    </div>
   </aside>
 
+  <!-- Conteúdo -->
   <main class="content">
-    <!-- Banner do nível Ascensão -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner (Ascensão) -->
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;" aria-hidden="true"></header>
 
-    <!-- CARD · Tarefas & Neuro-hábito -->
     <section class="card">
-      <h2>Tarefas & Neuro-Hábito</h2>
-      <p class="muted">
-        Aqui você recebe <strong>tarefas semanais de mindset</strong> e <strong>microtarefas a cada 3 dias</strong>
-        para aplicar na rotina. O gotejamento começa quando você abre esta página pela primeira vez. Você pode
-        ver conteúdos anteriores, mas os próximos ficam bloqueados até a data ficar disponível.
+      <h2>Práticas Mentais</h2>
+      <p>
+        Entre em estado de foco calmo. Abaixo, você encontra três práticas: respiração para gerenciamento de estresse,
+        visualização mental e relaxamento guiado. Um ping suave toca a cada 60 segundos como âncora de atenção.
       </p>
 
-      <div class="note">
-        <strong>Diário recomendado:</strong> mantenha um caderno (ou notas do celular) para registrar
-        reflexões, emoções e pequenas vitórias. A escrita consolida o aprendizado e fortalece o hábito.
+      <div class="tabs">
+        <!-- AJUSTE: rótulos encurtados; data-tab mantido -->
+        <button class="tab active" data-tab="respiracao">Respiração</button>
+        <button class="tab" data-tab="visualizacao">Visualização</button>
+        <button class="tab" data-tab="relax">Relaxamento</button>
       </div>
 
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="semanais" role="tab">Tarefas semanais (mindset)</button>
-        <button class="tab" data-tab="micro" role="tab">Microtarefas · a cada 3 dias</button>
-        <button class="tab" data-tab="guia" role="tab">Como usar / Diário</button>
+      <!-- ===================== RESPIRAÇÃO (4-4-6) ===================== -->
+      <div class="panel active" id="panel-respiracao">
+        <h3>Respiração 4–4–6 (2–10 min)</h3>
+        <p class="note">Ritmo: <strong>inspire 4s</strong> • <strong>segure 4s</strong> • <strong>expire 6s</strong>. Mantenha ombros soltos e mandíbula relaxada.</p>
+
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Encontre um espaço tranquilo e confortável. Fones com música leve/instrumental são opcionais.</li>
+            <li>Silencie notificações. Avise que fará uma prática breve.</li>
+            <li>Faça 3 respirações lentas antes de iniciar.</li>
+          </ul>
+        </div>
+
+        <label style="display:block;margin-top:12px">Duração</label>
+        <select id="respiro_dur" class="input">
+          <option value="120">2 minutos</option>
+          <option value="300" selected>5 minutos</option>
+          <option value="600">10 minutos</option>
+        </select>
+
+        <div class="box" style="margin-top:12px">
+          <div id="respiro_phase" class="note">Pronto</div>
+          <div id="respiro_bar" class="note">—</div>
+          <div id="respiro_time" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="respiro_start">Iniciar</button>
+            <button class="btn ghost" id="respiro_stop">Parar</button>
+          </div>
+        </div>
+        <p class="note" style="margin-top:8px">Ping a cada 60s. Ciclo: 4–4–6.</p>
       </div>
 
-      <!-- Painel: Tarefas semanais -->
-      <div class="panel active" id="panel-semanais">
-        <div class="meta" id="sem-meta">Semana —</div>
-        <h3 id="sem-titulo">Carregando…</h3>
-        <p id="sem-texto" style="margin-top:6px">—</p>
+      <!-- ===================== VISUALIZAÇÃO MENTAL ===================== -->
+      <div class="panel" id="panel-visualizacao">
+        <h3>Visualização Mental</h3>
 
-        <div class="row-actions">
-          <button class="btn ghost" id="semPrev">Anterior</button>
-          <button class="btn" id="semNext">Próxima</button>
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Postura confortável e alerta (sentado ou deitado com cabeça apoiada).</li>
+            <li>Ambiente silencioso; fones e música suave são opcionais.</li>
+            <li>Leia o roteiro escolhido abaixo, <strong>depois</strong> feche os olhos e aperte <em>Iniciar</em>.</li>
+          </ul>
         </div>
 
-        <div class="note small" style="margin-top:12px">
-          <strong>Dica:</strong> ao final da semana, escreva 3 aprendizados e 1 ajuste para a próxima.
+        <div class="row">
+          <label style="flex:1;min-width:220px">Roteiro
+            <select id="viz_script" class="input">
+              <option value="constancia" selected>Constância &amp; Hábito</option>
+              <option value="autoimagem">Autoimagem &amp; Confiança</option>
+              <option value="energia">Energia &amp; Motivação</option>
+            </select>
+          </label>
+          <label style="width:180px">Duração
+            <select id="viz_dur" class="input">
+              <option value="120">2 minutos</option>
+              <option value="300" selected>5 minutos</option>
+              <option value="600">10 minutos</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="viz_text" class="box" style="margin-top:10px"></div>
+
+        <div class="box" style="margin-top:10px">
+          <div id="viz_status" class="note">Pronto para começar? Depois de ler, feche os olhos e pressione Iniciar.</div>
+          <div id="viz_clock" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="viz_start">Iniciar</button>
+            <button class="btn ghost" id="viz_stop">Parar</button>
+          </div>
+          <p class="note">Ping suave a cada 60s para recente rar o foco.</p>
         </div>
       </div>
 
-      <!-- Painel: Microtarefas -->
-      <div class="panel" id="panel-micro">
-        <div class="meta" id="mic-meta">Bloco —</div>
-        <h3 id="mic-titulo">Carregando…</h3>
-        <p id="mic-texto" style="margin-top:6px">—</p>
+      <!-- ===================== RELAXAMENTO GUIADO (como estava) ===================== -->
+      <div class="panel" id="panel-relax">
+        <h3>Relaxamento guiado corporal</h3>
+        <p>Percorra o corpo dos pés à cabeça, soltando regiões com a expiração.</p>
 
-        <div class="row-actions">
-          <button class="btn ghost" id="micPrev">Anterior</button>
-          <button class="btn" id="micNext">Próxima</button>
+        <div class="prep">
+          <h4>Orientação de preparação</h4>
+          <ul>
+            <li>Deite-se ou sente-se com apoio. Solte ombros e descruze as pernas.</li>
+            <li>Se desejar, música ambiente baixa em fones.</li>
+          </ul>
         </div>
 
-        <div class="note small" style="margin-top:12px">
-          <strong>Aplicação:</strong> pratique por 3 dias e anote: gatilhos, facilidade/dificuldade e
-          como adaptar para o seu contexto.
-        </div>
-      </div>
+        <label style="display:block;margin-top:12px">Duração</label>
+        <select id="relax_dur" class="input">
+          <option value="120">2 minutos</option>
+          <option value="300" selected>5 minutos</option>
+          <option value="600">10 minutos</option>
+        </select>
 
-      <!-- Painel: Guia / Diário -->
-      <div class="panel" id="panel-guia">
-        <h3>Como usar este módulo</h3>
-        <ul>
-          <li><strong>Ritmo sustentável:</strong> 1 tarefa de mindset por semana e 1 microtarefa a cada 3 dias.</li>
-          <li><strong>Registro:</strong> use um diário para consolidar o que sentiu, aprendeu e aplicou.</li>
-          <li><strong>Sem pressa:</strong> volte conteúdos anteriores quando quiser; os futuros abrem no tempo certo.</li>
-        </ul>
-        <div class="note">
-          <strong>Modelo simples de entrada no diário:</strong><br>
-          • Intenção do dia · • Gatilho observado · • Recompensa percebida · • Ajuste para amanhã
+        <div class="box" style="margin-top:10px">
+          <div id="relax_step" class="note">Inicie pelo contato dos pés com o solo/apoio.</div>
+          <div id="relax_clock" class="note">00:00</div>
+          <div class="row">
+            <button class="btn" id="relax_start">Iniciar</button>
+            <button class="btn ghost" id="relax_stop">Parar</button>
+          </div>
+          <p class="note">As etapas avançam automaticamente a cada 4s (botões continuam disponíveis).</p>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    /* Configs do nível Ascensão */
-    window.NIVEL = "ascensao-82b7x";
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/ascensao-tarefas-semanais.json";
-    window.DATA_MICRO_TAREFAS   = "../../_data/ascensao-microtarefas.json";
+  // ======= Tabs =======
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+    });
+  });
 
-    window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
-    window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
+  // ======= Util =======
+  const fmt = s => {
+    s = Math.max(0, s|0);
+    const m = String(Math.floor(s/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    return `${m}:${ss}`;
+  };
+  function makePing(){
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    return ()=>{
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+      o.stop(ctx.currentTime + 0.27);
+    };
+  }
+  const ping = makePing();
+
+  // ======= RESPIRAÇÃO 4-4-6 =======
+  (function(){
+    const startBtn = document.getElementById('respiro_start');
+    const stopBtn  = document.getElementById('respiro_stop');
+    const durSel   = document.getElementById('respiro_dur');
+    const phaseEl  = document.getElementById('respiro_phase');
+    const barEl    = document.getElementById('respiro_bar');
+    const timeEl   = document.getElementById('respiro_time');
+
+    let t=0, total=300, tm=null, minutePing=0, sub=0, subDur=0;
+
+    function setSubphase(name, secs){
+      sub = secs; subDur = secs; phaseEl.textContent = name;
+    }
+    function drawBar(){
+      const p = subDur ? Math.round((1 - (sub/subDur))*10) : 0;
+      barEl.textContent = '▮'.repeat(p) + '▯'.repeat(10-p);
+    }
+    function tick(){
+      t++; minutePing++;
+      if(minutePing===60){ ping(); minutePing=0; }
+      timeEl.textContent = fmt(t);
+
+      // ciclo 4-4-6
+      sub--;
+      if(sub<=0){
+        if(phaseEl.textContent.includes('Inspire')) setSubphase('Segure 4s',4);
+        else if(phaseEl.textContent.includes('Segure')) setSubphase('Expire 6s',6);
+        else setSubphase('Inspire 4s',4);
+      }
+      drawBar();
+
+      if(t>=total) { stop(); }
+    }
+    function start(){
+      total = parseInt(durSel.value,10)||300;
+      t=0; minutePing=0;
+      setSubphase('Inspire 4s',4);
+      drawBar();
+      tm = setInterval(tick, 1000);
+    }
+    function stop(){
+      clearInterval(tm); tm=null;
+      phaseEl.textContent = 'Pronto';
+      barEl.textContent = '—';
+      timeEl.textContent = '00:00';
+    }
+    startBtn.addEventListener('click', ()=>{ if(!tm) start(); });
+    stopBtn.addEventListener('click', stop);
+  })();
+
+  // ======= VISUALIZAÇÃO: seleção de roteiro + timer + ping =======
+  (function(){
+    const select = document.getElementById('viz_script');
+    const durSel = document.getElementById('viz_dur');
+    const textEl = document.getElementById('viz_text');
+    const status = document.getElementById('viz_status');
+    const clock  = document.getElementById('viz_clock');
+    const start  = document.getElementById('viz_start');
+    const stop   = document.getElementById('viz_stop');
+
+    const roteiros = {
+      constancia: [
+        'Respire fundo e suavize o corpo.',
+        'Traga à mente uma versão sua com energia e postura confiante.',
+        'Veja-se executando sua rotina com prazer e leveza.',
+        'Perceba o orgulho após cumprir pequenas metas.',
+        'Agradeça pela sua dedicação. Ao terminar a leitura, feche os olhos e pressione Iniciar.'
+      ],
+      autoimagem: [
+        'Endireite a postura e sinta presença.',
+        'Lembre-se de uma qualidade sua de que você se orgulha.',
+        'Visualize-se agindo de acordo com seus valores.',
+        'Veja expressões e gestos confiantes nas situações do dia.',
+        'Ao terminar a leitura, feche os olhos e pressione Iniciar.'
+      ],
+      energia: [
+        'Respiração suave pelas narinas, alongando a expiração.',
+        'Imagine uma luz/energia percorrendo o corpo e despertando vitalidade.',
+        'Veja-se iniciando o dia/tarefa com ânimo e foco.',
+        'Sinta um “start” interno: pronto para agir com clareza.',
+        'Ao terminar a leitura, feche os olhos e pressione Iniciar.'
+      ]
+    };
+
+    function render(){
+      const key = select.value;
+      const itens = roteiros[key]||[];
+      textEl.innerHTML = `
+        <div class="note" style="margin-bottom:6px">Depois de ler o roteiro, <strong>feche os olhos</strong> e inicie a prática.</div>
+        <ol class="guide">${itens.map(i=>`<li>${i}</li>`).join('')}</ol>
+        <div class="note" style="margin-top:8px">Dica: se preferir, leia em voz baixa para engajar mais áreas do cérebro.</div>
+      `;
+    }
+    render();
+    select.addEventListener('change', render);
+
+    let t=0, total=300, tm=null, minutePing=0;
+    function tick(){
+      t++; minutePing++;
+      if(minutePing===60){ ping(); minutePing=0; }
+      clock.textContent = fmt(t);
+      if(t>=total) stopF();
+    }
+    function startF(){
+      total = parseInt(durSel.value,10)||300;
+      t=0; minutePing=0;
+      status.textContent = 'Em andamento… foque na cena principal. Ping a cada 60s.';
+      tm = setInterval(tick, 1000);
+    }
+    function stopF(){
+      clearInterval(tm); tm=null;
+      status.textContent = 'Pronto para começar? Depois de ler, feche os olhos e pressione Iniciar.';
+      clock.textContent = '00:00';
+    }
+    start.addEventListener('click', ()=>{ if(!tm) startF(); });
+    stop.addEventListener('click', stopF);
+  })();
+
+  // ======= RELAXAMENTO GUIADO: auto 4s por etapa + ping/minuto =======
+  (function(){
+    const steps = [
+      'Pés e tornozelos — solte com a expiração.',
+      'Panturrilhas e joelhos — amoleça.',
+      'Coxas e quadris — relaxe o peso.',
+      'Abdômen e lombar — respire amplo.',
+      'Peito e ombros — solte e abaixe.',
+      'Braços e mãos — descanse.',
+      'Pescoço, mandíbula e rosto — suavize.',
+      'Testa e couro cabeludo — alise a tensão.',
+      'Respire amplo por alguns ciclos. Permaneça presente.'
+    ];
+    const stepEl = document.getElementById('relax_step');
+    const clock  = document.getElementById('relax_clock');
+    const start  = document.getElementById('relax_start');
+    const stop   = document.getElementById('relax_stop');
+    const durSel = document.getElementById('relax_dur');
+
+    let t=0, total=300, tm=null, minutePing=0, idx=0, phase=4;
+    function show(){ stepEl.textContent = steps[idx]||steps[steps.length-1]; }
+    function tick(){
+      t++; minutePing++; phase--;
+      if(minutePing===60){ ping(); minutePing=0; }
+      if(phase<=0){ idx = (idx+1)%steps.length; phase=4; show(); }
+      clock.textContent = fmt(t);
+      if(t>=total) stopF();
+    }
+    function startF(){
+      total = parseInt(durSel.value,10)||300;
+      t=0; minutePing=0; idx=0; phase=4; show();
+      tm = setInterval(tick, 1000);
+    }
+    function stopF(){
+      clearInterval(tm); tm=null; clock.textContent='00:00';
+      stepEl.textContent = 'Inicie pelo contato dos pés com o solo/apoio.';
+    }
+    start.addEventListener('click', ()=>{ if(!tm) startF(); });
+    stop.addEventListener('click', stopF);
+  })();
   </script>
-
-  <script src="../../assets/js/drip.js?v=22" defer></script>
-  <script src="./plano.js?v=22" defer></script>
 </body>
 </html>
