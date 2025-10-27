@@ -4,18 +4,15 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Ascensão · Tarefas e Neuro-Hábito</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <!-- Tema da Ascensão -->
-  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=22">
+  <link rel="stylesheet" href="../../assets/css/tema-ascensao.css?v=22">
   <meta name="theme-color" content="#0b0d10">
   <style>
-    /* Texto justificado nesta página */
     .content p, .content li { text-align: justify; }
 
-    /* Abas e painéis (mesmo padrão do Card 1) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
+    .tab.active{border-color:rgba(0,179,126,.35);background:#10211b;color:#00b37e}
     .panel{display:none}
     .panel.active{display:block}
 
@@ -26,7 +23,6 @@
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
 
-    /* --- AJUSTE: garantir quebra e altura automática nos textos --- */
     #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
     #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
     .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
@@ -47,11 +43,11 @@
       <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
       <a class="sb-item" href="./suporte.html">Suporte</a>
     </nav>
-    <div class="sb-footer"><div class="quote">Você está florescendo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
+    <div class="sb-footer"><div class="quote">Você está evoluindo.</div><div class="ver">v1.0 · © Bella Prime</div></div>
   </aside>
 
   <main class="content">
-    <!-- Banner (imagem da Ascensão) -->
+    <!-- Banner do nível Ascensão -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg')" aria-hidden="true"></header>
 
     <!-- CARD · Tarefas & Neuro-hábito -->
@@ -90,7 +86,7 @@
         </div>
       </div>
 
-      <!-- Painel: Microtarefas (3 em 3 dias) -->
+      <!-- Painel: Microtarefas -->
       <div class="panel" id="panel-micro">
         <div class="meta" id="mic-meta">Bloco —</div>
         <h3 id="mic-titulo">Carregando…</h3>
@@ -124,59 +120,16 @@
   </main>
 
   <script>
-    /* Configs desta página — ASCENSÃO */
-    window.NIVEL = "ascensao-9f3b2"; /* ajuste o sufixo se a pasta tiver outro código */
+    /* Configs do nível Ascensão */
+    window.NIVEL = "ascensao-82b7x";
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/ascensao-tarefas-semanais.json";
+    window.DATA_MICRO_TAREFAS   = "../../_data/ascensao-microtarefas.json";
 
-    /* Caminhos dos JSONs da Ascensão (coloque estes arquivos em _data) */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais-ascensao.json"; // 8+ itens [{titulo, ...}]
-    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas-ascensao.json";      // ~20 itens [{titulo, ...}]
-
-    /* Aliases para compatibilidade com scripts que usam nomes anteriores */
     window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
     window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
 
-  <!-- motor de gotejamento (antes do JS da página) -->
-  <script src="../../assets/js/drip.js?v=18" defer></script>
-
-  <!-- SHIM: se drip.js não carregar, garante um Drip básico para o plano.js -->
-  <script>
-    (function(){
-      if (typeof window.Drip === 'undefined') {
-        const Drip = (() => {
-          const localISO = (d=new Date())=>{
-            const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-            return `${y}-${m}-${dd}`;
-          };
-          const parseISO = (s)=>new Date(`${s}T12:00:00`);
-          const todayISO = ()=>localISO(new Date());
-          const daysBetween = (aISO,bISO)=>Math.floor((parseISO(bISO)-parseISO(aISO))/86400000);
-          const LS = {
-            get:(k,def=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-            set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
-            del:(k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }
-          };
-          function ensureStart(levelId, streamId){
-            const KEY=`drip_start_${levelId}_${streamId}`;
-            let start = LS.get(KEY, null);
-            if(!start){ start = todayISO(); LS.set(KEY, start); }
-            return start;
-          }
-          function getTodayIndex(startISO, maxDays=60){
-            const delta = daysBetween(startISO, todayISO());
-            return Math.max(1, Math.min(maxDays, delta + 1));
-          }
-          function reset(levelId, streamId){
-            LS.del(`drip_start_${levelId}_${streamId}`);
-          }
-          return { ensureStart, getTodayIndex, reset, LS };
-        })();
-        window.Drip = Drip;
-      }
-    })();
-  </script>
-
-  <!-- JS desta página (versão da Ascensão) -->
-  <script src="./plano.js?v=18" defer></script>
+  <script src="../../assets/js/drip.js?v=22" defer></script>
+  <script src="./plano.js?v=22" defer></script>
 </body>
 </html>
