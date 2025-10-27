@@ -1,5 +1,3 @@
-<!-- dicas-orientacoes.js (Ascensão) -->
-<script>
 // ============================
 // EVO360 · Ascensão
 // Página: Dicas e Orientações (JS completo)
@@ -8,6 +6,14 @@
 // Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+function cacheBust(url){
+  try{
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', String(Date.now()));
+    return u.href;
+  }catch(_){ return url }
+}
 
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
@@ -25,7 +31,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     async function load(url) {
       try {
         if (!url) return null;
-        const r = await fetch(url, { cache: 'no-store' });
+        const r = await fetch(cacheBust(url), { cache: 'no-store' });
         if (!r.ok) throw 0;
         return await r.json();
       } catch {
@@ -33,7 +39,12 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       }
     }
 
-    const raw = await load(window.DATA_DICAS);
+    // tenta caminho informado; se falhar, tenta fallback absoluto
+    let raw = await load(window.DATA_DICAS);
+    if (!raw && window.DATA_DICAS !== '/data/ascensao.json') {
+      raw = await load('/data/ascensao.json');
+    }
+
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
     if (!data || data.length === 0) {
@@ -144,7 +155,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const pcts = [50,55,60,65,70,75,80];
     return pcts.map(p=>{
       const thr = target(hmax, fcrep, p/100);
-      return `<div class="row" style="justify-content:space-between"><span>${p}%</span><strong>${thr} bpm</strong></div>`;
+      return `<div class="row" style="justify-content:space-between"><span>${p}% da FC de reserva</span><strong>${thr} bpm</strong></div>`;
     }).join('');
   }
 
@@ -159,7 +170,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const hmax = hrMax(a);
     const lo = target(hmax, r, 0.50);
     const hi = target(hmax, r, 0.65);
-    out.innerHTML = `HRmáx ≈ <strong>${Math.round(hmax)} bpm</strong><br><span class="small muted">Faixa sugerida (Ascensão): ${lo}–${hi} bpm</span>`;
+    out.innerHTML = `FC máx. (estimada): <strong>${Math.round(hmax)} bpm</strong><br><span class="small muted">Faixa sugerida (Ascensão): ${lo}–${hi} bpm</span>`;
     table.innerHTML = construirTabela(hmax, r);
   }
 
@@ -196,4 +207,3 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   ['input','change'].forEach(ev=>{ peso.addEventListener(ev,calc); alt.addEventListener(ev,calc); ida.addEventListener(ev,calc); sex.addEventListener(ev,calc); });
   calc();
 })();
-</script>
