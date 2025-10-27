@@ -2,10 +2,10 @@
 <html lang="pt-br">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Fundação · Tarefas e Neuro-Hábito</title>
+  <title>EVO360 · Ascensão · Tarefas e Neuro-Hábito</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=22">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=22">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* Texto justificado nesta página */
@@ -14,7 +14,6 @@
     /* Abas e painéis (mesmo padrão do Card 1) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
     .panel{display:none}
     .panel.active{display:block}
 
@@ -25,18 +24,26 @@
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
 
-    /* --- AJUSTE: garantir quebra e altura automática nos textos --- */
+    /* --- Garantir quebra e altura automática nos textos --- */
     #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
     #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
     .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
+
+    /* ===== Overrides para o tema Ascensão ===== */
+    :root{ --emerald:#00b37e; }
+    .content h2, .card h2, .content .card h2{ color:var(--emerald) !important; }
+    .tab.active{ border-color:rgba(0,179,126,.35) !important; color:var(--emerald) !important; background:#10211b !important; }
+    .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
+    .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
+    .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
   </style>
 </head>
 <body class="layout-with-sidebar">
   <!-- Sidebar -->
-  <aside class="sidebar" aria-label="Navegação do Nível Fundação">
+  <aside class="sidebar" aria-label="Navegação do Nível Ascensão">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Fundação</div>
+      <div class="nivel">Nível Ascensão</div>
     </div>
     <nav class="sb-nav">
       <a class="sb-item" href="./">Início</a>
@@ -50,8 +57,8 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (apenas imagem, mesmo padrão) -->
-    <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
+    <!-- Banner (ascensão) -->
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;" aria-hidden="true"></header>
 
     <!-- CARD · Tarefas & Neuro-hábito -->
     <section class="card">
@@ -124,21 +131,19 @@
 
   <script>
     /* Configs desta página */
-    window.NIVEL = "fundacao-72a9c";
+    window.NIVEL = "ascensao-72a9c";
 
-    /* Caminhos dos JSONs reais no seu _data */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, ...}]
-    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, ...}]
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json";
+    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";
 
-    /* Aliases para compatibilidade com scripts que usam nomes anteriores */
     window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
     window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
 
   <!-- motor de gotejamento (antes do JS da página) -->
-  <script src="../../assets/js/drip.js?v=18" defer></script>
+  <script src="../../assets/js/drip.js?v=22" defer></script>
 
-  <!-- SHIM: se drip.js não carregar, garante um Drip básico para o plano.js -->
+  <!-- SHIM: se drip.js não carregar, garante um Drip básico -->
   <script>
     (function(){
       if (typeof window.Drip === 'undefined') {
@@ -176,6 +181,6 @@
   </script>
 
   <!-- JS desta página -->
-  <script src="./plano.js?v=18" defer></script>
+  <script src="./plano.js?v=22" defer></script>
 </body>
 </html>
