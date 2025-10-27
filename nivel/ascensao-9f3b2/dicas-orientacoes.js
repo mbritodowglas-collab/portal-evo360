@@ -1,23 +1,24 @@
 // ============================
-// EVO360 · Fundação
-// Página: Dicas e Orientações (JS completo e corrigido)
+// EVO360 · Ascensão
+// Página: Dicas e Orientações (JS completo)
 // ============================
 
 (() => {
-  // Helpers locais (NÃO poluem o global)
+  // Helpers locais (não poluem global)
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
   // ---------- DRIP: Dica do dia ----------
   (async function dicaDrip() {
     try {
-      const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+      const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
       const DRIP_ID  = 'card1_dicas_orientacoes';
+
       const startISO = (typeof Drip !== 'undefined')
         ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
         : new Date().toISOString().slice(0, 10);
 
-      const dataPathBase = window.DATA_DICAS || '../../data/fundacao.json';
+      const dataPathBase = window.DATA_DICAS || '../../data/ascensao.json';
       const dataPath = `${dataPathBase}${dataPathBase.includes('?') ? '&' : '?'}cb=${Date.now()}`;
 
       async function load(url) {
@@ -45,10 +46,8 @@
         return;
       }
 
-      const MAX_DAYS = Math.min(60, data.length);
-      const todayIdx = (typeof Drip !== 'undefined')
-        ? Drip.getTodayIndex(startISO, MAX_DAYS)
-        : 1;
+      const MAX_DAYS  = Math.min(60, data.length);
+      const todayIdx  = (typeof Drip !== 'undefined') ? Drip.getTodayIndex(startISO, MAX_DAYS) : 1;
 
       const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
       const LS = {
@@ -73,19 +72,12 @@
           const blocoHTML = (item.conceito || item.orientacao)
             ? `
               <div class="dica-bloco">
-                ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-                ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
+                ${item.conceito ? `<div class="dica-label">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
+                ${item.orientacao ? `<div class="dica-label">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
               </div>`
             : `<p style="margin:0">${item.texto || ''}</p>`;
 
-          if (texto) {
-            texto.innerHTML = blocoHTML;
-            texto.style.whiteSpace   = 'normal';
-            texto.style.overflowWrap = 'anywhere';
-            texto.style.wordBreak    = 'break-word';
-            texto.style.lineHeight   = '1.6';
-            texto.style.marginTop    = '6px';
-          }
+          texto && (texto.innerHTML = blocoHTML);
         } else {
           meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS}`);
           texto && (texto.textContent = 'Dica indisponível.');
@@ -114,7 +106,6 @@
       tabs.forEach(x => x.classList.remove('active'));
       panels.forEach(p => p.classList.remove('active'));
       tabEl.classList.add('active');
-
       const key = tabEl.dataset.tab;
       const target = key ? `#panel-${key}` : null;
       const panel = target ? $(target) : null;
@@ -134,7 +125,19 @@
     const table = $('#k_table');
     const btn   = $('#k_calcBtn');
     const clr   = $('#k_clearBtn');
-    if (!idade || !fCR || !out || !table || !btn || !clr) return;
+
+    // Auto-diagnóstico leve (ajuda a detectar HTML divergente)
+    const missing = [];
+    if (!idade) missing.push('#k_idade');
+    if (!fCR)   missing.push('#k_fcr');
+    if (!out)   missing.push('#k_out');
+    if (!table) missing.push('#k_table');
+    if (!btn)   missing.push('#k_calcBtn');
+    if (!clr)   missing.push('#k_clearBtn');
+    if (missing.length){
+      console.warn('[Karvonen] Elementos não encontrados no HTML:', missing.join(', '));
+      return;
+    }
 
     function karvonenTarget(fcMax, fcRep, frac) {
       return Math.round(((fcMax - fcRep) * frac) + fcRep);
@@ -158,12 +161,14 @@
     function calcular() {
       const a = +idade.value || 0;
       const r = +fCR.value   || 0;
+
       if (a <= 0 || r <= 0) {
         out.textContent = 'Informe idade e FC de repouso.';
         table.innerHTML = '';
         return;
       }
-      const fcMax = 220 - a; // Fundação mantém 220 - idade
+
+      const fcMax = 220 - a; // mantém o mesmo do Fundação
       const alvo50 = karvonenTarget(fcMax, r, 0.50);
       const alvo65 = karvonenTarget(fcMax, r, 0.65);
 
@@ -183,6 +188,7 @@
 
     btn.addEventListener('click', calcular);
     clr.addEventListener('click', limpar);
+
     [idade, fCR].forEach(el => {
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { e.preventDefault(); calcular(); }
@@ -197,7 +203,17 @@
     const ida  = $('#t_idade');
     const sex  = $('#t_sexo');
     const out  = $('#t_out');
-    if (!peso || !alt || !ida || !sex || !out) return;
+
+    const missing = [];
+    if (!peso) missing.push('#t_peso');
+    if (!alt)  missing.push('#t_altura');
+    if (!ida)  missing.push('#t_idade');
+    if (!sex)  missing.push('#t_sexo');
+    if (!out)  missing.push('#t_out');
+    if (missing.length){
+      console.warn('[TMB] Elementos não encontrados no HTML:', missing.join(', '));
+      return;
+    }
 
     function calc() {
       const p = +peso.value || 0;
@@ -222,4 +238,4 @@
     });
     calc();
   })();
-})(); // ← fecha o wrapper e evita colisão no escopo global
+})();
