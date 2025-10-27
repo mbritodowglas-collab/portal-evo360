@@ -11,7 +11,7 @@
     /* Texto justificado nesta página */
     .content p, .content li { text-align: justify; }
 
-    /* Abas e painéis (mesmo padrão do Card 1) */
+    /* Abas e painéis (mesmo padrão) */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .panel{display:none}
@@ -24,14 +24,14 @@
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
 
-    /* --- Garantir quebra e altura automática nos textos --- */
-    #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
+    /* Quebras e altura automática nos textos */
+    #sem-titulo,#mic-titulo{white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
+    #sem-texto,#mic-texto{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
+    .panel p,.panel .note{overflow-wrap:anywhere;word-break:break-word}
 
-    /* ===== Overrides para o tema Ascensão ===== */
+    /* ===== Overrides tema Ascensão (só cor) ===== */
     :root{ --emerald:#00b37e; }
-    .content h2, .card h2, .content .card h2{ color:var(--emerald) !important; }
+    .content h2,.card h2,.content .card h2{ color:var(--emerald) !important; }
     .tab.active{ border-color:rgba(0,179,126,.35) !important; color:var(--emerald) !important; background:#10211b !important; }
     .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
     .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
@@ -57,8 +57,10 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (ascensão) -->
-    <header class="banner-full" style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;" aria-hidden="true"></header>
+    <!-- Banner (Ascensão) -->
+    <header class="banner-full"
+      style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;"
+      aria-hidden="true"></header>
 
     <!-- CARD · Tarefas & Neuro-hábito -->
     <section class="card">
@@ -131,23 +133,22 @@
 
   <script>
     /* Configs desta página */
-    window.NIVEL = "ascensao-72a9c";
+    window.NIVEL = "ascensao-9f3b2";
 
-    /* >>> ADIÇÃO: caminho do JSON unificado das tarefas do nível Ascensão <<< */
+    /* JSON unificado das tarefas da Ascensão */
     window.DATA_PLANO = "../../data/ascensao-tarefas.json";
 
-    /* (mantidos para compatibilidade, sem uso pelo plano.js novo) */
+    /* (mantidos só por compatibilidade; não usados pelo plano.js novo) */
     window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json";
     window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";
-
     window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
     window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
 
-  <!-- motor de gotejamento (antes do JS da página) -->
+  <!-- Drip -->
   <script src="../../assets/js/drip.js?v=22" defer></script>
 
-  <!-- SHIM: se drip.js não carregar, garante um Drip básico -->
+  <!-- SHIM: Drip básico se faltar -->
   <script>
     (function(){
       if (typeof window.Drip === 'undefined') {
@@ -156,35 +157,28 @@
             const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
             return `${y}-${m}-${dd}`;
           };
-          const parseISO = (s)=>new Date(`${s}T12:00:00`);
-          const todayISO = ()=>localISO(new Date());
-          const daysBetween = (aISO,bISO)=>Math.floor((parseISO(bISO)-parseISO(aISO))/86400000);
-          const LS = {
-            get:(k,def=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-            set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
-            del:(k)=>{ try{ localStorage.removeItem(k); }catch(_){ } }
-          };
+          const parseISO=(s)=>new Date(`${s}T12:00:00`);
+          const todayISO=()=>localISO(new Date());
+          const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+          const LS={get:(k,def=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(_){return def}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
           function ensureStart(levelId, streamId){
             const KEY=`drip_start_${levelId}_${streamId}`;
-            let start = LS.get(KEY, null);
-            if(!start){ start = todayISO(); LS.set(KEY, start); }
+            let start=LS.get(KEY,null);
+            if(!start){start=todayISO();LS.set(KEY,start);}
             return start;
           }
-          function getTodayIndex(startISO, maxDays=60){
-            const delta = daysBetween(startISO, todayISO());
-            return Math.max(1, Math.min(maxDays, delta + 1));
+          function getTodayIndex(startISO,maxDays=60){
+            const delta=daysBetween(startISO,todayISO());
+            return Math.max(1,Math.min(maxDays,delta+1));
           }
-          function reset(levelId, streamId){
-            LS.del(`drip_start_${levelId}_${streamId}`);
-          }
-          return { ensureStart, getTodayIndex, reset, LS };
+          return { ensureStart, getTodayIndex, LS };
         })();
         window.Drip = Drip;
       }
     })();
   </script>
 
-  <!-- JS desta página -->
+  <!-- JS da página (usa window.DATA_PLANO) -->
   <script src="./plano.js?v=22" defer></script>
 </body>
 </html>
