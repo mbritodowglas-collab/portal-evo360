@@ -1,5 +1,5 @@
 // ============================
-// EVO360 · Fundação
+// EVO360 · Ascensão
 // Página: Dicas e Orientações (JS completo)
 // ============================
 
@@ -10,7 +10,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
-    const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+    const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
     // pode não existir se drip.js não carregar, por isso o try/catch
@@ -19,9 +19,9 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       : (new Date()).toISOString().slice(0,10);
 
     async function load(url) {
+      const urlFinal = url || 'data/ascensao.json'; // << fallback ajustado
       try {
-        if (!url) return null;
-        const r = await fetch(url, { cache: 'no-store' });
+        const r = await fetch(urlFinal, { cache: 'no-store' });
         if (!r.ok) throw 0;
         return await r.json();
       } catch {
@@ -81,7 +81,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
                      : (item.categoria === 'nutricao' ? 'Nutrição'
                      : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
 
-        // título no meta (mantendo padrão anterior)
+        // título no meta
         if (meta) meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
 
         // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
@@ -120,7 +120,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
   if (!tabs.length || !panels.length) return;
 
-  // ajuda a ativar a primeira aba caso nada esteja ativo
   function activate(tabEl) {
     tabs.forEach(x => x.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
@@ -130,15 +129,11 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const target = key ? `#panel-${key}` : null;     // ex.: "#panel-karvonen"
     const panel = target ? $(target) : null;
 
-    // fallback: se não achar pelo data-tab, mantém a atual
     (panel || panels[0])?.classList.add('active');
   }
 
-  tabs.forEach(tb => {
-    tb.addEventListener('click', () => activate(tb));
-  });
+  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
 
-  // garante estado inicial válido
   const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
   activate(anyActive);
 })();
@@ -183,13 +178,13 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
-    const fcMax = 220 - a; // estimativa
+    const fcMax = 220 - a; // estimativa (mantido como no Fundação)
     const alvo50 = karvonenTarget(fcMax, r, 0.50);
     const alvo65 = karvonenTarget(fcMax, r, 0.65);
 
     out.innerHTML = `
       FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-      <span class="small muted">Faixa sugerida (Fundação): ${alvo50}–${alvo65} bpm</span>
+      <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>
     `;
     table.innerHTML = construirTabela(fcMax, r);
   }
