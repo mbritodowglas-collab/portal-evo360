@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EVO360 · Diagnóstico do Drip</title>
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    :root{
+      --bg:#0b0d10; --panel:#0f1318; --ink:#e8f4ff; --muted:#9fb3c8; --line:#22303d;
+      --ok:#2bb673; --warn:#f5a623; --err:#d04c4c; --ruby:#cc0033; --emerald:#00b37e;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
+    h1,h2{margin:.5rem 0 0} h1{font-size:1.25rem} h2{font-size:1.05rem;color:var(--emerald)}
+    main{max-width:980px;margin:0 auto;padding:16px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+    .grid{display:grid;gap:10px} @media(min-width:860px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#14202b;color:var(--ink);cursor:pointer}
+    .btn.ok{background:var(--emerald);border-color:transparent;color:#fff}
+    .btn.warn{background:transparent;border-color:var(--warn);color:var(--warn)}
+    .btn.err{background:transparent;border-color:var(--err);color:var(--err)}
+    .tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.15rem .5rem;margin-right:.35rem}
+    .muted{color:var(--muted)}
+    pre,code{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;font-size:.95em}
+    pre.log{white-space:pre-wrap;background:#0d1116;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:300px;overflow:auto}
+    .kv{display:grid;grid-template-columns:220px 1fr;gap:8px;border-bottom:1px dashed var(--line);padding:6px 0}
+    .kv b{color:#cfe3f7}
+    .pill{display:inline-block;padding:.1rem .45rem;border-radius:6px}
+    .pill.ok{background:rgba(43,182,115,.12);border:1px solid rgba(43,182,115,.35)}
+    .pill.err{background:rgba(208,76,76,.12);border:1px solid rgba(208,76,76,.35)}
+    .pill.warn{background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35)}
+    .box{border:1px solid var(--line);border-radius:10px;padding:10px;background:#0d1116}
+    a{color:#89d1ff}
+  </style>
+</head>
+<body>
+<main>
+  <h1>🔎 Diagnóstico do Drip (gotejamento)</h1>
+  <div class="muted">Use esta página para testar: datas, localStorage, JSON, presença do Drip e índice liberado hoje.</div>
+
+  <section class="card">
+    <h2>Parâmetros</h2>
+    <div class="grid cols-2">
+      <div class="kv"><div>Nível (query <code>?nivel=</code>)</div><div><b id="kvNivel">—</b></div></div>
+      <div class="kv"><div>Data JSON (query <code>?data=</code>)</div><div><b id="kvData">—</b></div></div>
+      <div class="kv"><div><code>window.NIVEL</code></div><div><b id="kvWNivel">—</b></div></div>
+      <div class="kv"><div><code>window.DATA_DICAS</code></div><div><b id="kvWData">—</b></div></div>
+      <div class="kv"><div>Timezone</div><div><b id="kvTz">—</b></div></div>
+      <div class="kv"><div>Data local</div><div><b id="kvHoje">—</b></div></div>
+      <div class="kv"><div>localStorage</div><div id="kvLS" class="pill warn">testando…</div></div>
+      <div class="kv"><div>Objeto <code>Drip</code></div><div id="kvDrip" class="pill warn">testando…</div></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="btnReload" class="btn">Recarregar</button>
+      <button id="btnReset" class="btn warn">Resetar Drip (apaga início)</button>
+      <button id="btnPlus1" class="btn">Simular +1 dia</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Teste de JSON & índice liberado</h2>
+    <div class="grid cols-2">
+      <div class="box">
+        <div><strong>Fetch:</strong> <span id="fetchStatus" class="pill warn">aguardando…</span></div>
+        <div style="margin-top:8px"><small class="muted">URL usada:</small><br><code id="fetchURL">—</code></div>
+        <div style="margin-top:8px">
+          <div>Total de itens: <b id="totalItens">—</b></div>
+          <div>Chaves detectadas: <b id="rootKeys">—</b></div>
+        </div>
+        <div style="margin-top:8px"><small class="muted">Amostra (1º item bruto):</small>
+          <pre id="sample" class="log">—</pre>
+        </div>
+      </div>
+      <div class="box">
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div>
+            <div>Início do drip: <b id="kvStart">—</b></div>
+            <div>Índice de hoje: <b id="kvIdx">—</b> <small class="muted">(1..max)</small></div>
+            <div>Max dias (cap): <b id="kvMax">—</b></div>
+          </div>
+          <div>
+            <button id="btnPrev" class="btn">Anterior</button>
+            <button id="btnNext" class="btn ok">Próxima</button>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <div id="rotulo" class="muted">—</div>
+          <div id="texto" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Chaves <code>drip_*</code> no localStorage</h2>
+    <pre id="keys" class="log">—</pre>
+  </section>
+</main>
+
+<!-- Fallback Drip (se não existir) -->
+<script>
+(function(){
+  if (typeof window.Drip !== 'undefined') return; // já existe
+  console.warn('[diag] Drip não encontrado no global. Injetando fallback local.');
+  window.Drip = (() => {
+    const localISO = (d=new Date())=>{
+      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    };
+    const parseISO = s => new Date(`${s}T12:00:00`);
+    const daysBetween = (a,b)=> Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const isISO = s => typeof s==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+    const LS={get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}} ,del:(k)=>{try{localStorage.removeItem(k)}catch(_){}}};
+    function ensureStart(levelId, streamId){
+      const KEY=`drip_start_${levelId}_${streamId}`;
+      let start=LS.get(KEY,null);
+      if(!isISO(start)){ start=localISO(); LS.set(KEY,start); }
+      return start;
+    }
+    function getTodayIndex(startISO, maxDays=60){
+      const today = localISO();
+      const delta = daysBetween(startISO||today, today);
+      return Math.max(1, Math.min(maxDays, delta+1));
+    }
+    function reset(levelId, streamId){ LS.del(`drip_start_${levelId}_${streamId}`); }
+    function getTodayISO(){ const d=new Date(); return localISO(d); }
+    function diffFrom(startISO){ const t=getTodayISO(); return daysBetween(startISO,t); }
+    return { ensureStart, getTodayIndex, reset, LS, getTodayISO, diffFrom };
+  })();
+})();
+</script>
+
+<script>
+(function(){
+  // ------- Params -------
+  const qs = new URLSearchParams(location.search);
+  const nivelParam = qs.get('nivel') || 'ascensao-9f3b2';
+  const dataParam  = qs.get('data')  || '../../data/ascensao.json';
+
+  // Expor para quem quiser comparar com páginas
+  window.NIVEL      = window.NIVEL || nivelParam;
+  window.DATA_DICAS = window.DATA_DICAS || dataParam;
+
+  // ------- UI refs -------
+  const $ = s=>document.querySelector(s);
+  const kvNivel = $('#kvNivel'), kvData = $('#kvData'), kvWNivel=$('#kvWNivel'), kvWData=$('#kvWData');
+  const kvTz = $('#kvTz'), kvHoje = $('#kvHoje'), kvLS = $('#kvLS'), kvDrip = $('#kvDrip');
+  const fetchStatus = $('#fetchStatus'), fetchURL = $('#fetchURL'), totalItens = $('#totalItens'), rootKeys = $('#rootKeys'), sample = $('#sample');
+  const kvStart = $('#kvStart'), kvIdx = $('#kvIdx'), kvMax = $('#kvMax'), rotulo = $('#rotulo'), texto = $('#texto');
+  const keys = $('#keys');
+  const btnReload = $('#btnReload'), btnReset = $('#btnReset'), btnPlus1 = $('#btnPlus1');
+  const btnPrev = $('#btnPrev'), btnNext = $('#btnNext');
+
+  // ------- Helpers -------
+  const LS = {
+    get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+    set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){} },
+    del:(k)=>{ try{ localStorage.removeItem(k);}catch(_){ } }
+  };
+  function canUseLocalStorage(){
+    const k='__diag_ls_test__', v=String(Math.random());
+    try{ localStorage.setItem(k,v); const ok = localStorage.getItem(k)===v; localStorage.removeItem(k); return ok; }catch(_){ return false; }
+  }
+  function listDripKeys(){
+    const arr=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(/^drip_/.test(k)) arr.push([k, localStorage.getItem(k)]);
+    }
+    return arr.sort((a,b)=>a[0].localeCompare(b[0]));
+  }
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
+  const today = (d=new Date())=>{
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+  };
+
+  // ------- Paint basics -------
+  kvNivel.textContent = nivelParam;
+  kvData.textContent  = dataParam;
+  kvWNivel.textContent = String(window.NIVEL||'—');
+  kvWData.textContent  = String(window.DATA_DICAS||'—');
+  kvTz.textContent = tz;
+  kvHoje.textContent = today();
+
+  // localStorage & Drip status
+  kvLS.textContent = canUseLocalStorage() ? 'OK' : 'Bloqueado';
+  kvLS.className = 'pill ' + (canUseLocalStorage() ? 'ok' : 'err');
+  const hasDrip = (typeof window.Drip !== 'undefined');
+  kvDrip.textContent = hasDrip ? 'Encontrado' : 'Ausente (fallback ativo)';
+  kvDrip.className = 'pill ' + (hasDrip ? 'ok' : 'warn');
+
+  // ------- Start & view index -------
+  const LEVEL_ID = window.NIVEL;
+  const STREAM_ID = 'card1_dicas_orientacoes';
+  let startISO = Drip.ensureStart(LEVEL_ID, STREAM_ID);
+  kvStart.textContent = startISO;
+
+  // ------- Fetch data -------
+  const cbURL = `${window.DATA_DICAS}${window.DATA_DICAS.includes('?')?'&':'?'}cb=${Date.now()}`;
+  fetchURL.textContent = cbURL;
+
+  function showKeys(){
+    const arr = listDripKeys();
+    keys.textContent = arr.length ? arr.map(([k,v])=>`${k} = ${v}`).join('\n') : '— nenhuma chave drip_* —';
+  }
+  showKeys();
+
+  let dataArr = [];
+  let maxDays = 60;
+  let todayIdx = 1;
+  let view = 1;
+
+  function renderView(){
+    const cap = Math.max(1, todayIdx);
+    if (view < 1) view = 1;
+    if (view > cap) view = cap;
+    kvIdx.textContent = String(view);
+    kvMax.textContent = String(maxDays);
+    btnPrev.disabled = (view<=1);
+    btnNext.disabled = (view>=cap);
+
+    const item = dataArr[view-1] || null;
+    if (!item){
+      rotulo.textContent = '—';
+      texto.textContent = 'Sem item para o dia.';
+      return;
+    }
+    const rot = item.categoria === 'treino' ? 'Treino'
+              : item.categoria === 'nutricao' ? 'Nutrição'
+              : item.categoria === 'mentalidade' ? 'Mentalidade'
+              : 'Dica';
+
+    rotulo.textContent = `Dia ${view} — ${rot}` + (item.titulo ? ` · ${item.titulo}` : '');
+    texto.innerHTML =
+      (item.conceito || item.orientacao)
+      ? `
+         <div class="tag">Conceito</div> ${item.conceito||''}<br><br>
+         <div class="tag">Orientação</div> ${item.orientacao||''}
+        `
+      : (item.texto || '<span class="muted">Sem texto</span>');
+  }
+
+  async function doFetch(){
+    fetchStatus.textContent = 'buscando…';
+    fetchStatus.className = 'pill warn';
+    try{
+      const r = await fetch(cbURL, {cache:'no-store'});
+      if(!r.ok){
+        fetchStatus.textContent = `erro HTTP ${r.status}`;
+        fetchStatus.className = 'pill err';
+        return;
+      }
+      const json = await r.json();
+      const isArr = Array.isArray(json);
+      const dicas = isArr ? json : (json && Array.isArray(json.dicas) ? json.dicas : []);
+      rootKeys.textContent = isArr ? '[array]' : Object.keys(json||{}).join(', ') || '—';
+      dataArr = dicas;
+      totalItens.textContent = String(dicas.length||0);
+      sample.textContent = dicas.length ? JSON.stringify(dicas[0], null, 2) : '—';
+
+      maxDays = Math.min(60, Math.max(1, dataArr.length || 60));
+      todayIdx = Drip.getTodayIndex(startISO, maxDays);
+      view = Math.max(1, Math.min(todayIdx, maxDays));
+
+      fetchStatus.textContent = 'ok';
+      fetchStatus.className = 'pill ok';
+      renderView();
+    }catch(err){
+      fetchStatus.textContent = (String(err && err.message || err) || 'erro');
+      fetchStatus.className = 'pill err';
+      sample.textContent = String(err && err.stack || err);
+    }
+  }
+
+  // ------- Buttons -------
+  btnReload.addEventListener('click', ()=>location.reload());
+  btnReset.addEventListener('click', ()=>{
+    Drip.reset(LEVEL_ID, STREAM_ID);
+    startISO = Drip.ensureStart(LEVEL_ID, STREAM_ID);
+    kvStart.textContent = startISO;
+    todayIdx = Drip.getTodayIndex(startISO, maxDays);
+    view = todayIdx;
+    showKeys();
+    renderView();
+  });
+  btnPlus1.addEventListener('click', ()=>{
+    // Simula +1 dia recuando o start em 1 dia
+    const d = new Date(`${startISO}T12:00:00`);
+    d.setDate(d.getDate()-1);
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+    const newStart = `${y}-${m}-${dd}`;
+    Drip.LS.set(`drip_start_${LEVEL_ID}_${STREAM_ID}`, newStart);
+    startISO = newStart;
+    kvStart.textContent = startISO;
+    todayIdx = Drip.getTodayIndex(startISO, maxDays);
+    view = todayIdx;
+    showKeys();
+    renderView();
+  });
+  btnPrev.addEventListener('click', ()=>{ view--; renderView(); });
+  btnNext.addEventListener('click', ()=>{ view++; renderView(); });
+
+  // ------- Go! -------
+  doFetch();
+})();
+</script>
+</body>
+</html>
