@@ -4,38 +4,27 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Ascensão · Tarefas e Neuro-Hábito</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=22">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=22">
+
+  <!-- CSS base do seu projeto (mantido) -->
+  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
+
   <style>
-    /* Texto justificado nesta página */
     .content p, .content li { text-align: justify; }
+    .muted { color: var(--silver); }
+    .row { display:flex; gap:8px; flex-wrap:wrap; }
 
-    /* Abas e painéis (mesmo padrão) */
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
-    .panel{display:none}
-    .panel.active{display:block}
-
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .meta{color:var(--ink-2);font-size:.95rem;margin-bottom:6px}
-    .note{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px}
-
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-
-    /* Quebras e altura automática nos textos */
-    #sem-titulo,#mic-titulo{white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
-    #sem-texto,#mic-texto{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
-    .panel p,.panel .note{overflow-wrap:anywhere;word-break:break-word}
-
-    /* ===== Overrides tema Ascensão (só cor) ===== */
+    /* ===== Overrides mínimos: verde esmeralda (Ascensão) ===== */
     :root{ --emerald:#00b37e; }
-    .content h2,.card h2,.content .card h2{ color:var(--emerald) !important; }
-    .tab.active{ border-color:rgba(0,179,126,.35) !important; color:var(--emerald) !important; background:#10211b !important; }
+    .content h2, .card h2{ color:var(--emerald) !important; }
     .btn:not(.ghost){ background:var(--emerald) !important; border-color:transparent !important; color:#fff !important; }
     .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
     .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
+
+    /* segurança de quebra de linha */
+    #tarefa-meta, #micro-meta { white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
+    #tarefa-texto, #micro-texto { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -57,128 +46,47 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (Ascensão) -->
-    <header class="banner-full"
+    <!-- Banner Ascensão -->
+    <header
+      class="banner-full"
       style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;"
-      aria-hidden="true"></header>
+      aria-hidden="true">
+    </header>
 
-    <!-- CARD · Tarefas & Neuro-hábito -->
-    <section class="card">
-      <h2>Tarefas & Neuro-Hábito</h2>
-      <p class="muted">
-        Aqui você recebe <strong>tarefas semanais de mindset</strong> e <strong>microtarefas a cada 3 dias</strong>
-        para aplicar na rotina. O gotejamento começa quando você abre esta página pela primeira vez. Você pode
-        ver conteúdos anteriores, mas os próximos ficam bloqueados até a data ficar disponível.
-      </p>
-
-      <div class="note">
-        <strong>Diário recomendado:</strong> mantenha um caderno (ou notas do celular) para registrar
-        reflexões, emoções e pequenas vitórias. A escrita consolida o aprendizado e fortalece o hábito.
+    <!-- Tarefas do dia (gotejamento) -->
+    <section class="card" id="tarefas-dia">
+      <h2>Tarefas do dia</h2>
+      <div class="muted" id="tarefa-meta">Dia —</div>
+      <div id="tarefa-texto">Carregando…</div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" id="tarefaPrev">Anterior</button>
+        <button class="btn" id="tarefaNext">Próxima</button>
       </div>
+      <small class="muted">Você pode rever dias anteriores. Tarefas futuras ficam bloqueadas.</small>
+    </section>
 
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="semanais" role="tab">Tarefas semanais (mindset)</button>
-        <button class="tab" data-tab="micro" role="tab">Microtarefas · a cada 3 dias</button>
-        <button class="tab" data-tab="guia" role="tab">Como usar / Diário</button>
+    <!-- Microtarefas (gotejamento) -->
+    <section class="card" id="microtarefas-dia">
+      <h2>Microtarefas — foco e constância</h2>
+      <div class="muted" id="micro-meta">Dia —</div>
+      <div id="micro-texto">Carregando…</div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" id="microPrev">Anterior</button>
+        <button class="btn" id="microNext">Próxima</button>
       </div>
-
-      <!-- Painel: Tarefas semanais -->
-      <div class="panel active" id="panel-semanais">
-        <div class="meta" id="sem-meta">Semana —</div>
-        <h3 id="sem-titulo">Carregando…</h3>
-        <p id="sem-texto" style="margin-top:6px">—</p>
-
-        <div class="row-actions">
-          <button class="btn ghost" id="semPrev">Anterior</button>
-          <button class="btn" id="semNext">Próxima</button>
-        </div>
-
-        <div class="note small" style="margin-top:12px">
-          <strong>Dica:</strong> ao final da semana, escreva 3 aprendizados e 1 ajuste para a próxima.
-        </div>
-      </div>
-
-      <!-- Painel: Microtarefas (3 em 3 dias) -->
-      <div class="panel" id="panel-micro">
-        <div class="meta" id="mic-meta">Bloco —</div>
-        <h3 id="mic-titulo">Carregando…</h3>
-        <p id="mic-texto" style="margin-top:6px">—</p>
-
-        <div class="row-actions">
-          <button class="btn ghost" id="micPrev">Anterior</button>
-          <button class="btn" id="micNext">Próxima</button>
-        </div>
-
-        <div class="note small" style="margin-top:12px">
-          <strong>Aplicação:</strong> pratique por 3 dias e anote: gatilhos, facilidade/dificuldade e
-          como adaptar para o seu contexto.
-        </div>
-      </div>
-
-      <!-- Painel: Guia / Diário -->
-      <div class="panel" id="panel-guia">
-        <h3>Como usar este módulo</h3>
-        <ul>
-          <li><strong>Ritmo sustentável:</strong> 1 tarefa de mindset por semana e 1 microtarefa a cada 3 dias.</li>
-          <li><strong>Registro:</strong> use um diário para consolidar o que sentiu, aprendeu e aplicou.</li>
-          <li><strong>Sem pressa:</strong> volte conteúdos anteriores quando quiser; os futuros abrem no tempo certo.</li>
-        </ul>
-        <div class="note">
-          <strong>Modelo simples de entrada no diário:</strong><br>
-          • Intenção do dia · • Gatilho observado · • Recompensa percebida · • Ajuste para amanhã
-        </div>
-      </div>
+      <small class="muted">Progrida um passo por vez. Microtarefas futuras ficam bloqueadas.</small>
     </section>
   </main>
 
+  <!-- Definições globais -->
   <script>
-    /* Configs desta página */
+    // Mesmo arquivo JSON do Ascensão (contendo "tarefas" e "microtarefas")
     window.NIVEL = "ascensao-9f3b2";
-
-    /* JSON unificado das tarefas da Ascensão */
-    window.DATA_PLANO = "../../data/ascensao-tarefas.json";
-
-    /* (mantidos só por compatibilidade; não usados pelo plano.js novo) */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json";
-    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";
-    window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
-    window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
+    window.DATA_TAREFAS = "../../data/ascensao.json";
   </script>
 
-  <!-- Drip -->
-  <script src="../../assets/js/drip.js?v=22" defer></script>
-
-  <!-- SHIM: Drip básico se faltar -->
-  <script>
-    (function(){
-      if (typeof window.Drip === 'undefined') {
-        const Drip = (() => {
-          const localISO = (d=new Date())=>{
-            const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-            return `${y}-${m}-${dd}`;
-          };
-          const parseISO=(s)=>new Date(`${s}T12:00:00`);
-          const todayISO=()=>localISO(new Date());
-          const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-          const LS={get:(k,def=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(_){return def}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
-          function ensureStart(levelId, streamId){
-            const KEY=`drip_start_${levelId}_${streamId}`;
-            let start=LS.get(KEY,null);
-            if(!start){start=todayISO();LS.set(KEY,start);}
-            return start;
-          }
-          function getTodayIndex(startISO,maxDays=60){
-            const delta=daysBetween(startISO,todayISO());
-            return Math.max(1,Math.min(maxDays,delta+1));
-          }
-          return { ensureStart, getTodayIndex, LS };
-        })();
-        window.Drip = Drip;
-      }
-    })();
-  </script>
-
-  <!-- JS da página (usa window.DATA_PLANO) -->
-  <script src="./plano.js?v=22" defer></script>
+  <!-- Ordem dos scripts: Drip primeiro, depois página -->
+  <script src="../../assets/js/drip.js?v=23" defer></script>
+  <script src="./tarefas-microtarefas.js?v=23" defer></script>
 </body>
 </html>
