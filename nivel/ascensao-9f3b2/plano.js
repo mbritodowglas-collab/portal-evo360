@@ -1,113 +1,234 @@
-<script>
-// ============================================
-// EVO360 · Ascensão · Tarefas e Microtarefas (gotejamento)
-// - Carrega window.DATA_TAREFAS (pode ser o mesmo ascensao.json)
-// - Campos esperados no JSON: { "tarefas":[...], "microtarefas":[...] }
-// - Cada bloco só ativa se encontrar os elementos/ids no HTML
-// ============================================
-(() => {
-  const $  = (s,r=document)=>r.querySelector(s);
+// ============================
+// EVO360 · Ascensão · plano.js (v23 robusto)
+// Tarefas semanais + Microtarefas (gotejamento)
+// ============================
 
-  const D = (window.Drip && typeof window.Drip.ensureStart==='function')
-    ? window.Drip
-    : (()=>{ // fallback mínimo
-        const localISO=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const parseISO = s=>new Date(`${s}T12:00:00`);
-        const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-        const LS={get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
-        function ensureStart(level,stream){ const k=`drip_start_${level}_${stream}`; let s=LS.get(k,null); if(!s){ s=localISO(); LS.set(k,s); } return s; }
-        function getTodayIndex(startISO,max=60){ const t=localISO(); const d=daysBetween(startISO||t,t); return Math.max(1, Math.min(max, d+1)); }
-        return { ensureStart, getTodayIndex };
-      })();
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-  const LEVEL_ID = window.NIVEL || 'ascensao-fallback';
-  const JSON_PATH = (() => {
-    const base = window.DATA_TAREFAS || window.DATA_DICAS || '../../data/ascensao.json';
-    return `${base}${base.includes('?') ? '&' : '?'}cb=${Date.now()}`;
-  })();
+// ---------- Tabs ----------
+(function tabs() {
+  const tabs = $$('.tab');
+  if (!tabs.length) return;
+  function activate(tb){
+    tabs.forEach(x => x.classList.remove('active'));
+    tb.classList.add('active');
+    $$('.panel').forEach(p => p.classList.remove('active'));
+    $('#panel-' + tb.dataset.tab)?.classList.add('active');
+  }
+  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
+  activate(tabs.find(t=>t.classList.contains('active')) || tabs[0]);
+})();
 
-  async function fetchJSON(url){
-    try{
-      const r = await fetch(url, { cache:'no-store' });
-      if(!r.ok) throw new Error(`HTTP ${r.status}`);
-      return await r.json();
-    }catch(err){
-      console.warn('[Tarefas] Falha ao carregar JSON:', err);
-      return null;
+// ---------- Utils ----------
+function cacheBust(url){
+  if(!url) return url;
+  try {
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', String(Date.now()));
+    return u.href;
+  } catch { return url; }
+}
+
+function repoRoot() {
+  // devolve prefixo até a raiz do repo (ex.: "/")
+  // e NÃO corta errado quando path começa em /nivel/...
+  const parts = location.pathname.split('/').filter(Boolean);
+  // ex: ["nivel","ascensao-9f3b2","plano.html"]
+  // raiz do site é "/"
+  return '/';
+}
+
+async function fetchJson(url){
+  const res = await fetch(cacheBust(url), { cache: 'no-store' });
+  if (!res.ok) throw new Error(String(res.status));
+  return await res.json();
+}
+
+async function tryMany(urls){
+  for (const url of urls){
+    if (!url) continue;
+    try {
+      const data = await fetchJson(url);
+      console.info('[plano] carregado:', url);
+      return data;
+    } catch (e) {
+      console.warn('[plano] falhou:', url, e?.message||e);
     }
   }
+  return null;
+}
 
-  function mountStream({streamId, items, sel, maxCap=60}){
-    const metaEl = $(sel.meta);
-    const textEl = $(sel.text);
-    const prevEl = $(sel.prev);
-    const nextEl = $(sel.next);
-    if(!metaEl || !textEl || !prevEl || !nextEl || !Array.isArray(items) || !items.length){
-      // Silencioso: nada feito (HTML ou dados ausentes)
+function showError(msg){
+  const semTit  = $('#sem-titulo');
+  const semTxt  = $('#sem-texto');
+  const micTit  = $('#mic-titulo');
+  const micTxt  = $('#mic-texto');
+  if (semTit) semTit.textContent = 'Conteúdo indisponível';
+  if (micTit) micTit.textContent = 'Conteúdo indisponível';
+  if (semTxt) semTxt.innerHTML = `<span class="muted">${msg}</span>`;
+  if (micTxt) micTxt.textContent = '—';
+}
+
+// ---------- Drip fallback ----------
+if (typeof window.Drip === 'undefined') {
+  (function(){
+    const localISO = (d=new Date())=>{
+      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    };
+    const parseISO = (s)=>new Date(`${s}T12:00:00`);
+    const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const todayISO = ()=>localISO(new Date());
+    const LS = {
+      get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+      set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
+    };
+    window.Drip = {
+      ensureStart(level, stream){
+        const KEY=`drip_start_${level}_${stream}`;
+        let s = LS.get(KEY, null);
+        if(!s){ s = todayISO(); LS.set(KEY, s); }
+        return s;
+      },
+      getTodayIndex(startISO, maxDays=60){
+        const idx = daysBetween(startISO, todayISO()) + 1;
+        return Math.max(1, Math.min(maxDays, idx));
+      }
+    };
+  })();
+}
+
+// ---------- Gotejamento ----------
+(async function dripPlano() {
+  try {
+    const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
+
+    const SEM_ID  = 'card2_tarefas_semanais';
+    const MIC_ID  = 'card2_microtarefas';
+    const SEM_MAX = 8;
+    const MIC_MAX = 20;
+
+    const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
+    const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
+
+    const semIdx = Math.max(1, Math.min(
+      SEM_MAX,
+      Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
+    ));
+    const micIdx = Math.max(1, Math.min(
+      MIC_MAX,
+      Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
+    ));
+
+    // -------- Carregamento dos dados --------
+    const ROOT = repoRoot();
+    const hinted = window.DATA_PLANO; // prioridade
+
+    const candidates = [
+      hinted,                                               // ex.: "../../data/ascensao-tarefas.json"
+      `${ROOT}data/ascensao-tarefas.json`,
+      `${ROOT}data/tarefas-ascensao.json`,
+      `${ROOT}data/plano-ascensao.json`,
+      `${ROOT}_data/ascensao-tarefas.json`,
+      `${ROOT}_data/tarefas-ascensao.json`,
+      `${ROOT}_data/plano-ascensao.json`,
+    ];
+
+    const planoRaw = await tryMany(candidates);
+    if (!planoRaw) {
+      showError('Não foi possível carregar as tarefas (verifique o arquivo em /data).');
       return;
     }
 
-    const startISO = D.ensureStart(LEVEL_ID, streamId);
-    const MAX = Math.min(maxCap, items.length);
-    const todayIdx = D.getTodayIndex(startISO, MAX);
+    const semanais = Array.isArray(planoRaw.semanais) ? planoRaw.semanais : [];
+    const micros   = Array.isArray(planoRaw.micros)   ? planoRaw.micros   : [];
 
-    const VIEW_KEY = `drip_view_${LEVEL_ID}_${streamId}`;
-    const LS = { get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}}, set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}} };
+    // ---------- Semanais ----------
+    const semMeta = $('#sem-meta');
+    const semTit  = $('#sem-titulo');
+    const semTxt  = $('#sem-texto');
+    const semPrev = $('#semPrev');
+    const semNext = $('#semNext');
 
-    let day = LS.get(VIEW_KEY, todayIdx);
+    const SEM_VIEW_KEY = `drip_view_${LEVEL_ID}_${SEM_ID}`;
+    const LS = {
+      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+    };
 
-    function clamp(){ const cap=Math.max(1,todayIdx); day=Math.max(1, Math.min(day,cap)); return cap; }
+    let semDay = LS.get(SEM_VIEW_KEY, semIdx);
 
-    function render(){
-      const cap = clamp();
-      const it = items[day-1] || {};
-      // aceita strings simples ou objetos { titulo/texto }
-      const titulo = it.titulo || it.title || `Dia ${day}`;
-      const corpo  = it.texto  || it.text  || it.body || String(it || '');
+    function renderSem() {
+      if (!semanais.length) {
+        semMeta && (semMeta.textContent = 'Semana —');
+        semTit  && (semTit.textContent  = 'Conteúdo indisponível');
+        semTxt  && (semTxt.textContent  = '—');
+        if (semPrev) semPrev.disabled = true;
+        if (semNext) semNext.disabled = true;
+        return;
+      }
+      const cap = semIdx;
+      semDay = Math.max(1, Math.min(semDay, cap));
+      const item = semanais[semDay - 1] || {};
 
-      metaEl.textContent = `Dia ${day} de ${MAX} — ${titulo}`;
-      textEl.innerHTML   = `<p style="margin:0; white-space:pre-wrap">${corpo}</p>`;
+      semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
+      semTit.textContent  = item.titulo || '—';
+      semTxt.innerHTML =
+        (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
+        (item.orientacao ? `<div style="margin-bottom:8px">${item.orientacao}</div>` : '') +
+        (Array.isArray(item.tarefas) && item.tarefas.length
+          ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
+          : '');
+      if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
 
-      prevEl.disabled = day <= 1;
-      nextEl.disabled = day >= cap;
-      LS.set(VIEW_KEY, day);
+      if (semPrev) semPrev.disabled = (semDay <= 1);
+      if (semNext) semNext.disabled = (semDay >= cap);
+      LS.set(SEM_VIEW_KEY, semDay);
     }
 
-    prevEl.addEventListener('click', ()=>{ day--; render(); });
-    nextEl.addEventListener('click', ()=>{ day++; render(); });
+    semPrev?.addEventListener('click', ()=>{ semDay--; renderSem(); });
+    semNext?.addEventListener('click', ()=>{ semDay++; renderSem(); });
+    renderSem();
 
-    render();
+    // ---------- Microtarefas ----------
+    const micMeta = $('#mic-meta');
+    const micTit  = $('#mic-titulo');
+    const micTxt  = $('#mic-texto');
+    const micPrev = $('#micPrev');
+    const micNext = $('#micNext');
+
+    const MIC_VIEW_KEY = `drip_view_${LEVEL_ID}_${MIC_ID}`;
+    let micDay = LS.get(MIC_VIEW_KEY, micIdx);
+
+    function renderMic() {
+      if (!micros.length) {
+        micMeta && (micMeta.textContent = 'Bloco —');
+        micTit  && (micTit.textContent  = 'Conteúdo indisponível');
+        micTxt  && (micTxt.textContent  = '—');
+        if (micPrev) micPrev.disabled = true;
+        if (micNext) micNext.disabled = true;
+        return;
+      }
+      const cap = micIdx;
+      micDay = Math.max(1, Math.min(micDay, cap));
+      const item = micros[micDay - 1] || {};
+
+      micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
+      micTit.textContent  = item.titulo || '—';
+      micTxt.textContent  = (item.texto || '').trim() || '—';
+
+      if (micPrev) micPrev.disabled = (micDay <= 1);
+      if (micNext) micNext.disabled = (micDay >= cap);
+      LS.set(MIC_VIEW_KEY, micDay);
+    }
+
+    micPrev?.addEventListener('click', ()=>{ micDay--; renderMic(); });
+    micNext?.addEventListener('click', ()=>{ micDay++; renderMic(); });
+    renderMic();
+
+  } catch (e) {
+    console.warn('dripPlano falhou:', e);
+    showError('Erro ao inicializar o módulo.');
   }
-
-  (async function init(){
-    const raw = await fetchJSON(JSON_PATH) || {};
-    // aceita tanto raiz direta (arrays) quanto objeto com campos
-    const tarefas      = Array.isArray(raw.tarefas)      ? raw.tarefas      : [];
-    const microtarefas = Array.isArray(raw.microtarefas) ? raw.microtarefas : [];
-
-    // Monta Tarefas (se HTML existir)
-    mountStream({
-      streamId: 'card2_tarefas',
-      items: tarefas,
-      sel: {
-        meta: '#tarefa-meta',
-        text: '#tarefa-texto',
-        prev: '#tarefaPrev',
-        next: '#tarefaNext'
-      }
-    });
-
-    // Monta Microtarefas (se HTML existir)
-    mountStream({
-      streamId: 'card3_microtarefas',
-      items: microtarefas,
-      sel: {
-        meta: '#micro-meta',
-        text: '#micro-texto',
-        prev: '#microPrev',
-        next: '#microNext'
-      }
-    });
-  })();
 })();
-</script>
