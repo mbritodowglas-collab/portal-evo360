@@ -4,10 +4,12 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Ascensão · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
-  <!-- Layout do Fundação (intacto) -->
+
+  <!-- CSS base do seu projeto (mantido) -->
   <link rel="stylesheet" href="../../assets/css/base.css?v=14">
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
+
   <style>
     /* texto justificado nesta página */
     .content p, .content li { text-align: justify; }
@@ -22,12 +24,12 @@
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* --- Garantir quebra de texto nos cards --- */
+    /* Quebras de texto seguras nos cards */
     #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
     #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
     .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
 
-    /* ===== Overrides mínimos: verde esmeralda (sem mexer no layout) ===== */
+    /* ===== Overrides mínimos: verde esmeralda (Ascensão) ===== */
     :root{ --emerald:#00b37e; }
     .content h2, .card h2, .content .card h2{ color:var(--emerald) !important; }
     .content h2 *, .card h2 *{ color:var(--emerald) !important; }
@@ -36,7 +38,7 @@
     .btn.ghost{ background:transparent !important; border:1px solid var(--emerald) !important; color:var(--emerald) !important; }
     .btn.ghost:hover{ background:var(--emerald) !important; color:#fff !important; }
 
-    /* microajustes visuais do card novo (sem afetar layout global) */
+    /* visuais do plano (mantidos) */
     .bullets { display:grid; gap:8px; }
     .mini { font-size:.95rem; }
     .tag { display:inline-block; padding:.15rem .5rem; border:1px solid var(--line); border-radius:999px; margin-right:.35rem; }
@@ -73,7 +75,7 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (FORÇADO com !important, sem alterar layout) -->
+    <!-- Banner Ascensão -->
     <header
       class="banner-full"
       style="background:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') center/cover no-repeat !important; background-image:url('../../assets/img/hub/banner-ascensao-hero.jpg?v=22') !important;"
@@ -92,7 +94,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
-    <!-- *** CALCULADORAS (AGORA LOGO ABAIXO DAS DICAS) *** -->
+    <!-- Calculadoras -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -130,7 +132,7 @@
       </div>
     </section>
 
-    <!-- *** PLANO ALIMENTAR (AGORA ABAIXO DAS CALCULADORAS) *** -->
+    <!-- Plano alimentar (mantido) -->
     <section class="card" id="plano-alimentar">
       <h2>Plano alimentar — Ascensão (déficit calórico)</h2>
 
@@ -146,7 +148,6 @@
         <div><span class="tag">3</span>Monte o prato: ½ <strong>vegetais</strong>, 1 <strong>palma</strong> de <strong>proteína</strong>, 1 <strong>punho</strong> de <strong>carbo</strong> e 1 <strong>polegar</strong> de <strong>gordura boa</strong>.</div>
       </div>
 
-      <!-- Metas automáticas (ligadas aos inputs da TMB) -->
       <div class="metas" id="pf_metas">
         <div class="row">
           <label>Atividade:
@@ -224,11 +225,11 @@
     window.DATA_DICAS = "../../data/ascensao.json";
   </script>
 
-  <!-- Ordem: drip antes; v=22 para cache-bust -->
-  <script src="../../assets/js/drip.js?v=22" defer></script>
-  <script src="./dicas-orientacoes.js?v=22" defer></script>
+  <!-- Ordem dos scripts: Drip primeiro, depois página -->
+  <script src="../../assets/js/drip.js?v=23" defer></script>
+  <script src="./dicas-orientacoes.js?v=23" defer></script>
 
-  <!-- VÍNCULO DAS CALCULADORAS COM AS METAS DO PLANO (não altera o restante) -->
+  <!-- Vínculo das calculadoras com metas do plano (mantido) -->
   <script>
   (function(){
     const $ = (s,r=document)=>r.querySelector(s);
