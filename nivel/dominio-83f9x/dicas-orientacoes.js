@@ -49,6 +49,22 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       ? Drip.getTodayIndex(startISO, MAX_DAYS)
       : 1;
 
+    // --------- índice por data LOCAL (sem UTC) — patch mínimo ---------
+    function todayLocalISO(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    }
+    function daysBetweenLocal(aISO, bISO){
+      const A = new Date(`${aISO}T12:00:00`);
+      const B = new Date(`${bISO}T12:00:00`);
+      return Math.floor((B - A) / 86400000);
+    }
+    const LIBERADO = Math.max(1, Math.min(MAX_DAYS, daysBetweenLocal(startISO, todayLocalISO()) + 1));
+    // ------------------------------------------------------------------
+
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
@@ -69,10 +85,15 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
-    let day = LS.get(VIEW_KEY, todayIdx);
+    // default baseado no liberado por data local
+    let day = LS.get(VIEW_KEY, LIBERADO);
+
+    // auto-avanço: se houver novo conteúdo liberado, já abre nele
+    if (day < LIBERADO) { day = LIBERADO; LS.set(VIEW_KEY, day); }
 
     function render() {
-      const cap = Math.max(1, todayIdx);
+      // bloqueia futuro: só até o liberado localmente
+      const cap = Math.max(1, LIBERADO);
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
@@ -244,3 +265,4 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
   calc();
 })();
+```0
