@@ -1,11 +1,51 @@
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (JS completo e corrigido)
+// Página: Dicas e Orientações (robusto, v24)
 // ============================
 
-// Helpers
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// ---- DRIP shim (se faltar ou estiver bugado) ----
+(function ensureDrip(){
+  if (typeof window.Drip !== 'undefined') return;
+  const localISO = (d=new Date())=>{
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+  };
+  const parseISO = (s)=> new Date(`${s}T12:00:00`); // 12h local evita DST
+  const todayISO = ()=> localISO(new Date());
+  const daysBetween = (a,b)=> Math.floor((parseISO(b)-parseISO(a))/86400000);
+  const LS = {
+    get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+    set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
+    del:(k)=>{ try{ localStorage.removeItem(k); }catch(_){ } },
+  };
+  window.Drip = {
+    ensureStart(levelId, streamId){
+      const KEY = `drip_start_${levelId}_${streamId}`;
+      let start = LS.get(KEY, null);
+      // aceita apenas 'YYYY-MM-DD'
+      if (!(/^\\d{4}-\\d{2}-\\d{2}$/.test(start||''))) {
+        start = todayISO();
+        LS.set(KEY, start);
+      }
+      return start;
+    },
+    getTodayIndex(startISO, maxDays=60){
+      if (!(/^\\d{4}-\\d{2}-\\d{2}$/.test(startISO||''))) startISO = todayISO();
+      const idx = daysBetween(startISO, todayISO()) + 1; // 1..N
+      return Math.max(1, Math.min(maxDays, idx));
+    },
+    _debug:{ todayISO, parseISO, daysBetween, LS }
+  };
+})();
+
+// ---- util: cache-bust no JSON ----
+function cacheBust(url){
+  try { const u = new URL(url, location.href); u.searchParams.set('cb', Date.now()); return u.href; }
+  catch { return url; }
+}
 
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
@@ -13,14 +53,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
-    // Data inicial (com ou sem drip.js)
-    const startISO = (typeof Drip !== 'undefined')
-      ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
-      : new Date().toISOString().slice(0, 10);
+    const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
 
-    // Caminho do JSON (usa window.DATA_DICAS se houver)
     const dataPathBase = window.DATA_DICAS || '../../data/fundacao.json';
-    const dataPath = `${dataPathBase}${dataPathBase.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+    const dataPath = cacheBust(dataPathBase);
 
     async function load(url) {
       try {
@@ -28,7 +64,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return await r.json();
       } catch (err) {
-        console.warn('[Dica] Falha ao carregar JSON:', err);
+        console.warn('[Fundação/Dica] Falha ao carregar JSON:', err);
         return null;
       }
     }
@@ -42,17 +78,22 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const next  = $('#btnNext');
 
     if (!data || !data.length) {
-      if (meta)  meta.textContent  = 'Dia —';
-      if (texto) texto.textContent = 'Dica indisponível.';
+      meta && (meta.textContent = 'Dia —');
+      texto && (texto.textContent = 'Dica indisponível.');
       return;
     }
 
     const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
+    const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
 
-    // Persistência do dia visualizado (não avança futuro)
+    // LOG rápido de diagnóstico
+    console.info('[Fundação/Drip] KEY=',
+      `drip_start_${LEVEL_ID}_${DRIP_ID}`,
+      '| start=', startISO,
+      '| todayIdx=', todayIdx,
+      '| len=', data.length
+    );
+
     const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
     const LS = {
       get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
@@ -62,28 +103,28 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     let day = LS.get(VIEW_KEY, todayIdx);
 
     function render() {
-      const cap = Math.max(1, todayIdx);
+      const cap = Math.max(1, todayIdx);         // não passa do liberado hoje
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
       if (item) {
         const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+                     : item.categoria === 'nutricao' ? 'Nutrição'
+                     : item.categoria === 'mentalidade' ? 'Mentalidade'
+                     : 'Dica';
 
-        if (meta) meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`);
 
         const blocoHTML = (item.conceito || item.orientacao)
           ? `
             <div class="dica-bloco">
-              ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
+              ${item.conceito   ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
               ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
             </div>`
           : `<p style="margin:0">${item.texto || ''}</p>`;
 
         if (texto) {
           texto.innerHTML = blocoHTML;
-          // Garantir quebra adequada em textos longos
           texto.style.whiteSpace   = 'normal';
           texto.style.overflowWrap = 'anywhere';
           texto.style.wordBreak    = 'break-word';
@@ -91,12 +132,12 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
           texto.style.marginTop    = '6px';
         }
       } else {
-        if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
-        if (texto) texto.textContent = 'Dica indisponível.';
+        meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS}`);
+        texto && (texto.textContent = 'Dica indisponível.');
       }
 
-      if (prev) prev.disabled = (day <= 1);
-      if (next) next.disabled = (day >= cap);
+      prev && (prev.disabled = day <= 1);
+      next && (next.disabled = day >= cap);
       LS.set(VIEW_KEY, day);
     }
 
@@ -105,7 +146,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
     render();
   } catch (e) {
-    console.warn('drip init falhou:', e);
+    console.warn('[Fundação/Drip] init falhou:', e);
   }
 })();
 
@@ -113,28 +154,22 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 (function tabs() {
   const tabs = $$('.tab');
   const panels = $$('.panel');
-
   if (!tabs.length || !panels.length) return;
 
   function activate(tabEl) {
     tabs.forEach(x => x.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
     tabEl.classList.add('active');
-
-    const key = tabEl.dataset.tab;               // "karvonen" | "tmb"
-    const target = key ? `#panel-${key}` : null; // "#panel-karvonen" | "#panel-tmb"
-    const panel = target ? $(target) : null;
-
+    const key = tabEl.dataset.tab;
+    const panel = key ? document.querySelector('#panel-' + key) : null;
     (panel || panels[0])?.classList.add('active');
   }
 
   tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
-
-  const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-  activate(anyActive);
+  activate(tabs.find(t => t.classList.contains('active')) || tabs[0]);
 })();
 
-// ---------- Calculadora · FC de Reserva (Karvonen) ----------
+// ---------- Calculadora · Karvonen ----------
 (function karvonen() {
   const idade = $('#k_idade');
   const fCR   = $('#k_fcr');
@@ -142,48 +177,31 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const table = $('#k_table');
   const btn   = $('#k_calcBtn');
   const clr   = $('#k_clearBtn');
-
   if (!idade || !fCR || !out || !table || !btn || !clr) return;
 
-  function karvonenTarget(fcMax, fcRep, frac) {
-    return Math.round(((fcMax - fcRep) * frac) + fcRep);
-  }
-
-  function construirTabela(fcMax, fcRep) {
+  const karv = (fcMax, fcRep, frac) => Math.round(((fcMax - fcRep) * frac) + fcRep);
+  const tabela = (fcMax, fcRep) => {
     const linhas = [];
     for (let pct = 50; pct <= 80; pct += 5) {
-      const frac = pct / 100;
-      const alvo = karvonenTarget(fcMax, fcRep, frac);
-      linhas.push(
-        `<div class="row" style="justify-content:space-between">
-          <span>${pct}% da FC de reserva</span>
-          <strong>${alvo} bpm</strong>
-        </div>`
-      );
+      const alvo = karv(fcMax, fcRep, pct/100);
+      linhas.push(`<div class="row" style="justify-content:space-between"><span>${pct}% da FC de reserva</span><strong>${alvo} bpm</strong></div>`);
     }
     return linhas.join('');
-  }
+  };
 
   function calcular() {
     const a = +idade.value || 0;
     const r = +fCR.value   || 0;
-
     if (a <= 0 || r <= 0) {
       out.textContent = 'Informe idade e FC de repouso.';
       table.innerHTML = '';
       return;
     }
-
-    // Mantido como na versão Fundação: 220 - idade
     const fcMax = 220 - a;
-    const alvo50 = karvonenTarget(fcMax, r, 0.50);
-    const alvo65 = karvonenTarget(fcMax, r, 0.65);
-
-    out.innerHTML = `
-      FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-      <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>
-    `;
-    table.innerHTML = construirTabela(fcMax, r);
+    const alvo50 = karv(fcMax, r, 0.50);
+    const alvo65 = karv(fcMax, r, 0.65);
+    out.innerHTML = `FC máx. estimada: <strong>${fcMax} bpm</strong><br><span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>`;
+    table.innerHTML = tabela(fcMax, r);
   }
 
   function limpar() {
@@ -195,12 +213,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
   btn.addEventListener('click', calcular);
   clr.addEventListener('click', limpar);
-
-  [idade, fCR].forEach(el => {
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); calcular(); }
-    });
-  });
+  [idade, fCR].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calcular(); }}));
 })();
 
 // ---------- Calculadora · TMB ----------
@@ -210,7 +223,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const ida  = $('#t_idade');
   const sex  = $('#t_sexo');
   const out  = $('#t_out');
-
   if (!peso || !alt || !ida || !sex || !out) return;
 
   function calc() {
@@ -218,11 +230,9 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
     const h = +alt.value  || 0;
     const i = +ida.value  || 0;
     const s = (sex.value || 'f').toLowerCase();
-
     if (p > 0 && h > 0 && i > 0) {
       const base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
-      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
-        <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
     } else {
       out.textContent = 'Preencha peso, altura e idade.';
     }
