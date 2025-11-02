@@ -1,5 +1,5 @@
 // ============================
-// EVO360 · Fundação · plano.js (unificado ou separado)
+// EVO360 · Fundação · plano.js (robusto)
 // Tarefas semanais + Microtarefas com gotejamento
 // ============================
 
@@ -9,29 +9,44 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- Tabs ----------
 (function tabs() {
   const tabs = $$('.tab');
-  tabs.forEach(tb => {
-    tb.addEventListener('click', () => {
-      tabs.forEach(x => x.classList.remove('active'));
-      tb.classList.add('active');
-      $$('.panel').forEach(p => p.classList.remove('active'));
-      $('#panel-' + tb.dataset.tab)?.classList.add('active');
-    });
-  });
+  if (!tabs.length) return;
+
+  function activate(tb){
+    tabs.forEach(x => x.classList.remove('active'));
+    tb.classList.add('active');
+    $$('.panel').forEach(p => p.classList.remove('active'));
+    const key = tb.dataset.tab;
+    $('#panel-' + key)?.classList.add('active');
+  }
+
+  tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
+  activate(tabs.find(t=>t.classList.contains('active')) || tabs[0]);
 })();
 
 // ---------- Utils ----------
 function cacheBust(url){
   if(!url) return url;
-  const u = new URL(url, location.href);
-  u.searchParams.set('cb', String(Date.now()));
-  return u.href;
+  try {
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', String(Date.now()));
+    return u.href;
+  } catch { return url; }
 }
 
+// Descobre a "raiz do repo": tudo antes de "/nivel/..."
+// ex.: "/bella-prime-dashboard/nivel/fundacao-72a9c/plano.html"
+// -> retorna "/bella-prime-dashboard/"
 function repoRoot() {
-  const path = location.pathname;
-  const i = path.indexOf('/nivel/');
-  const base = i > -1 ? path.slice(0, i + 1) : '/';
-  return base || '/';
+  const path = location.pathname; // ex. "/bella-prime-dashboard/nivel/fundacao-72a9c/plano.html"
+  const split = path.split('/nivel/');
+  if (split.length > 1) {
+    let base = split[0];
+    if (!base.endsWith('/')) base += '/';
+    return base;             // ex.: "/bella-prime-dashboard/"
+  }
+  // Se não houver "/nivel/", tenta a pasta atual como base
+  const lastSlash = path.lastIndexOf('/');
+  return lastSlash > 0 ? path.slice(0, lastSlash + 1) : '/';
 }
 
 async function fetchJson(url){
@@ -43,21 +58,38 @@ async function fetchJson(url){
 async function tryMany(urls){
   for (const url of urls){
     if (!url) continue;
-    try { return await fetchJson(url); } catch(_) {}
+    try {
+      const data = await fetchJson(url);
+      console.info('[plano] carregado:', url);
+      return data;
+    } catch (e) {
+      console.warn('[plano] falhou:', url, e?.message||e);
+    }
   }
   return null;
 }
 
-// ---------- Drip fallback ----------
+function showError(msg){
+  const semTit  = $('#sem-titulo');
+  const semTxt  = $('#sem-texto');
+  const micTit  = $('#mic-titulo');
+  const micTxt  = $('#mic-texto');
+  if (semTit) semTit.textContent = 'Conteúdo indisponível';
+  if (micTit) micTit.textContent = 'Conteúdo indisponível';
+  if (semTxt) semTxt.innerHTML   = `<span class="muted">${msg}</span>`;
+  if (micTxt) micTxt.textContent = '—';
+}
+
+// ---------- Drip fallback (caso drip.js não esteja carregado) ----------
 if (typeof window.Drip === 'undefined') {
   (function(){
     const localISO = (d=new Date())=>{
       const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}-${m}-${dd}`;
     };
-    const parseISO = (s)=>new Date(`${s}T12:00:00`);
-    const daysBetween = (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-    const todayISO = ()=>localISO(new Date());
+    const parseISO   = (s)=>new Date(`${s}T12:00:00`);
+    const daysBetween= (a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
+    const todayISO   = ()=>localISO(new Date());
     const LS = {
       get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
       set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } }
@@ -101,30 +133,38 @@ if (typeof window.Drip === 'undefined') {
       Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
     ));
 
-    // -------- Carregamento dos dados (unificado -> separado) --------
+    // -------- Carregamento dos dados --------
     const ROOT = repoRoot();
+    const hinted = window.DATA_PLANO; // prioridade absoluta se definido no HTML
 
-    // 2.1) Caminhos do arquivo unificado
-    const PLANO_CFG = window.DATA_PLANO || `${ROOT}data/plano.json`;
-    const planoRaw = await tryMany([
-      PLANO_CFG,
-      `${ROOT}_data/plano.json`
-    ]);
+    const candidates = [
+      hinted,                                        // ex.: "../../data/fundacao-tarefas.json"
+      `${ROOT}data/fundacao-tarefas.json`,           // unificado por nível
+      `${ROOT}_data/fundacao-tarefas.json`,
+      `${ROOT}data/plano.json`,                      // nome genérico (site inteiro)
+      `${ROOT}_data/plano.json`,
+      // compat: separados
+      `${ROOT}data/tarefas-semanais.json`,
+      `${ROOT}_data/tarefas-semanais.json`,
+    ];
 
-    let semanais = null;
-    let micros   = null;
+    const planoRaw = await tryMany(candidates);
+    if (!planoRaw) {
+      showError('Não foi possível carregar as tarefas (verifique o arquivo em /data).');
+      return;
+    }
 
-    if (planoRaw && Array.isArray(planoRaw.semanais) && Array.isArray(planoRaw.micros)) {
-      // Unificado
-      semanais = planoRaw.semanais;
-      micros   = planoRaw.micros;
-    } else {
-      // 2.2) Fallback para arquivos separados (mantém compatibilidade)
+    // aceita unificado { semanais:[], micros:[] } ou separados
+    let semanais = Array.isArray(planoRaw.semanais) ? planoRaw.semanais : null;
+    let micros   = Array.isArray(planoRaw.micros)   ? planoRaw.micros   : null;
+
+    // fallback separado se não vierem as chaves
+    if (!semanais || !micros) {
       const semCfg = window.DATA_TAREFAS_SEMANAIS || `${ROOT}data/tarefas-semanais.json`;
       const micCfg = window.DATA_MICRO_TAREFAS   || `${ROOT}data/microtarefas.json`;
 
-      const semanaisRaw = await tryMany([ semCfg, `${ROOT}_data/tarefas-semanais.json` ]);
-      const microsRaw   = await tryMany([ micCfg, `${ROOT}_data/microtarefas.json`, `${ROOT}_data/micro-tarefas.json` ]);
+      const semanaisRaw = semanais ? semanais : await tryMany([ semCfg, `${ROOT}_data/tarefas-semanais.json` ]);
+      const microsRaw   = micros   ? micros   : await tryMany([ micCfg, `${ROOT}_data/microtarefas.json`, `${ROOT}_data/micro-tarefas.json` ]);
 
       semanais = Array.isArray(semanaisRaw) ? semanaisRaw
                : (semanaisRaw && Array.isArray(semanaisRaw.items) ? semanaisRaw.items : []);
@@ -160,18 +200,18 @@ if (typeof window.Drip === 'undefined') {
       semDay = Math.max(1, Math.min(semDay, cap));
       const item = semanais[semDay - 1] || {};
 
-      semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
-      semTit.textContent  = item.titulo || '—';
+      if (semMeta) semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
+      if (semTit)  semTit.textContent  = item.titulo || '—';
 
-      // monta bloco com conceito + orientação + lista de tarefas (se houver)
-      semTxt.innerHTML =
-        (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
-        (item.orientacao ? `<div style="margin-bottom:8px">${item.orientacao}</div>` : '') +
-        (Array.isArray(item.tarefas) && item.tarefas.length
-          ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
-          : '');
-
-      if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
+      if (semTxt) {
+        semTxt.innerHTML =
+          (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
+          (item.orientacao ? `<div style="margin-bottom:8px">${item.orientacao}</div>` : '') +
+          (Array.isArray(item.tarefas) && item.tarefas.length
+            ? '<ul style="margin:0;padding-left:18px">' + item.tarefas.map(t=>`<li>${t}</li>`).join('') + '</ul>'
+            : '');
+        if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
+      }
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
@@ -205,9 +245,9 @@ if (typeof window.Drip === 'undefined') {
       micDay = Math.max(1, Math.min(micDay, cap));
       const item = micros[micDay - 1] || {};
 
-      micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
-      micTit.textContent  = item.titulo || '—';
-      micTxt.textContent  = (item.texto || '').trim() || '—';
+      if (micMeta) micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
+      if (micTit)  micTit.textContent  = item.titulo || '—';
+      if (micTxt)  micTxt.textContent  = (item.texto || '').trim() || '—';
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
@@ -220,5 +260,6 @@ if (typeof window.Drip === 'undefined') {
 
   } catch (e) {
     console.warn('dripPlano falhou:', e);
+    showError('Erro ao inicializar o módulo.');
   }
 })();
