@@ -1,141 +1,200 @@
 // ============================
 // EVO360 · Ascensão
-// Página: Dicas e Orientações (JS completo)
+// Página: Dicas e Orientações (JS robusto / compat)
 // ============================
 
-(() => {
-  // Helpers locais (não poluem global)
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+(function () {
+  // Helpers locais
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $all(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 
   // ---------- DRIP: Dica do dia ----------
-  (async function dicaDrip() {
+  (function dicaDrip() {
     try {
-      const LEVEL_ID = window.NIVEL || 'ascensao-9f3b2';
-      const DRIP_ID  = 'card1_dicas_orientacoes';
+      var LEVEL_ID = (window && window.NIVEL) || 'ascensao-9f3b2';
+      var DRIP_ID  = 'card1_dicas_orientacoes';
 
-      const startISO = (typeof Drip !== 'undefined')
-        ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
-        : new Date().toISOString().slice(0, 10);
+      // startISO: usa Drip se existir; senão usa hoje em ISO local (aaaa-mm-dd)
+      var startISO;
+      if (typeof Drip !== 'undefined' && Drip && typeof Drip.ensureStart === 'function') {
+        startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
+      } else {
+        startISO = (function todayISO(){
+          var d=new Date(), y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+          return y+'-'+m+'-'+dd;
+        })();
+      }
 
-      const dataPathBase = window.DATA_DICAS || '../../data/ascensao.json';
-      const dataPath = `${dataPathBase}${dataPathBase.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+      // Caminho do JSON
+      var dataPathBase = (window && window.DATA_DICAS) || '../../data/ascensao.json';
+      var dataPath = dataPathBase + (dataPathBase.indexOf('?')>-1 ? '&' : '?') + 'cb=' + Date.now();
 
-      async function load(url) {
+      function loadJSON(url){
+        return fetch(url, { cache:'no-store' })
+          .then(function(r){
+            if(!r.ok) throw new Error('HTTP '+r.status);
+            return r.text(); // lê como texto primeiro pra diagnosticar JSON quebrado
+          })
+          .then(function(txt){
+            try { return JSON.parse(txt); }
+            catch(parseErr){
+              console.warn('[Dica] JSON inválido em', url, parseErr);
+              // expõe diagnóstico na UI
+              var meta = $('#dica-meta'), texto=$('#dica-texto');
+              if(meta) meta.textContent = 'Dia —';
+              if(texto) texto.textContent = 'Não foi possível ler o JSON (formatação inválida).';
+              return null;
+            }
+          })
+          .catch(function(err){
+            console.warn('[Dica] Falha ao carregar JSON:', err);
+            var meta = $('#dica-meta'), texto=$('#dica-texto');
+            if(meta) meta.textContent = 'Dia —';
+            if(texto) texto.textContent = 'Dica indisponível (erro de rede/arquivo).';
+            return null;
+          });
+      }
+
+      function coerceTips(raw){
+        // Aceita: array puro; {dicas:[...]}; {items:[...]}; {tips:[...]}.
+        if (!raw) return [];
+        if (Array.isArray(raw)) return raw;
+        if (raw.dicas && Array.isArray(raw.dicas)) return raw.dicas;
+        if (raw.items && Array.isArray(raw.items)) return raw.items;
+        if (raw.tips  && Array.isArray(raw.tips))  return raw.tips;
+        return [];
+      }
+
+      function getTodayIndexCompat(startISO, maxDays){
+        // Usa Drip se existir; senão calcula diferença de dias local
+        if (typeof Drip !== 'undefined' && Drip && typeof Drip.getTodayIndex === 'function') {
+          return Drip.getTodayIndex(startISO, maxDays);
+        }
+        function parseISO(s){ return new Date(s+'T12:00:00'); }
+        function todayISO(){
+          var d=new Date(), y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+          return y+'-'+m+'-'+dd;
+        }
+        var delta = Math.floor((parseISO(todayISO()) - parseISO(startISO)) / 86400000);
+        var idx = Math.min(maxDays, delta+1);
+        return Math.max(1, idx);
+      }
+
+      loadJSON(dataPath).then(function(raw){
+        var data = coerceTips(raw);
+
+        var meta  = $('#dica-meta');
+        var texto = $('#dica-texto');
+        var prev  = $('#btnPrev');
+        var next  = $('#btnNext');
+
+        if (!data || !data.length) {
+          if (meta)  meta.textContent  = 'Dia —';
+          if (texto) texto.textContent = 'Nenhuma dica encontrada. Verifique /data/ascensao.json.';
+          return;
+        }
+
+        var MAX_DAYS = Math.min(60, data.length);
+        var todayIdx = getTodayIndexCompat(startISO, MAX_DAYS);
+
+        // localStorage seguro (sem JSON.parse obrigatório)
+        var VIEW_KEY = 'drip_view_'+LEVEL_ID+'_'+DRIP_ID;
+        var day = todayIdx;
         try {
-          const r = await fetch(url, { cache: 'no-store' });
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return await r.json();
-        } catch (err) {
-          console.warn('[Dica] Falha ao carregar JSON:', err);
-          return null;
-        }
-      }
+          var prevVal = localStorage.getItem(VIEW_KEY);
+          if (prevVal != null) {
+            // aceita número puro ou JSON; se quebrar, ignora
+            var parsed = parseInt(prevVal.replace(/[^0-9]/g,''), 10);
+            if (!isNaN(parsed)) day = parsed;
+          }
+        } catch(_){}
 
-      const raw = await load(dataPath);
-      const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      const prev  = $('#btnPrev');
-      const next  = $('#btnNext');
-
-      if (!data || !data.length) {
-        meta && (meta.textContent = 'Dia —');
-        texto && (texto.textContent = 'Dica indisponível.');
-        return;
-      }
-
-      const MAX_DAYS  = Math.min(60, data.length);
-      const todayIdx  = (typeof Drip !== 'undefined') ? Drip.getTodayIndex(startISO, MAX_DAYS) : 1;
-
-      const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-      const LS = {
-        get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-        set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-      };
-
-      let day = LS.get(VIEW_KEY, todayIdx);
-
-      function render() {
-        const cap = Math.max(1, todayIdx);
-        day = Math.max(1, Math.min(day, cap));
-        const item = data[day - 1];
-
-        if (item) {
-          const rotulo = item.categoria === 'treino' ? 'Treino'
-                       : (item.categoria === 'nutricao' ? 'Nutrição'
-                       : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
-
-          meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`);
-
-          const blocoHTML = (item.conceito || item.orientacao)
-            ? `
-              <div class="dica-bloco">
-                ${item.conceito ? `<div class="dica-label">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-                ${item.orientacao ? `<div class="dica-label">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
-              </div>`
-            : `<p style="margin:0">${item.texto || ''}</p>`;
-
-          texto && (texto.innerHTML = blocoHTML);
-        } else {
-          meta && (meta.textContent = `Dia ${day} de ${MAX_DAYS}`);
-          texto && (texto.textContent = 'Dica indisponível.');
+        function setLS(k,v){
+          try { localStorage.setItem(k, String(v)); } catch(_){}
         }
 
-        prev && (prev.disabled = day <= 1);
-        next && (next.disabled = day >= cap);
-        LS.set(VIEW_KEY, day);
-      }
+        function rotuloCategoria(cat){
+          if (cat === 'treino') return 'Treino';
+          if (cat === 'nutricao') return 'Nutrição';
+          if (cat === 'mentalidade') return 'Mentalidade';
+          return 'Dica';
+        }
 
-      prev?.addEventListener('click', () => { day--; render(); });
-      next?.addEventListener('click', () => { day++; render(); });
-      render();
+        function render(){
+          var cap = Math.max(1, todayIdx);   // trava no dia liberado de hoje
+          if (day < 1) day = 1;
+          if (day > cap) day = cap;
+
+          var item = data[day-1];
+          if (item) {
+            var rot = rotuloCategoria(item.categoria);
+            if (meta) meta.textContent = 'Dia '+day+' de '+MAX_DAYS+' — '+rot+(item.titulo ? ' · '+item.titulo : '');
+
+            var blocoHTML = '';
+            if (item.conceito || item.orientacao) {
+              blocoHTML += '<div class="dica-bloco">';
+              if (item.conceito)   blocoHTML += '<div class="dica-label">Conceito</div><p style="margin:0 0 10px">'+item.conceito+'</p>';
+              if (item.orientacao) blocoHTML += '<div class="dica-label">Orientação</div><p style="margin:0">'+item.orientacao+'</p>';
+              blocoHTML += '</div>';
+            } else {
+              blocoHTML = '<p style="margin:0">'+(item.texto || '')+'</p>';
+            }
+            if (texto) texto.innerHTML = blocoHTML;
+          } else {
+            if (meta)  meta.textContent  = 'Dia '+day+' de '+MAX_DAYS;
+            if (texto) texto.textContent = 'Dica indisponível.';
+          }
+
+          if (prev) prev.disabled = (day <= 1);
+          if (next) next.disabled = (day >= Math.max(1,todayIdx));
+          setLS(VIEW_KEY, day);
+        }
+
+        if (prev) prev.addEventListener('click', function(){ day--; render(); });
+        if (next) next.addEventListener('click', function(){ day++; render(); });
+        render();
+      });
     } catch (e) {
       console.warn('drip init falhou:', e);
+      var meta  = $('#dica-meta');
+      var texto = $('#dica-texto');
+      if (meta)  meta.textContent  = 'Dia —';
+      if (texto) texto.textContent = 'Falha ao iniciar as dicas.';
     }
   })();
 
   // ---------- Abas (Calculadoras) ----------
   (function tabs() {
-    const tabs = $$('.tab');
-    const panels = $$('.panel');
+    var tabs = $all('.tab');
+    var panels = $all('.panel');
     if (!tabs.length || !panels.length) return;
 
     function activate(tabEl) {
-      tabs.forEach(x => x.classList.remove('active'));
-      panels.forEach(p => p.classList.remove('active'));
+      tabs.forEach(function(x){ x.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
       tabEl.classList.add('active');
-      const key = tabEl.dataset.tab;
-      const target = key ? `#panel-${key}` : null;
-      const panel = target ? $(target) : null;
-      (panel || panels[0])?.classList.add('active');
+      var key = tabEl.getAttribute('data-tab');
+      var target = key ? '#panel-' + key : null;
+      var panel = target ? $(target) : null;
+      (panel || panels[0]).classList.add('active');
     }
 
-    tabs.forEach(tb => tb.addEventListener('click', () => activate(tb)));
-    const anyActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+    tabs.forEach(function(tb){ tb.addEventListener('click', function(){ activate(tb); }); });
+    var anyActive = tabs.filter(function(t){ return t.classList.contains('active'); })[0] || tabs[0];
     activate(anyActive);
   })();
 
   // ---------- Calculadora · FC de Reserva (Karvonen) ----------
   (function karvonen() {
-    const idade = $('#k_idade');
-    const fCR   = $('#k_fcr');
-    const out   = $('#k_out');
-    const table = $('#k_table');
-    const btn   = $('#k_calcBtn');
-    const clr   = $('#k_clearBtn');
+    var idade = $('#k_idade');
+    var fCR   = $('#k_fcr');
+    var out   = $('#k_out');
+    var table = $('#k_table');
+    var btn   = $('#k_calcBtn');
+    var clr   = $('#k_clearBtn');
 
-    // Auto-diagnóstico leve (ajuda a detectar HTML divergente)
-    const missing = [];
-    if (!idade) missing.push('#k_idade');
-    if (!fCR)   missing.push('#k_fcr');
-    if (!out)   missing.push('#k_out');
-    if (!table) missing.push('#k_table');
-    if (!btn)   missing.push('#k_calcBtn');
-    if (!clr)   missing.push('#k_clearBtn');
-    if (missing.length){
-      console.warn('[Karvonen] Elementos não encontrados no HTML:', missing.join(', '));
+    if (!idade || !fCR || !out || !table || !btn || !clr){
+      console.warn('[Karvonen] Elementos não encontrados no HTML.');
       return;
     }
 
@@ -144,38 +203,34 @@
     }
 
     function construirTabela(fcMax, fcRep) {
-      const linhas = [];
-      for (let pct = 50; pct <= 80; pct += 5) {
-        const frac = pct / 100;
-        const alvo = karvonenTarget(fcMax, fcRep, frac);
+      var linhas = [];
+      for (var pct = 50; pct <= 80; pct += 5) {
+        var frac = pct / 100;
+        var alvo = karvonenTarget(fcMax, fcRep, frac);
         linhas.push(
-          `<div class="row" style="justify-content:space-between">
-            <span>${pct}% da FC de reserva</span>
-            <strong>${alvo} bpm</strong>
-          </div>`
+          '<div class="row" style="justify-content:space-between">' +
+            '<span>'+pct+'% da FC de reserva</span>' +
+            '<strong>'+alvo+' bpm</strong>' +
+          '</div>'
         );
       }
       return linhas.join('');
     }
 
     function calcular() {
-      const a = +idade.value || 0;
-      const r = +fCR.value   || 0;
-
+      var a = parseInt(idade.value,10) || 0;
+      var r = parseInt(fCR.value,10)   || 0;
       if (a <= 0 || r <= 0) {
         out.textContent = 'Informe idade e FC de repouso.';
         table.innerHTML = '';
         return;
       }
-
-      const fcMax = 220 - a; // mantém o mesmo do Fundação
-      const alvo50 = karvonenTarget(fcMax, r, 0.50);
-      const alvo65 = karvonenTarget(fcMax, r, 0.65);
-
-      out.innerHTML = `
-        FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-        <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>
-      `;
+      var fcMax = 220 - a;
+      var alvo50 = karvonenTarget(fcMax, r, 0.50);
+      var alvo65 = karvonenTarget(fcMax, r, 0.65);
+      out.innerHTML =
+        'FC máx. estimada: <strong>'+fcMax+' bpm</strong><br>' +
+        '<span class="small muted">Faixa sugerida: '+alvo50+'–'+alvo65+' bpm</span>';
       table.innerHTML = construirTabela(fcMax, r);
     }
 
@@ -188,9 +243,8 @@
 
     btn.addEventListener('click', calcular);
     clr.addEventListener('click', limpar);
-
-    [idade, fCR].forEach(el => {
-      el.addEventListener('keydown', (e) => {
+    [idade, fCR].forEach(function(el){
+      el.addEventListener('keydown', function(e){
         if (e.key === 'Enter') { e.preventDefault(); calcular(); }
       });
     });
@@ -198,39 +252,33 @@
 
   // ---------- Calculadora · TMB ----------
   (function tmb() {
-    const peso = $('#t_peso');
-    const alt  = $('#t_altura');
-    const ida  = $('#t_idade');
-    const sex  = $('#t_sexo');
-    const out  = $('#t_out');
+    var peso = $('#t_peso');
+    var alt  = $('#t_altura');
+    var ida  = $('#t_idade');
+    var sex  = $('#t_sexo');
+    var out  = $('#t_out');
 
-    const missing = [];
-    if (!peso) missing.push('#t_peso');
-    if (!alt)  missing.push('#t_altura');
-    if (!ida)  missing.push('#t_idade');
-    if (!sex)  missing.push('#t_sexo');
-    if (!out)  missing.push('#t_out');
-    if (missing.length){
-      console.warn('[TMB] Elementos não encontrados no HTML:', missing.join(', '));
+    if (!peso || !alt || !ida || !sex || !out){
+      console.warn('[TMB] Elementos não encontrados no HTML.');
       return;
     }
 
     function calc() {
-      const p = +peso.value || 0;
-      const h = +alt.value  || 0;
-      const i = +ida.value  || 0;
-      const s = (sex.value || 'f').toLowerCase();
+      var p = parseFloat(peso.value) || 0;
+      var h = parseFloat(alt.value)  || 0;
+      var i = parseInt(ida.value,10) || 0;
+      var s = String(sex.value || 'f').toLowerCase();
 
       if (p > 0 && h > 0 && i > 0) {
-        const base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
-        out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
-          <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+        var base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
+        out.innerHTML = 'Sua TMB estimada: <strong>'+base+' kcal/dia</strong><br>' +
+          '<span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>';
       } else {
         out.textContent = 'Preencha peso, altura e idade.';
       }
     }
 
-    ['input','change'].forEach(ev=>{
+    ['input','change'].forEach(function(ev){
       peso.addEventListener(ev, calc);
       alt.addEventListener(ev, calc);
       ida.addEventListener(ev, calc);
