@@ -1,5 +1,5 @@
 // ============================
-// EVO360 · Ascensão · plano.js (v23 robusto)
+// EVO360 · Ascensão · plano.js (v24)
 // Tarefas semanais + Microtarefas (gotejamento)
 // ============================
 
@@ -31,11 +31,7 @@ function cacheBust(url){
 }
 
 function repoRoot() {
-  // devolve prefixo até a raiz do repo (ex.: "/")
-  // e NÃO corta errado quando path começa em /nivel/...
-  const parts = location.pathname.split('/').filter(Boolean);
-  // ex: ["nivel","ascensao-9f3b2","plano.html"]
-  // raiz do site é "/"
+  // Mantém simples: raiz do site
   return '/';
 }
 
@@ -106,19 +102,24 @@ if (typeof window.Drip === 'undefined') {
 
     const SEM_ID  = 'card2_tarefas_semanais';
     const MIC_ID  = 'card2_microtarefas';
-    const SEM_MAX = 8;
-    const MIC_MAX = 20;
+    const SEM_MAX = 8;   // teto lógico do módulo
+    const MIC_MAX = 20;  // teto lógico do módulo
 
     const semStart = Drip.ensureStart(LEVEL_ID, SEM_ID);
     const micStart = Drip.ensureStart(LEVEL_ID, MIC_ID);
 
+    // Índices "liberados" pelo tempo decorrido
+    const semIdxByDays = Drip.getTodayIndex(semStart, SEM_MAX * 7); // 1..(SEM_MAX*7)
+    const micIdxByDays = Drip.getTodayIndex(micStart, MIC_MAX * 3); // 1..(MIC_MAX*3)
+
+    // Converte dias em semana/bloco
     const semIdx = Math.max(1, Math.min(
       SEM_MAX,
-      Math.floor((Drip.getTodayIndex(semStart, SEM_MAX * 7) - 1) / 7) + 1
+      Math.floor((semIdxByDays - 1) / 7) + 1
     ));
     const micIdx = Math.max(1, Math.min(
       MIC_MAX,
-      Math.floor((Drip.getTodayIndex(micStart, MIC_MAX * 3) - 1) / 3) + 1
+      Math.floor((micIdxByDays - 1) / 3) + 1
     ));
 
     // -------- Carregamento dos dados --------
@@ -157,10 +158,12 @@ if (typeof window.Drip === 'undefined') {
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
-    let semDay = LS.get(SEM_VIEW_KEY, semIdx);
+    // Cap pelo tamanho REAL do JSON e pelo teto lógico
+    const semTotalCap = Math.min(SEM_MAX, semanais.length);
+    let semDay = LS.get(SEM_VIEW_KEY, Math.min(semIdx, semTotalCap) || 1);
 
     function renderSem() {
-      if (!semanais.length) {
+      if (!semanais.length || semTotalCap < 1) {
         semMeta && (semMeta.textContent = 'Semana —');
         semTit  && (semTit.textContent  = 'Conteúdo indisponível');
         semTxt  && (semTxt.textContent  = '—');
@@ -168,11 +171,12 @@ if (typeof window.Drip === 'undefined') {
         if (semNext) semNext.disabled = true;
         return;
       }
-      const cap = semIdx;
+
+      const cap = Math.min(semIdx, semTotalCap);
       semDay = Math.max(1, Math.min(semDay, cap));
       const item = semanais[semDay - 1] || {};
 
-      semMeta.textContent = `Semana ${semDay} de ${SEM_MAX}`;
+      semMeta.textContent = `Semana ${semDay} de ${semTotalCap}`;
       semTit.textContent  = item.titulo || '—';
       semTxt.innerHTML =
         (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
@@ -199,10 +203,12 @@ if (typeof window.Drip === 'undefined') {
     const micNext = $('#micNext');
 
     const MIC_VIEW_KEY = `drip_view_${LEVEL_ID}_${MIC_ID}`;
-    let micDay = LS.get(MIC_VIEW_KEY, micIdx);
+
+    const micTotalCap = Math.min(MIC_MAX, micros.length);
+    let micDay = LS.get(MIC_VIEW_KEY, Math.min(micIdx, micTotalCap) || 1);
 
     function renderMic() {
-      if (!micros.length) {
+      if (!micros.length || micTotalCap < 1) {
         micMeta && (micMeta.textContent = 'Bloco —');
         micTit  && (micTit.textContent  = 'Conteúdo indisponível');
         micTxt  && (micTxt.textContent  = '—');
@@ -210,11 +216,12 @@ if (typeof window.Drip === 'undefined') {
         if (micNext) micNext.disabled = true;
         return;
       }
-      const cap = micIdx;
+
+      const cap = Math.min(micIdx, micTotalCap);
       micDay = Math.max(1, Math.min(micDay, cap));
       const item = micros[micDay - 1] || {};
 
-      micMeta.textContent = `Bloco ${micDay} de ${MIC_MAX}`;
+      micMeta.textContent = `Bloco ${micDay} de ${micTotalCap}`;
       micTit.textContent  = item.titulo || '—';
       micTxt.textContent  = (item.texto || '').trim() || '—';
 
