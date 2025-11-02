@@ -4,8 +4,8 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EVO360 · Fundação · Tarefas e Neuro-Hábito</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="../../assets/css/base.css?v=18">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=18">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=19">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=19">
   <meta name="theme-color" content="#0b0d10">
   <style>
     /* Texto justificado nesta página */
@@ -25,10 +25,10 @@
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
 
-    /* --- AJUSTE: garantir quebra e altura automática nos textos --- */
-    #sem-titulo, #mic-titulo{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #sem-texto, #mic-texto{  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .panel p, .panel .note{  overflow-wrap:anywhere; word-break:break-word; }
+    /* Quebra e altura automática nos textos */
+    #sem-titulo,#mic-titulo{white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
+    #sem-texto,#mic-texto{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
+    .panel p,.panel .note{overflow-wrap:anywhere;word-break:break-word}
   </style>
 </head>
 <body class="layout-with-sidebar">
@@ -50,7 +50,7 @@
   </aside>
 
   <main class="content">
-    <!-- Banner (apenas imagem, mesmo padrão) -->
+    <!-- Banner -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
     <!-- CARD · Tarefas & Neuro-hábito -->
@@ -126,17 +126,18 @@
     /* Configs desta página */
     window.NIVEL = "fundacao-72a9c";
 
-    /* Caminhos dos JSONs reais no seu _data */
-    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json"; // 8 itens [{titulo, ...}]
-    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";      // ~20 itens [{titulo, ...}]
+    /* ÚNICO arquivo com semanais + micros */
+    window.DATA_PLANO = "../../data/fundacao-tarefas.json";
 
-    /* Aliases para compatibilidade com scripts que usam nomes anteriores */
+    /* Mantidos apenas por compatibilidade (não serão usados se DATA_PLANO existir) */
+    window.DATA_TAREFAS_SEMANAIS = "../../_data/tarefas-semanais.json";
+    window.DATA_MICRO_TAREFAS   = "../../_data/microtarefas.json";
     window.DATA_TAREFAS = window.DATA_TAREFAS_SEMANAIS;
     window.DATA_MICROS  = window.DATA_MICRO_TAREFAS;
   </script>
 
   <!-- motor de gotejamento (antes do JS da página) -->
-  <script src="../../assets/js/drip.js?v=18" defer></script>
+  <script src="../../assets/js/drip.js?v=19" defer></script>
 
   <!-- SHIM: se drip.js não carregar, garante um Drip básico para o plano.js -->
   <script>
@@ -176,6 +177,6 @@
   </script>
 
   <!-- JS desta página -->
-  <script src="./plano.js?v=18" defer></script>
+  <script src="./plano.js?v=19" defer></script>
 </body>
 </html>
