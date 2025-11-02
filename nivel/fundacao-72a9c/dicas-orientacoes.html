@@ -8,7 +8,10 @@
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#0b0d10">
   <style>
+    /* texto justificado nesta página */
     .content p, .content li { text-align: justify; }
+
+    /* abas e painéis */
     .tabs{display:flex;gap:8px;margin:12px 0}
     .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer}
     .tab.active{border-color:rgba(203,229,255,.35);background:#12161B}
@@ -18,12 +21,30 @@
     @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
     .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
     .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
+
+    /* --- AJUSTE: garantir que a dica inteira apareça no card --- */
+    #dica-meta{
+      display:block;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.35;
+    }
+    #dica-texto{
+      margin-top:6px;
+      white-space:pre-wrap;     /* preserva \n das dicas */
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.55;
+    }
+    .card p, .card small{
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
   </style>
 </head>
 <body class="layout-with-sidebar">
+  <!-- Sidebar -->
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
       <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
@@ -41,8 +62,10 @@
   </aside>
 
   <main class="content">
+    <!-- Banner (apenas imagem) -->
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
+    <!-- Dica do dia (gotejamento) -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -54,27 +77,36 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
+    <!-- Calculadoras -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
         <button class="tab active" data-tab="karvonen">FC de Reserva (Karvonen)</button>
       </div>
 
+      <!-- Karvonen (lista 50% a 80% por 5%) -->
       <div class="panel active" id="panel-karvonen">
         <div class="grid-2">
           <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
           <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
           <div class="small muted" style="align-self:end">Sugestão Fundação: 50–65% (cardio leve/moderado)</div>
         </div>
+
+        <!-- Resumo -->
         <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
+
+        <!-- Ações -->
         <div class="row-actions">
           <button class="btn" id="k_calcBtn">Calcular</button>
           <button class="btn ghost" id="k_clearBtn">Limpar</button>
         </div>
+
+        <!-- Tabela de zonas (50% a 80% por 5%) -->
         <div class="calc-out" id="k_table" aria-live="polite"></div>
       </div>
     </section>
 
+    <!-- Módulo livre · Orientação nutricional (8 aulas) -->
     <section class="card" id="modulo-nutri">
       <h2>Orientação nutricional — Fundação (módulo livre)</h2>
       <p class="mini">
@@ -86,41 +118,78 @@
         <em>assim que aplicar</em> a orientação da aula atual no seu dia a dia.
       </div>
 
+      <!-- Fallback fixo -->
       <ol id="aulas-fallback">
-        <li><strong>Aula 1 — Prato base 50/25/25</strong><br>Monte 1 refeição/dia com 50% vegetais, 25% proteína magra, 25% carboidrato integral.</li>
-        <li><strong>Aula 2 — Hidratação simples</strong><br>Defina um alvo diário e distribua em 4 “checkpoints” (manhã, almoço, tarde, noite).</li>
-        <li><strong>Aula 3 — Proteína em todas as refeições</strong><br>Garanta uma fonte proteica a cada refeição para saciedade e recuperação.</li>
-        <li><strong>Aula 4 — Lanche esperto</strong><br>Tenha 1 opção de lanche planejado (fruta + iogurte; castanhas; ovo cozido) para evitar impulsos.</li>
-        <li><strong>Aula 5 — Planejamento de mercado</strong><br>Lista curta de “básicos da semana” e 1 horário fixo de compra.</li>
-        <li><strong>Aula 6 — Janelas de fome</strong><br>Observe sinais de fome/saciedade e desacelere na hora de comer (respiração + mastigação).</li>
-        <li><strong>Aula 7 — Pré e pós-treino fundamentais</strong><br>Pré: carboidrato simples + pequena proteína. Pós: proteína + carboidrato para recuperação.</li>
-        <li><strong>Aula 8 — Rotina sustentável</strong><br>Escolha 3 hábitos que mais funcionaram e fixe-os como padrão semanal.</li>
+        <li><strong>Aula 1 — Prato base 50/25/25</strong><br>
+          Monte 1 refeição/dia com 50% vegetais, 25% proteína magra, 25% carboidrato integral.
+        </li>
+        <li><strong>Aula 2 — Hidratação simples</strong><br>
+          Defina um alvo diário e distribua em 4 “checkpoints” (manhã, almoço, tarde, noite).
+        </li>
+        <li><strong>Aula 3 — Proteína em todas as refeições</strong><br>
+          Garanta uma fonte proteica a cada refeição para saciedade e recuperação.
+        </li>
+        <li><strong>Aula 4 — Lanche esperto</strong><br>
+          Tenha 1 opção de lanche planejado (fruta + iogurte; castanhas; ovo cozido) para evitar impulsos.
+        </li>
+        <li><strong>Aula 5 — Planejamento de mercado</strong><br>
+          Lista curta de “básicos da semana” e 1 horário fixo de compra.
+        </li>
+        <li><strong>Aula 6 — Janelas de fome</strong><br>
+          Observe sinais de fome/saciedade e desacelere na hora de comer (respiração + mastigação).
+        </li>
+        <li><strong>Aula 7 — Pré e pós-treino fundamentais</strong><br>
+          Pré: carboidrato simples + pequena proteína. Pós: proteína + carboidrato para recuperação.
+        </li>
+        <li><strong>Aula 8 — Rotina sustentável</strong><br>
+          Escolha 3 hábitos que mais funcionaram e fixe-os como padrão semanal.
+        </li>
       </ol>
 
+      <!-- Contêiner dinâmico -->
       <div id="lista-aulas" style="display:none"></div>
-      <small class="muted">Dica prática: registre pequenas vitórias no app (ou caderno) e celebre consistência, não perfeição.</small>
+      <small class="muted">
+        Dica prática: registre pequenas vitórias no app (ou caderno) e celebre consistência, não perfeição.
+      </small>
     </section>
   </main>
 
   <script>
+    /* Nível + cache-bust só no JSON de dicas */
     window.NIVEL = "fundacao-72a9c";
-    /* Força cache-bust do JSON das dicas */
     window.DATA_DICAS = "../../data/fundacao.json?cb=" + Date.now();
   </script>
 
+  <!-- Drip + JS da página (mantém v=21 que você já publicou) -->
   <script src="../../assets/js/drip.js?v=21" defer></script>
-  <!-- força baixar JS atualizado -->
-  <script src="./dicas-orientacoes.js?v=24" defer></script>
+  <script src="./dicas-orientacoes.js?v=21" defer></script>
 
+  <!-- Aulas livres: tenta com e sem .json, sem tocar no resto -->
   <script>
   (async function carregarAulasLivres(){
     try{
       const alvo = document.querySelector('#lista-aulas');
       const fallback = document.querySelector('#aulas-fallback');
-      const res = await fetch('../../data/fundacao-nutri-aulas.json', { cache:'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const json = await res.json();
-      if (!json || !Array.isArray(json.aulas) || json.aulas.length === 0) return;
+
+      async function tenta(paths){
+        for (const p of paths){
+          try{
+            const res = await fetch(p + (p.includes('?') ? '' : ('?cb=' + Date.now())), { cache:'no-store' });
+            if (!res.ok) continue;
+            const json = await res.json();
+            if (json && Array.isArray(json.aulas) && json.aulas.length) return json;
+          }catch(_){ /* segue tentando */ }
+        }
+        return null;
+      }
+
+      const json = await tenta([
+        '../../data/fundacao-nutri-aulas.json',
+        '../../data/fundacao-nutri-aulas'
+      ]);
+
+      if (!json) return; // mantém fallback
+
       const html = json.aulas.map(a => `
         <article class="aula" style="margin:10px 0 16px">
           <h3>${a.numero}. ${a.titulo}</h3>
@@ -130,6 +199,7 @@
           <hr style="margin:10px 0;border:0;border-top:1px solid var(--line)">
         </article>
       `).join('');
+
       alvo.innerHTML = html;
       alvo.style.display = 'block';
       if (fallback) fallback.style.display = 'none';
