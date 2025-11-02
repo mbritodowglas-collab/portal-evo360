@@ -118,7 +118,8 @@
         <em>assim que aplicar</em> a orientação da aula atual no seu dia a dia.
       </div>
 
-      <ol>
+      <!-- AULAS: Fallback estático (mantido) -->
+      <ol id="aulas-fallback">
         <li><strong>Aula 1 — Prato base 50/25/25</strong><br>
           Monte 1 refeição/dia com 50% vegetais, 25% proteína magra, 25% carboidrato integral.
         </li>
@@ -144,6 +145,9 @@
           Escolha 3 hábitos que mais funcionaram e fixe-os como padrão semanal.
         </li>
       </ol>
+
+      <!-- AULAS: Contêiner dinâmico (preenchido via JSON). Fica vazio e oculto até carregar. -->
+      <div id="lista-aulas" style="display:none"></div>
       <small class="muted">
         Dica prática: registre pequenas vitórias no app (ou caderno) e celebre consistência, não perfeição.
       </small>
@@ -159,5 +163,36 @@
   <!-- Drip + JS da página (ordem: drip antes) -->
   <script src="../../assets/js/drip.js?v=21" defer></script>
   <script src="./dicas-orientacoes.js?v=21" defer></script>
+
+  <!-- AULAS: carregamento dinâmico NÃO interfere em nada do que já está rodando -->
+  <script>
+  (async function carregarAulasLivres(){
+    try{
+      const alvo = document.querySelector('#lista-aulas');
+      const fallback = document.querySelector('#aulas-fallback');
+      const res = await fetch('../../data/fundacao-nutri-aulas.json', { cache:'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if (!json || !Array.isArray(json.aulas) || json.aulas.length === 0) return; // mantém fallback
+
+      const html = json.aulas.map(a => `
+        <article class="aula" style="margin:10px 0 16px">
+          <h3>${a.numero}. ${a.titulo}</h3>
+          <p>${(a.texto||'').replace(/\n/g,'<br>')}</p>
+          ${a.tarefa ? `<div class="muted"><strong>Tarefa:</strong> ${a.tarefa}</div>` : ''}
+          ${a.lembrete ? `<small class="muted">${a.lembrete}</small>` : ''}
+          <hr style="margin:10px 0;border:0;border-top:1px solid var(--line)">
+        </article>
+      `).join('');
+
+      alvo.innerHTML = html;
+      alvo.style.display = 'block';
+      if (fallback) fallback.style.display = 'none';
+    } catch(e){
+      // Em erro, não toca no fallback
+      console.warn('[Fundação][Aulas Livres] Falha ao carregar JSON:', e);
+    }
+  })();
+  </script>
 </body>
 </html>
