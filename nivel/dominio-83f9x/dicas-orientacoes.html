@@ -5,8 +5,8 @@
   <title>EVO360 · Domínio · Dicas e Orientações</title>
   <meta name="robots" content="noindex,nofollow">
   <!-- Layout base -->
-  <link rel="stylesheet" href="../../assets/css/base.css?v=23">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=23">
+  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
+  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
   <meta name="theme-color" content="#4b0b16">
   <style>
     .content p, .content li { text-align: justify; }
@@ -21,8 +21,6 @@
     #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
     #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
     .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
-
-    /* Tema Domínio */
     :root{ --ruby:#ff5e5e; }
     .content h2, .card h2{ color:var(--ruby)!important; }
     .tab.active{ border-color:rgba(255,94,94,.35)!important; color:var(--ruby)!important; background:#2a0d0d!important; }
@@ -50,7 +48,7 @@
   </aside>
 
   <main class="content">
-    <header class="banner-full" style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=23') center/cover no-repeat!important;" aria-hidden="true"></header>
+    <header class="banner-full" style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat!important;" aria-hidden="true"></header>
 
     <!-- DICA -->
     <section class="card" id="dica-dia">
@@ -88,9 +86,9 @@
 
       <div class="panel" id="panel-tmb">
         <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1" placeholder="ex: 68"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura" placeholder="ex: 165"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade" placeholder="ex: 35"></label>
+          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1"></label>
+          <label>Altura (cm)<br><input type="number" id="t_altura"></label>
+          <label>Idade (anos)<br><input type="number" id="t_idade"></label>
           <label>Sexo<br><select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select></label>
         </div>
         <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
@@ -192,70 +190,33 @@
   </main>
 
   <script>
-    /* Identidade e fonte de dados das dicas */
     window.NIVEL = "dominio-83f9x";
-    window.DATA_DICAS = "../../data/dominio.json";
+    window.DATA_DICAS = "../../data/dominio.json?v=22"; /* única mudança pra derrubar cache */
   </script>
+  <script src="../../assets/js/drip.js?v=22" defer></script>
+  <script src="./dicas-orientacoes.js?v=22" defer></script>
 
-  <!-- Drip base -->
-  <script src="../../assets/js/drip.js?v=23" defer></script>
-
-  <!-- SHIM: se drip.js falhar, cria um Drip básico -->
   <script>
-    (function(){
-      if (typeof window.Drip === 'undefined') {
-        const Drip = (() => {
-          const localISO = (d=new Date())=>{
-            const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-            return `${y}-${m}-${dd}`;
-          };
-          const parseISO=(s)=>new Date(`${s}T12:00:00`);
-          const todayISO=()=>localISO(new Date());
-          const daysBetween=(a,b)=>Math.floor((parseISO(b)-parseISO(a))/86400000);
-          const LS={get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
-          function ensureStart(levelId, streamId){
-            const KEY=`drip_start_${levelId}_${streamId}`;
-            let start=LS.get(KEY,null);
-            if(!start){start=todayISO();LS.set(KEY,start);}
-            return start;
-          }
-          function getTodayIndex(startISO,maxDays=60){
-            const delta=daysBetween(startISO,todayISO());
-            return Math.max(1,Math.min(maxDays,delta+1));
-          }
-          return { ensureStart, getTodayIndex, LS };
-        })();
-        window.Drip = Drip;
-      }
-    })();
-  </script>
-
-  <!-- JS unificado (dicas + abas + calculadoras) -->
-  <script src="../../assets/js/dicas-orientacoes.js?v=23" defer></script>
-
-  <!-- Ajuste calórico (mantido) -->
-  <script>
-    (function(){
-      const $ = (s,r=document)=>r.querySelector(s);
-      const peso=$('#t_peso'),altura=$('#t_altura'),idade=$('#t_idade'),sexo=$('#t_sexo');
-      const fa=$('#pf_atividade'),obj=$('#pf_objetivo');
-      const outTMB=$('#pf_tmb'),outTDEE=$('#pf_tdee'),outAlvo=$('#pf_kcal'),outProt=$('#pf_prot'),outGord=$('#pf_gord'),outCarb=$('#pf_carb');
-      const num=v=>isFinite(+v)?+v:0, round=v=>Math.round(v);
-      function recalc(){
-        const p=num(peso?.value),h=num(altura?.value),i=num(idade?.value);
-        const sx=(sexo?.value||'f').toLowerCase(),fator=num(fa?.value)||1.55,objetivo=num(obj?.value)||0;
-        if(!(p>0&&h>0&&i>0)){[outTMB,outTDEE,outAlvo,outProt,outGord,outCarb].forEach(o=>o.textContent='—');return;}
-        const tmb=round((10*p)+(6.25*h)-(5*i)+(sx==='f'?-161:5));
-        const tdee=round(tmb*fator);
-        const alvo=round(tdee*(1+objetivo));
-        const prot=round(2.0*p),gord=round(1.0*p);
-        const carb=Math.max(0,round((alvo-(prot*4)-(gord*9))/4));
-        outTMB.textContent=tmb+' kcal'; outTDEE.textContent=tdee+' kcal'; outAlvo.textContent=alvo+' kcal';
-        outProt.textContent=prot+' g'; outGord.textContent=gord+' g'; outCarb.textContent=carb+' g';
-      }
-      ['input','change'].forEach(ev=>[peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc)));
-      // opcional: recalc(); // chama se quiser tentar preencher assim que o usuário digitar TMB completa
-    })();
+  (function(){
+    const $ = (s,r=document)=>r.querySelector(s);
+    const peso=$('#t_peso'),altura=$('#t_altura'),idade=$('#t_idade'),sexo=$('#t_sexo');
+    const fa=$('#pf_atividade'),obj=$('#pf_objetivo');
+    const outTMB=$('#pf_tmb'),outTDEE=$('#pf_tdee'),outAlvo=$('#pf_kcal'),outProt=$('#pf_prot'),outGord=$('#pf_gord'),outCarb=$('#pf_carb');
+    const num=v=>isFinite(+v)?+v:0; const round=v=>Math.round(v);
+    function recalc(){
+      const p=num(peso?.value),h=num(altura?.value),i=num(idade?.value);
+      const sx=(sexo?.value||'f').toLowerCase(),fator=num(fa?.value)||1.55,objetivo=num(obj?.value)||0;
+      if(!(p>0&&h>0&&i>0)){[outTMB,outTDEE,outAlvo,outProt,outGord,outCarb].forEach(o=>o.textContent='—');return;}
+      const tmb=round((10*p)+(6.25*h)-(5*i)+(sx==='f'?-161:5));
+      const tdee=round(tmb*fator);
+      const alvo=round(tdee*(1+objetivo));
+      const prot=round(2.0*p),gord=round(1.0*p);
+      const carb=Math.max(0,round((alvo-(prot*4)-(gord*9))/4));
+      outTMB.textContent=tmb+' kcal'; outTDEE.textContent=tdee+' kcal'; outAlvo.textContent=alvo+' kcal';
+      outProt.textContent=prot+' g'; outGord.textContent=gord+' g'; outCarb.textContent=carb+' g';
+    }
+    ['input','change'].forEach(ev=>[peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc)));
+  })();
   </script>
 </body>
 </html>
