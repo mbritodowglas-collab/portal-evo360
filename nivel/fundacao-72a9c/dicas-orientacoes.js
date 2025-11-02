@@ -26,14 +26,14 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       const KEY = `drip_start_${levelId}_${streamId}`;
       let start = LS.get(KEY, null);
       // aceita apenas 'YYYY-MM-DD'
-      if (!(/^\\d{4}-\\d{2}-\\d{2}$/.test(start||''))) {
+      if (!(/^\d{4}-\d{2}-\d{2}$/.test(start||''))) {
         start = todayISO();
         LS.set(KEY, start);
       }
       return start;
     },
     getTodayIndex(startISO, maxDays=60){
-      if (!(/^\\d{4}-\\d{2}-\\d{2}$/.test(startISO||''))) startISO = todayISO();
+      if (!(/^\d{4}-\d{2}-\d{2}$/.test(startISO||''))) startISO = todayISO();
       const idx = daysBetween(startISO, todayISO()) + 1; // 1..N
       return Math.max(1, Math.min(maxDays, idx));
     },
@@ -246,3 +246,4 @@ function cacheBust(url){
   });
   calc();
 })();
+```0
