@@ -1,0 +1,63 @@
+{
+  "modulo": "Fundação · Orientação Nutricional Livre",
+  "versao": "2.0",
+  "descricao": "Série de 8 aulas práticas em linguagem direta e humana. Aqui eu converso com você sobre alimentação sem neura — o foco é reeducar, entender seu corpo e aplicar hábitos reais, não contar calorias.",
+  "aulas": [
+    {
+      "numero": 1,
+      "titulo": "Seu Primeiro Passo: O Prato 50/25/25",
+      "texto": "Senta comigo aqui um minuto. A gente vai começar simples — nada de pesar comida, nada de aplicativos. Quero que você olhe pro seu prato e veja equilíbrio.\n\nMetade dele deve ser cor, textura e vida: vegetais. O outro quarto é proteína — aquilo que te deixa firme, forte e saciada. O último quarto é energia: carboidrato de verdade, não o ultraprocessado.\n\nPensa assim: 50% verde, 25% proteína, 25% energia boa. Eu costumo dizer que esse prato é o primeiro treino da sua alimentação.\n\nHoje, quero que você monte um desses pratos. Pode ser no almoço. Tire uma foto e olhe pra ele depois: será que te representa? Se sim, salva como referência. Se não, ajusta — isso é aprendizado.",
+      "tarefa": "Montar o prato 50/25/25 e aplicá-lo em uma refeição. Tire foto e registre como se sentiu 30 minutos depois.",
+      "lembrete": "Quando aplicar, pode passar pra próxima aula. O importante é praticar, não decorar regra."
+    },
+    {
+      "numero": 2,
+      "titulo": "Hidratação: a energia que você esquece",
+      "texto": "Você sabia que muita gente confunde sede com fome? É real. Antes de pensar em dieta, a gente precisa aprender a beber água.\n\nEu quero que você divida sua meta diária em quatro momentos: manhã, almoço, tarde e noite. Quatro copos grandes. Não precisa complicar.\n\nPega uma garrafa e deixa marcada. Eu gosto de pensar nela como um lembrete físico de autocuidado — o tipo de coisa que você faz por você, sem ninguém ver.\n\nHoje, sua missão é cumprir esses quatro checkpoints. Manhã, almoço, tarde e noite. E me promete uma coisa: não espere ter sede pra beber água. Antecipe.",
+      "tarefa": "Cumprir os 4 checkpoints de hidratação no dia de hoje.",
+      "lembrete": "Você pode avançar assim que completar o ciclo de hidratação. Simples, mas poderoso."
+    },
+    {
+      "numero": 3,
+      "titulo": "Proteína em todas as refeições — o segredo da saciedade",
+      "texto": "Deixa eu te contar um segredo: proteína é a base da constância. Quando você sente fome o tempo todo, o problema geralmente não é força de vontade — é falta de proteína.\n\nHoje eu quero que você olhe pro seu dia e garanta uma fonte proteica em cada refeição principal e num lanche. Não precisa ser perfeita, precisa ser prática.\n\nPode ser ovo, frango, peixe, iogurte natural, tofu, feijão... o que couber na sua rotina. Só não vale pular.\n\nPense assim: cada refeição é uma chance de cuidar do seu corpo, não uma negociação com a balança.",
+      "tarefa": "Garantir proteína no café, almoço, jantar e um lanche.",
+      "lembrete": "Marca mentalmente ou anota no seu caderno — o importante é perceber a diferença na fome e na disposição."
+    },
+    {
+      "numero": 4,
+      "titulo": "Lanche Padrão: menos caos, mais controle",
+      "texto": "Quero propor um desafio rápido: e se você nunca mais precisasse pensar no lanche? A ideia é criar o seu 'lanche padrão', aquele que resolve a fome e evita as armadilhas da correria.\n\nPode ser simples: fruta + iogurte, ovo cozido + pão integral, ou castanhas + fruta. O segredo é planejar antes, pra não ser refém do impulso.\n\nEscolha um lanche fixo e repita nos próximos dias. Quando a rotina fica caótica, ele vai ser o seu porto seguro.",
+      "tarefa": "Definir e aplicar seu lanche padrão hoje.",
+      "lembrete": "Pode mudar depois, mas hoje é sobre ter uma opção fixa. A previsibilidade é libertadora."
+    },
+    {
+      "numero": 5,
+      "titulo": "O Mercado é o seu campo de batalha",
+      "texto": "Se eu abrisse sua geladeira agora, o que eu veria? É aí que começa a mudança.\n\nAntes de pensar em 'comer certo', a gente precisa *ter* o que comer certo. Então, sua missão de hoje é simples: montar uma lista curta e funcional de compras.\n\nAnota: vegetais (5 tipos), proteínas magras (2), carboidratos integrais (2), frutas (3), gordura boa (1). Só o essencial. E vai ao mercado com a barriga cheia — de preferência, depois do almoço.\n\nQuando voltar, lave os vegetais e deixe um deles pronto. Organização é liberdade.",
+      "tarefa": "Ir ao mercado com lista curta e preparar uma base da semana (ex.: frango e salada).",
+      "lembrete": "A casa organiza o comportamento. Um armário certo é meio caminho andado."
+    },
+    {
+      "numero": 6,
+      "titulo": "Comer devagar é um ato de força",
+      "texto": "Tem gente que acha que autocontrole é resistir à comida. Eu acho que é aprender a senti-la. Comer devagar é um treino mental, igual ao da academia.\n\nHoje, quero que você escolha uma refeição e faça o ‘protocolo 15–20 minutos’. Comece observando sua fome (0 a 10). Faça uma pausa no meio da refeição. Respira. E termina sentindo a saciedade, não o relógio.\n\nSeu corpo sabe parar — ele só precisa que você escute.",
+      "tarefa": "Aplicar o protocolo em uma refeição hoje e anotar as sensações antes e depois.",
+      "lembrete": "Avance quando sentir que comeu com presença — não com culpa."
+    },
+    {
+      "numero": 7,
+      "titulo": "Pré e pós-treino sem drama",
+      "texto": "Treinar sem energia é igual dirigir com o tanque vazio. A gente precisa de combustível, e ele é simples.\n\nPré-treino: algo leve, de fácil digestão — banana com pasta de amendoim, iogurte com fruta, pão integral com ovo. Pós-treino: proteína + carboidrato — frango com batata, shake com fruta, peixe com arroz.\n\nSem inventar moda. É sobre constância, não gourmetização. Seu corpo vai te agradecer.",
+      "tarefa": "Aplicar um pré e um pós-treino hoje e observar sua energia.",
+      "lembrete": "Se sentir diferença, registra — esse é o tipo de progresso que não aparece na balança."
+    },
+    {
+      "numero": 8,
+      "titulo": "Consolidando: três hábitos pra levar pra vida",
+      "texto": "Chegamos ao final dessa fase, mas agora vem a parte mais importante: escolher o que fica. Não quero que você saia daqui com dez regras. Quero três hábitos sólidos.\n\nOlhe pra tudo o que fez até agora — o prato 50/25/25, a água, o lanche, o ritmo das refeições, o pré e pós-treino — e escolha três práticas que te fizeram bem.\n\nEsses três serão sua base. O resto, a gente ajusta depois. Hoje, eu só quero que você entenda que o sucesso está no simples, no repetido, no sustentável.",
+      "tarefa": "Definir 3 hábitos que funcionaram e praticá-los por dois dias seguidos.",
+      "lembrete": "Esses hábitos serão seu ponto de partida na próxima etapa. Quando estiver firme, você sobe de nível."
+    }
+  ]
+}
