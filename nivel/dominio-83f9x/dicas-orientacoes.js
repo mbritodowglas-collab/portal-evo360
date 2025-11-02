@@ -60,7 +60,6 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return Math.floor((B - A) / 86400000);
     }
     const LIBERADO = Math.max(1, Math.min(MAX_DAYS, daysBetweenLocal(startISO, todayLocalISO()) + 1));
-    // -----------------------------------------------
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
@@ -82,12 +81,13 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
-    // pega último dia visto; se houver novo conteúdo liberado, avança sozinho
     let day = LS.get(VIEW_KEY, LIBERADO);
+
+    // avanço automático para o dia liberado atual (sem desbloquear futuro)
     if (day < LIBERADO) { day = LIBERADO; LS.set(VIEW_KEY, day); }
 
     function render() {
-      const cap = Math.max(1, LIBERADO);   // bloqueia o futuro
+      const cap = Math.max(1, LIBERADO); // bloqueia futuro
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
@@ -259,4 +259,3 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   });
   calc();
 })();
-```0
