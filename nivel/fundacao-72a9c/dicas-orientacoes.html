@@ -23,7 +23,6 @@
     .card p, .card small{overflow-wrap:anywhere;word-break:break-word;}
   </style>
 </head>
-
 <body class="layout-with-sidebar">
   <aside class="sidebar" aria-label="Navegação do Nível Fundação">
     <div class="sb-header">
@@ -44,6 +43,7 @@
   <main class="content">
     <header class="banner-full" style="background-image:url('../../assets/img/hub/banner-fundacao-hero.jpg')" aria-hidden="true"></header>
 
+    <!-- Dica do dia (drip) -->
     <section class="card" id="dica-dia">
       <h2>Dica & orientação do dia</h2>
       <div class="muted" id="dica-meta">Dia —</div>
@@ -55,6 +55,7 @@
       <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
     </section>
 
+    <!-- Calculadora: Karvonen -->
     <section class="card">
       <h2>Calculadoras</h2>
       <div class="tabs">
@@ -79,6 +80,7 @@
       </div>
     </section>
 
+    <!-- Módulo livre · Orientação nutricional (8 aulas) -->
     <section class="card" id="modulo-nutri">
       <h2>Orientação nutricional — Fundação (módulo livre)</h2>
       <p class="mini">
@@ -90,6 +92,7 @@
         <em>assim que aplicar</em> a orientação da aula atual no seu dia a dia.
       </div>
 
+      <!-- Fallback fixo -->
       <ol id="aulas-fallback">
         <li><strong>Aula 1 — Prato base 50/25/25</strong><br>Monte 1 refeição/dia com 50% vegetais, 25% proteína magra, 25% carboidrato integral.</li>
         <li><strong>Aula 2 — Hidratação simples</strong><br>Defina um alvo diário e distribua em 4 “checkpoints”.</li>
@@ -101,6 +104,7 @@
         <li><strong>Aula 8 — Rotina sustentável</strong><br>Escolha 3 hábitos que mais funcionaram e mantenha.</li>
       </ol>
 
+      <!-- Contêiner dinâmico -->
       <div id="lista-aulas" style="display:none"></div>
       <small class="muted">Dica prática: registre pequenas vitórias e celebre consistência, não perfeição.</small>
     </section>
@@ -111,9 +115,11 @@
     window.DATA_DICAS = "../../data/fundacao.json?cb=" + Date.now();
   </script>
 
+  <!-- Ordem mantida -->
   <script src="../../assets/js/drip.js?v=21" defer></script>
-  <script src="./dicas-orientacoes.js?v=21.1" defer></script>
+  <script src="./dicas-orientacoes.js?v=21" defer></script>
 
+  <!-- Loader das aulas (não interfere no resto) -->
   <script>
   (async function carregarAulasLivres(){
     try{
