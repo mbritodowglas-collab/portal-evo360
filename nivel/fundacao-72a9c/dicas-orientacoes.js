@@ -1,6 +1,6 @@
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (robusto, v24)
+// Página: Dicas e Orientações (robusto, v24 + patches)
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -103,7 +103,8 @@ function cacheBust(url){
     let day = LS.get(VIEW_KEY, todayIdx);
 
     function render() {
-      const cap = Math.max(1, todayIdx);         // não passa do liberado hoje
+      // PATCH: capa o liberado também pelo tamanho real dos dados
+      const cap = Math.min(Math.max(1, todayIdx), data.length);
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
@@ -171,49 +172,60 @@ function cacheBust(url){
 
 // ---------- Calculadora · Karvonen ----------
 (function karvonen() {
-  const idade = $('#k_idade');
-  const fCR   = $('#k_fcr');
-  const out   = $('#k_out');
-  const table = $('#k_table');
-  const btn   = $('#k_calcBtn');
-  const clr   = $('#k_clearBtn');
-  if (!idade || !fCR || !out || !table || !btn || !clr) return;
+  try {
+    const idade = $('#k_idade');
+    const fCR   = $('#k_fcr');
+    const out   = $('#k_out');
+    const table = $('#k_table');
+    const btn   = $('#k_calcBtn');
+    const clr   = $('#k_clearBtn');
+    if (!idade || !fCR || !out || !table || !btn || !clr) return;
 
-  const karv = (fcMax, fcRep, frac) => Math.round(((fcMax - fcRep) * frac) + fcRep);
-  const tabela = (fcMax, fcRep) => {
-    const linhas = [];
-    for (let pct = 50; pct <= 80; pct += 5) {
-      const alvo = karv(fcMax, fcRep, pct/100);
-      linhas.push(`<div class="row" style="justify-content:space-between"><span>${pct}% da FC de reserva</span><strong>${alvo} bpm</strong></div>`);
+    const karv = (fcMax, fcRep, frac) => Math.round(((fcMax - fcRep) * frac) + fcRep);
+    const tabela = (fcMax, fcRep) => {
+      const linhas = [];
+      for (let pct = 50; pct <= 80; pct += 5) {
+        const alvo = karv(fcMax, fcRep, pct/100);
+        linhas.push(
+          `<div class="row" style="justify-content:space-between">
+             <span>${pct}% da FC de reserva</span><strong>${alvo} bpm</strong>
+           </div>`
+        );
+      }
+      return linhas.join('');
+    };
+
+    function calcular() {
+      const a = +idade.value || 0;
+      const r = +fCR.value   || 0;
+      if (a <= 0 || r <= 0) {
+        out.textContent = 'Informe idade e FC de repouso.';
+        table.innerHTML = '';
+        return;
+      }
+      const fcMax = 220 - a;
+      const alvo50 = karv(fcMax, r, 0.50);
+      const alvo65 = karv(fcMax, r, 0.65);
+      out.innerHTML = `FC máx. estimada: <strong>${fcMax} bpm</strong><br>
+                       <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>`;
+      table.innerHTML = tabela(fcMax, r);
     }
-    return linhas.join('');
-  };
 
-  function calcular() {
-    const a = +idade.value || 0;
-    const r = +fCR.value   || 0;
-    if (a <= 0 || r <= 0) {
-      out.textContent = 'Informe idade e FC de repouso.';
+    function limpar() {
+      idade.value = '';
+      fCR.value   = '';
+      out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
       table.innerHTML = '';
-      return;
     }
-    const fcMax = 220 - a;
-    const alvo50 = karv(fcMax, r, 0.50);
-    const alvo65 = karv(fcMax, r, 0.65);
-    out.innerHTML = `FC máx. estimada: <strong>${fcMax} bpm</strong><br><span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>`;
-    table.innerHTML = tabela(fcMax, r);
-  }
 
-  function limpar() {
-    idade.value = '';
-    fCR.value   = '';
-    out.textContent = 'Informe idade e FC de repouso e clique em Calcular.';
-    table.innerHTML = '';
+    btn.addEventListener('click', calcular);
+    clr.addEventListener('click', limpar);
+    [idade, fCR].forEach(el => el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); calcular(); }
+    }));
+  } catch (err) {
+    console.warn('[Fundação/Karvonen] erro:', err);
   }
-
-  btn.addEventListener('click', calcular);
-  clr.addEventListener('click', limpar);
-  [idade, fCR].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calcular(); }}));
 })();
 
 // ---------- Calculadora · TMB ----------
@@ -232,7 +244,8 @@ function cacheBust(url){
     const s = (sex.value || 'f').toLowerCase();
     if (p > 0 && h > 0 && i > 0) {
       const base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
-      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+      out.innerHTML = `Sua TMB estimada: <strong>${base} kcal/dia</strong><br>
+                       <span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
     } else {
       out.textContent = 'Preencha peso, altura e idade.';
     }
