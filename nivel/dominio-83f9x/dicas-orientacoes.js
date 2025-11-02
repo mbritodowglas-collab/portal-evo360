@@ -1,5 +1,5 @@
 // ============================
-// EVO360 · Fundação
+// EVO360 · Domínio
 // Página: Dicas e Orientações (JS completo)
 // ============================
 
@@ -10,7 +10,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
-    const LEVEL_ID = window.NIVEL || 'fundacao-72a9c';
+    const LEVEL_ID = window.NIVEL || 'dominio-83f9x';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
     // pode não existir se drip.js não carregar, por isso o try/catch
@@ -43,13 +43,10 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return;
     }
 
-    // Limite real de dias (até 60) e índice do dia calculado APÓS saber o tamanho
+    // Limite real de dias (até 60)
     const MAX_DAYS = Math.min(60, data.length);
-    const todayIdx = (typeof Drip !== 'undefined')
-      ? Drip.getTodayIndex(startISO, MAX_DAYS)
-      : 1;
 
-    // --------- índice por data LOCAL (sem UTC) — patch mínimo ---------
+    // --------- índice por data LOCAL (sem UTC) ---------
     function todayLocalISO(){
       const d = new Date();
       const y = d.getFullYear();
@@ -63,7 +60,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       return Math.floor((B - A) / 86400000);
     }
     const LIBERADO = Math.max(1, Math.min(MAX_DAYS, daysBetweenLocal(startISO, todayLocalISO()) + 1));
-    // ------------------------------------------------------------------
+    // -----------------------------------------------
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
@@ -85,15 +82,12 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
-    // default baseado no liberado por data local
+    // pega último dia visto; se houver novo conteúdo liberado, avança sozinho
     let day = LS.get(VIEW_KEY, LIBERADO);
-
-    // auto-avanço: se houver novo conteúdo liberado, já abre nele
     if (day < LIBERADO) { day = LIBERADO; LS.set(VIEW_KEY, day); }
 
     function render() {
-      // bloqueia futuro: só até o liberado localmente
-      const cap = Math.max(1, LIBERADO);
+      const cap = Math.max(1, LIBERADO);   // bloqueia o futuro
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
