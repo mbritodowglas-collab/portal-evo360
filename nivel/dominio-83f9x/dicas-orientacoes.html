@@ -1,201 +1,12 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EVO360 · Domínio · Dicas e Orientações</title>
-  <meta name="robots" content="noindex,nofollow">
-  <!-- Layout base -->
-  <link rel="stylesheet" href="../../assets/css/base.css?v=14">
-  <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=14">
-  <meta name="theme-color" content="#4b0b16">
-  <style>
-    .content p, .content li { text-align: justify; }
-    .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1318;cursor:pointer;color:#ccc;transition:.3s}
-    .panel{display:none}
-    .panel.active{display:block}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:780px){ .grid-2{grid-template-columns:1fr} }
-    .calc-out{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0f1318}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    #dica-meta{ display:block; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.35; }
-    #dica-texto{ margin-top:6px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.55; }
-    .card p, .card small{ overflow-wrap:anywhere; word-break:break-word; }
-    :root{ --ruby:#ff5e5e; }
-    .content h2, .card h2{ color:var(--ruby)!important; }
-    .tab.active{ border-color:rgba(255,94,94,.35)!important; color:var(--ruby)!important; background:#2a0d0d!important; }
-    .btn:not(.ghost){ background:var(--ruby)!important; border-color:transparent!important; color:#fff!important; }
-    .btn.ghost{ background:transparent!important; border:1px solid var(--ruby)!important; color:var(--ruby)!important; }
-    .btn.ghost:hover{ background:var(--ruby)!important; color:#fff!important; }
-    .meal h3 { color:var(--ruby); }
-  </style>
-</head>
-<body class="layout-with-sidebar">
-  <aside class="sidebar">
-    <div class="sb-header">
-      <img src="../../assets/img/logo.svg" class="logo" alt="EVO360">
-      <div class="nivel">Nível Domínio</div>
-    </div>
-    <nav class="sb-nav">
-      <a class="sb-item" href="./">Início</a>
-      <a class="sb-item active" href="./dicas-orientacoes.html">Dicas e Orientações</a>
-      <a class="sb-item" href="./plano.html">Tarefas e Neuro-Hábito</a>
-      <a class="sb-item" href="./habitos.html">Hábitos e Recompensas</a>
-      <a class="sb-item" href="./praticas.html">Práticas Mentais</a>
-      <a class="sb-item" href="./suporte.html">Suporte</a>
-    </nav>
-    <div class="sb-footer"><div class="quote">Você está dominando.</div><div class="ver">v1.0 · © Bella Prime</div></div>
-  </aside>
-
-  <main class="content">
-    <header class="banner-full" style="background:url('../../assets/img/hub/banner-dominio-hero.jpg?v=22') center/cover no-repeat!important;" aria-hidden="true"></header>
-
-    <!-- DICA -->
-    <section class="card" id="dica-dia">
-      <h2>Dica & orientação do dia</h2>
-      <div class="muted" id="dica-meta">Dia —</div>
-      <p id="dica-texto">Carregando…</p>
-      <div class="row" style="margin-top:12px">
-        <button class="btn ghost" id="btnPrev">Anterior</button>
-        <button class="btn" id="btnNext">Próxima</button>
-      </div>
-      <small class="muted">Você pode rever dias anteriores. Dicas futuras ficam bloqueadas.</small>
-    </section>
-
-    <!-- CALCULADORAS -->
-    <section class="card">
-      <h2>Calculadoras</h2>
-      <div class="tabs">
-        <button class="tab active" data-tab="karvonen">FC de Reserva (Karvonen)</button>
-        <button class="tab" data-tab="tmb">TMB (Mifflin-St Jeor)</button>
-      </div>
-
-      <div class="panel active" id="panel-karvonen">
-        <div class="grid-2">
-          <label>Idade (anos)<br><input type="number" id="k_idade" min="10" max="100" placeholder="ex: 35"></label>
-          <label>FC de repouso (bpm)<br><input type="number" id="k_fcr" min="30" max="120" placeholder="ex: 65"></label>
-          <div class="small muted" style="align-self:end">Sugestão Domínio: 70–85% (cardio intenso)</div>
-        </div>
-        <div class="calc-out" id="k_out">Informe idade e FC de repouso e clique em Calcular.</div>
-        <div class="row-actions">
-          <button class="btn" id="k_calcBtn">Calcular</button>
-          <button class="btn ghost" id="k_clearBtn">Limpar</button>
-        </div>
-        <div class="calc-out" id="k_table"></div>
-      </div>
-
-      <div class="panel" id="panel-tmb">
-        <div class="grid-2">
-          <label>Peso (kg)<br><input type="number" id="t_peso" step="0.1"></label>
-          <label>Altura (cm)<br><input type="number" id="t_altura"></label>
-          <label>Idade (anos)<br><input type="number" id="t_idade"></label>
-          <label>Sexo<br><select id="t_sexo"><option value="f">Feminino</option><option value="m">Masculino</option></select></label>
-        </div>
-        <div class="calc-out" id="t_out">Preencha os campos para calcular sua TMB.</div>
-        <small class="muted">A TMB é o gasto energético em repouso — autoconhecimento, não plano alimentar.</small>
-      </div>
-    </section>
-
-    <!-- AJUSTE CALÓRICO -->
-    <section class="card" id="ajuste-calorico">
-      <h2>Ajuste calórico personalizado</h2>
-      <p>Escolha o fator de atividade e o objetivo. O cálculo abaixo gera automaticamente seu plano base:</p>
-      <div class="row">
-        <label>Atividade:
-          <select id="pf_atividade">
-            <option value="1.375">Leve</option>
-            <option value="1.55" selected>Moderada</option>
-            <option value="1.725">Alta</option>
-            <option value="1.9">Atleta</option>
-          </select>
-        </label>
-        <label>Objetivo:
-          <select id="pf_objetivo">
-            <option value="-0.10">Déficit (10%)</option>
-            <option value="0">Manutenção</option>
-            <option value="0.10" selected>Superávit (10%)</option>
-          </select>
-        </label>
-      </div>
-      <div class="grid">
-        <div class="kv"><span>TMB</span><b id="pf_tmb">— kcal</b></div>
-        <div class="kv"><span>TDEE</span><b id="pf_tdee">— kcal</b></div>
-        <div class="kv"><span>Alvo diário</span><b id="pf_kcal">— kcal</b></div>
-        <div class="kv"><span>Proteína</span><b id="pf_prot">— g</b></div>
-        <div class="kv"><span>Gorduras</span><b id="pf_gord">— g</b></div>
-        <div class="kv"><span>Carboidratos</span><b id="pf_carb">— g</b></div>
-      </div>
-      <small class="muted">Ajuste fino: se o peso cair mais de 1kg/semana, adicione 100 kcal; se subir mais de 0,5kg/semana, reduza 100 kcal.</small>
-    </section>
-
-    <!-- PLANO ALIMENTAR -->
-    <section class="card" id="plano-alimentar">
-      <h2>Plano alimentar — Domínio</h2>
-      <p class="mini">
-        Nesta fase, o corpo precisa de energia de qualidade e consistência nutricional para sustentar força, firmeza e rendimento.
-      </p>
-
-      <div class="grid-2">
-        <div class="meal">
-          <h3>Café da manhã</h3>
-          <p>Omelete com legumes + fruta + aveia.</p>
-          <div class="why"><em>Proteína:</em> mantém saciedade e inicia o metabolismo.</div>
-          <div class="why"><em>Carboidrato:</em> fornece energia e melhora foco mental.</div>
-          <div class="why"><em>Gordura boa:</em> estabiliza os níveis hormonais.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Lanche da manhã</h3>
-          <p>Iogurte natural + castanhas + fruta pequena.</p>
-          <div class="why"><em>Função:</em> evitar quedas de energia e estabilizar a fome.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Almoço</h3>
-          <p>Frango grelhado + arroz integral + salada colorida + azeite.</p>
-          <div class="why"><em>Proteína:</em> suporte à recuperação muscular.</div>
-          <div class="why"><em>Carboidrato:</em> repõe energia do treino matinal.</div>
-          <div class="why"><em>Vegetais:</em> controlam inflamação e otimizam digestão.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Lanche pré-treino</h3>
-          <p>Banana + pasta de amendoim + pão integral.</p>
-          <div class="why"><em>Função:</em> energia rápida e sustentada.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Pós-treino</h3>
-          <p>Shake proteico + fruta ou refeição sólida (frango + batata).</p>
-          <div class="why"><em>Função:</em> regenerar fibras musculares e reduzir fadiga.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Jantar</h3>
-          <p>Peixe + vegetais cozidos + azeite.</p>
-          <div class="why"><em>Função:</em> leve, nutritivo e favorece recuperação noturna.</div>
-        </div>
-
-        <div class="meal">
-          <h3>Ceia (opcional)</h3>
-          <p>Iogurte + sementes de chia ou caseína.</p>
-          <div class="why"><em>Função:</em> evita catabolismo durante o sono.</div>
-        </div>
-      </div>
-
-      <p class="mini" style="margin-top:10px">
-        <strong>Dica prática:</strong> mantenha proteína em todas as refeições e varie fontes de carboidrato e vegetais a cada semana.
-      </p>
-    </section>
-  </main>
-
-  <script>
+<script>
     window.NIVEL = "dominio-83f9x";
-    window.DATA_DICAS = "../../data/dominio.json?v=22"; /* única mudança pra derrubar cache */
+    window.DATA_DICAS = "../../data/dominio.json?v=22";
   </script>
   <script src="../../assets/js/drip.js?v=22" defer></script>
-  <script src="./dicas-orientacoes.js?v=22" defer></script>
+  <!-- ADICIONADO: cache-bust do JS da página -->
+  <script src="./dicas-orientacoes.js?v=23" defer></script>
 
+  <!-- Inline utilitário (já existia) -->
   <script>
   (function(){
     const $ = (s,r=document)=>r.querySelector(s);
@@ -216,7 +27,93 @@
       outProt.textContent=prot+' g'; outGord.textContent=gord+' g'; outCarb.textContent=carb+' g';
     }
     ['input','change'].forEach(ev=>[peso,altura,idade,sexo,fa,obj].forEach(el=>el?.addEventListener(ev,recalc)));
+    // ADICIONADO: primeiro cálculo para não parecer "inativo"
+    recalc();
   })();
   </script>
-</body>
-</html>
+
+  <!-- ADICIONADO: fallback ultra-leve para abas e calculadoras -->
+  <script>
+  (function(){
+    try {
+      // Se as abas não foram ligadas pelo JS externo, liga aqui.
+      const tabs = document.querySelectorAll('.tab');
+      const panels = document.querySelectorAll('.panel');
+      if (tabs.length && panels.length) {
+        const active = document.querySelector('.tab.active') || tabs[0];
+        const act = (tb)=>{
+          tabs.forEach(x=>x.classList.remove('active'));
+          panels.forEach(p=>p.classList.remove('active'));
+          tb.classList.add('active');
+          const key = tb.dataset.tab;
+          const panel = document.querySelector('#panel-' + key) || panels[0];
+          panel.classList.add('active');
+        };
+        // Só adiciona se ainda não houver listener
+        tabs.forEach(tb=>{
+          tb._bpBound || tb.addEventListener('click', ()=>act(tb));
+          tb._bpBound = true;
+        });
+        act(active);
+      }
+
+      // Se os botões Karvonen não tiverem listeners, instala aqui.
+      const kId = document.querySelector('#k_idade');
+      const kFr = document.querySelector('#k_fcr');
+      const kOut= document.querySelector('#k_out');
+      const kTbl= document.querySelector('#k_table');
+      const kBtn= document.querySelector('#k_calcBtn');
+      const kClr= document.querySelector('#k_clearBtn');
+      if (kId && kFr && kOut && kTbl && kBtn && kClr && !kBtn._bpBound) {
+        const karv = (fcMax, fcRep, frac)=> Math.round(((fcMax - fcRep)*frac)+fcRep);
+        const build = (fcMax, fcRep)=>{
+          const rows=[];
+          for(let pct=50;pct<=80;pct+=5){
+            rows.push(
+              `<div class="row" style="justify-content:space-between">
+                <span>${pct}% da FC de reserva</span><strong>${karv(fcMax,fcRep,pct/100)} bpm</strong>
+               </div>`
+            );
+          }
+          return rows.join('');
+        };
+        const calc=()=>{
+          const a=+kId.value||0, r=+kFr.value||0;
+          if(a<=0||r<=0){ kOut.textContent='Informe idade e FC de repouso.'; kTbl.innerHTML=''; return; }
+          const fcMax = 220 - a;
+          const alvo50 = karv(fcMax,r,0.50), alvo65 = karv(fcMax,r,0.65);
+          kOut.innerHTML = `FC máx. estimada: <strong>${fcMax} bpm</strong><br><span class="small muted">Faixa sugerida (Fundação): ${alvo50}–${alvo65} bpm</span>`;
+          kTbl.innerHTML = build(fcMax, r);
+        };
+        const clear=()=>{ kId.value=''; kFr.value=''; kOut.textContent='Informe idade e FC de repouso e clique em Calcular.'; kTbl.innerHTML=''; };
+        kBtn.addEventListener('click', calc);
+        kClr.addEventListener('click', clear);
+        [kId,kFr].forEach(el=>el.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); }}));
+        kBtn._bpBound = true;
+      }
+
+      // Se a TMB não tiver listeners, instala aqui e recalcula.
+      const tP=document.querySelector('#t_peso');
+      const tA=document.querySelector('#t_altura');
+      const tI=document.querySelector('#t_idade');
+      const tS=document.querySelector('#t_sexo');
+      const tOut=document.querySelector('#t_out');
+      if (tP && tA && tI && tS && tOut && !tP._bpBound) {
+        const calc=()=>{
+          const p=+tP.value||0, h=+tA.value||0, i=+tI.value||0, s=(tS.value||'f');
+          if (p>0 && h>0 && i>0) {
+            const base=Math.round((10*p)+(6.25*h)-(5*i)+(s==='f'?-161:5));
+            tOut.innerHTML=`Sua TMB estimada: <strong>${base} kcal/dia</strong><br><span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>`;
+          } else {
+            tOut.textContent='Preencha peso, altura e idade.';
+          }
+        };
+        ['input','change'].forEach(ev=>[tP,tA,tI,tS].forEach(el=>el.addEventListener(ev,calc)));
+        calc();
+        tP._bpBound = true;
+      }
+    } catch(e) {
+      console.warn('fallback tools:', e);
+    }
+  })();
+  </script>
