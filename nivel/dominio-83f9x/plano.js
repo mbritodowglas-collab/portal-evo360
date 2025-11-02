@@ -156,6 +156,9 @@ if (typeof window.Drip === 'undefined') {
     };
 
     let semDay = qsWeek || LS.get(SEM_VIEW_KEY, semIdx);
+    // >>> avanço automático para a semana liberada (não sobrescreve se veio via querystring)
+    if (!qsWeek && semDay < semIdx) { semDay = semIdx; LS.set(SEM_VIEW_KEY, semDay); }
+    // <<<
 
     function renderSem() {
       if (!semanais.length) {
@@ -198,6 +201,9 @@ if (typeof window.Drip === 'undefined') {
 
     const MIC_VIEW_KEY = `drip_view_${LEVEL_ID}_${MIC_ID}`;
     let micDay = qsMicro || LS.get(MIC_VIEW_KEY, micIdx);
+    // >>> avanço automático para o bloco liberado (não sobrescreve se veio via querystring)
+    if (!qsMicro && micDay < micIdx) { micDay = micIdx; LS.set(MIC_VIEW_KEY, micDay); }
+    // <<<
 
     function renderMic() {
       if (!micros.length) {
