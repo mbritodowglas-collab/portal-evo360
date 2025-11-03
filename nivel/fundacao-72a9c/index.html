@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="../../assets/css/tema-fundacao.css?v=17">
   <meta name="theme-color" content="#0b0d10">
 
+  <!-- PWA (nível Fundação) -->
+  <link rel="manifest" href="./manifest.webmanifest">
+
   <style>
     /* ===== Ajustes locais (sem mudar estrutura) ===== */
 
@@ -142,7 +145,7 @@
 
     <!-- HUB DE CARDS -->
     <section class="tiles tiles-modern" aria-label="Atalhos">
-      <!-- CARD 1 (comentário REMOVIDO dos atributos) -->
+      <!-- CARD 1 -->
       <button type="button" class="tile"
         style="background: url('../../assets/img/hub/tile-tarefas.jpg') center 40% / cover no-repeat !important;"
         onclick="location.href='./dicas-orientacoes.html'">
@@ -185,5 +188,16 @@
   </main>
 
   <script> window.NIVEL = "fundacao-72a9c"; </script>
+
+  <!-- Registro do Service Worker do nível -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .catch(err => console.warn('SW falhou:', err));
+      });
+    }
+  </script>
 </body>
 </html>
+```0
