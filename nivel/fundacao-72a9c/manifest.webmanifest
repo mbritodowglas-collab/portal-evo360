@@ -1,0 +1,13 @@
+{
+  "name": "EVO360 · Fundação",
+  "short_name": "Fundação",
+  "start_url": "./dicas-orientacoes.html?app=1",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "icons": [
+    { "src": "../../assets/img/pwa/fundacao-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../../assets/img/pwa/fundacao-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
