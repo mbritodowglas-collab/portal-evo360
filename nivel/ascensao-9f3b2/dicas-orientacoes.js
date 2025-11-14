@@ -8,138 +8,182 @@
   function $(s, r) { return (r || document).querySelector(s); }
   function $all(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 
+  // ---- DRIP shim (fallback local) ----
+  (function ensureDrip(){
+    if (typeof window.Drip !== 'undefined') return;
+
+    function localISO(d){
+      d = d || new Date();
+      var y = d.getFullYear();
+      var m = ('0'+(d.getMonth()+1)).slice(-2);
+      var dd = ('0'+d.getDate()).slice(-2);
+      return y + '-' + m + '-' + dd;
+    }
+
+    function parseISO(s){ return new Date(s + 'T12:00:00'); }
+    function todayISO(){ return localISO(new Date()); }
+    function daysBetween(a,b){
+      return Math.floor((parseISO(b) - parseISO(a)) / 86400000);
+    }
+
+    var LS = {
+      get: function(k, d){
+        try {
+          var v = localStorage.getItem(k);
+          return v ? JSON.parse(v) : d;
+        } catch(_) {
+          return d;
+        }
+      },
+      set: function(k, v){
+        try {
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch(_) {}
+      }
+    };
+
+    window.Drip = {
+      ensureStart: function(levelId, streamId){
+        var KEY = 'drip_start_' + levelId + '_' + streamId;
+        var start = LS.get(KEY, null);
+        if (!(/^\d{4}-\d{2}-\d{2}$/.test(start || ''))) {
+          start = todayISO();
+          LS.set(KEY, start);
+        }
+        return start;
+      },
+      getTodayIndex: function(startISO, maxDays){
+        if (!(/^\d{4}-\d{2}-\d{2}$/.test(startISO || ''))) {
+          startISO = todayISO();
+        }
+        var idx = daysBetween(startISO, todayISO()) + 1;
+        if (idx < 1) idx = 1;
+        if (idx > maxDays) idx = maxDays;
+        return idx;
+      }
+    };
+  })();
+
+  function cacheBust(url){
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set('cb', Date.now());
+      return u.href;
+    } catch {
+      return url;
+    }
+  }
+
   // ---------- DRIP: Dica do dia ----------
   (function dicaDrip() {
     try {
       var LEVEL_ID = (window && window.NIVEL) || 'ascensao-9f3b2';
       var DRIP_ID  = 'card1_dicas_orientacoes';
 
-      // startISO: usa Drip se existir; senão usa hoje em ISO local (aaaa-mm-dd)
-      var startISO;
-      if (typeof Drip !== 'undefined' && Drip && typeof Drip.ensureStart === 'function') {
-        startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
-      } else {
-        startISO = (function todayISO(){
-          var d=new Date(), y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
-          return y+'-'+m+'-'+dd;
-        })();
-      }
+      var startISO = window.Drip.ensureStart(LEVEL_ID, DRIP_ID);
 
-      // Caminho do JSON
+      // Caminho do JSON (igual ao Fundação, mas para ascensão)
       var dataPathBase = (window && window.DATA_DICAS) || '../../data/ascensao.json';
-      var dataPath = dataPathBase + (dataPathBase.indexOf('?')>-1 ? '&' : '?') + 'cb=' + Date.now();
-
-      function loadJSON(url){
-        return fetch(url, { cache:'no-store' })
-          .then(function(r){
-            if(!r.ok) throw new Error('HTTP '+r.status);
-            return r.text(); // lê como texto primeiro pra diagnosticar JSON quebrado
-          })
-          .then(function(txt){
-            try { return JSON.parse(txt); }
-            catch(parseErr){
-              console.warn('[Dica] JSON inválido em', url, parseErr);
-              // expõe diagnóstico na UI
-              var meta = $('#dica-meta'), texto=$('#dica-texto');
-              if(meta) meta.textContent = 'Dia —';
-              if(texto) texto.textContent = 'Não foi possível ler o JSON (formatação inválida).';
-              return null;
-            }
-          })
-          .catch(function(err){
-            console.warn('[Dica] Falha ao carregar JSON:', err);
-            var meta = $('#dica-meta'), texto=$('#dica-texto');
-            if(meta) meta.textContent = 'Dia —';
-            if(texto) texto.textContent = 'Dica indisponível (erro de rede/arquivo).';
-            return null;
-          });
-      }
+      var dataPath = cacheBust(dataPathBase);
 
       function coerceTips(raw){
-        // Aceita: array puro; {dicas:[...]}; {items:[...]}; {tips:[...]}.
+        // Aceita array direto ou {dicas:[...]}
         if (!raw) return [];
         if (Array.isArray(raw)) return raw;
         if (raw.dicas && Array.isArray(raw.dicas)) return raw.dicas;
-        if (raw.items && Array.isArray(raw.items)) return raw.items;
-        if (raw.tips  && Array.isArray(raw.tips))  return raw.tips;
         return [];
       }
 
-      function getTodayIndexCompat(startISO, maxDays){
-        // Usa Drip se existir; senão calcula diferença de dias local
-        if (typeof Drip !== 'undefined' && Drip && typeof Drip.getTodayIndex === 'function') {
-          return Drip.getTodayIndex(startISO, maxDays);
-        }
-        function parseISO(s){ return new Date(s+'T12:00:00'); }
-        function todayISO(){
-          var d=new Date(), y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
-          return y+'-'+m+'-'+dd;
-        }
-        var delta = Math.floor((parseISO(todayISO()) - parseISO(startISO)) / 86400000);
-        var idx = Math.min(maxDays, delta+1);
-        return Math.max(1, idx);
-      }
+      fetch(dataPath, { cache:'no-store' })
+        .then(function(r){
+          if (!r.ok) throw new Error('HTTP '+r.status);
+          return r.json();
+        })
+        .then(function(raw){
+          var data  = coerceTips(raw);
+          var meta  = $('#dica-meta');
+          var texto = $('#dica-texto');
+          var prev  = $('#btnPrev');
+          var next  = $('#btnNext');
 
-      loadJSON(dataPath).then(function(raw){
-        var data = coerceTips(raw);
-
-        var meta  = $('#dica-meta');
-        var texto = $('#dica-texto');
-        var prev  = $('#btnPrev');
-        var next  = $('#btnNext');
-
-        if (!data || !data.length) {
-          if (meta)  meta.textContent  = 'Dia —';
-          if (texto) texto.textContent = 'Nenhuma dica encontrada. Verifique /data/ascensao.json.';
-          return;
-        }
-
-        var MAX_DAYS = Math.min(60, data.length);
-        var todayIdx = getTodayIndexCompat(startISO, MAX_DAYS);
-
-        // sempre começa no dia liberado (sem localStorage)
-        var day = todayIdx;
-
-        function rotuloCategoria(cat){
-          if (cat === 'treino') return 'Treino';
-          if (cat === 'nutricao') return 'Nutrição';
-          if (cat === 'mentalidade') return 'Mentalidade';
-          return 'Dica';
-        }
-
-        function render(){
-          var cap = Math.max(1, todayIdx);   // trava no dia liberado de hoje
-          if (day < 1) day = 1;
-          if (day > cap) day = cap;
-
-          var item = data[day-1];
-          if (item) {
-            var rot = rotuloCategoria(item.categoria);
-            if (meta) meta.textContent = 'Dia '+day+' de '+MAX_DAYS+' — '+rot+(item.titulo ? ' · '+item.titulo : '');
-
-            var blocoHTML = '';
-            if (item.conceito || item.orientacao) {
-              blocoHTML += '<div class="dica-bloco">';
-              if (item.conceito)   blocoHTML += '<div class="dica-label">Conceito</div><p style="margin:0 0 10px">'+item.conceito+'</p>';
-              if (item.orientacao) blocoHTML += '<div class="dica-label">Orientação</div><p style="margin:0">'+item.orientacao+'</p>';
-              blocoHTML += '</div>';
-            } else {
-              blocoHTML = '<p style="margin:0">'+(item.texto || '')+'</p>';
-            }
-            if (texto) texto.innerHTML = blocoHTML;
-          } else {
-            if (meta)  meta.textContent  = 'Dia '+day+' de '+MAX_DAYS;
-            if (texto) texto.textContent = 'Dica indisponível.';
+          if (!data || !data.length) {
+            if (meta)  meta.textContent  = 'Dia —';
+            if (texto) texto.textContent = 'Nenhuma dica encontrada. Verifique /data/ascensao.json.';
+            return;
           }
 
-          if (prev) prev.disabled = (day <= 1);
-          if (next) next.disabled = (day >= Math.max(1,todayIdx));
-        }
+          var MAX_DAYS = Math.min(60, data.length);
+          var todayIdx = window.Drip.getTodayIndex(startISO, MAX_DAYS);
 
-        if (prev) prev.addEventListener('click', function(){ day--; render(); });
-        if (next) next.addEventListener('click', function(){ day++; render(); });
-        render();
-      });
+          // sempre começa no dia liberado (sem guardar dia visual em localStorage)
+          var day = todayIdx;
+
+          function rotuloCategoria(cat){
+            if (cat === 'treino')      return 'Treino';
+            if (cat === 'nutricao')    return 'Nutrição';
+            if (cat === 'mentalidade') return 'Mentalidade';
+            return 'Dica';
+          }
+
+          function render(){
+            var cap = Math.min(Math.max(1, todayIdx), data.length);
+            if (day < 1)   day = 1;
+            if (day > cap) day = cap;
+
+            var item = data[day-1];
+
+            if (item) {
+              var rot = rotuloCategoria(item.categoria);
+              if (meta) {
+                meta.textContent =
+                  'Dia ' + day + ' de ' + MAX_DAYS + ' — ' + rot +
+                  (item.titulo ? ' · ' + item.titulo : '');
+              }
+
+              var blocoHTML;
+              if (item.conceito || item.orientacao) {
+                blocoHTML = '<div class="dica-bloco">';
+                if (item.conceito) {
+                  blocoHTML += '<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div>' +
+                               '<p style="margin:0 0 10px">'+ item.conceito +'</p>';
+                }
+                if (item.orientacao) {
+                  blocoHTML += '<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div>' +
+                               '<p style="margin:0">'+ item.orientacao +'</p>';
+                }
+                blocoHTML += '</div>';
+              } else {
+                blocoHTML = '<p style="margin:0">'+ (item.texto || '') +'</p>';
+              }
+
+              if (texto) {
+                texto.innerHTML          = blocoHTML;
+                texto.style.whiteSpace   = 'normal';
+                texto.style.overflowWrap = 'anywhere';
+                texto.style.wordBreak    = 'break-word';
+                texto.style.lineHeight   = '1.6';
+                texto.style.marginTop    = '6px';
+              }
+            } else {
+              if (meta)  meta.textContent  = 'Dia ' + day + ' de ' + MAX_DAYS;
+              if (texto) texto.textContent = 'Dica indisponível.';
+            }
+
+            if (prev) prev.disabled = (day <= 1);
+            if (next) next.disabled = (day >= cap);
+          }
+
+          if (prev) prev.addEventListener('click', function(){ day--; render(); });
+          if (next) next.addEventListener('click', function(){ day++; render(); });
+          render();
+        })
+        .catch(function(err){
+          console.warn('[Ascensão/Drip] erro ao carregar JSON:', err);
+          var meta  = $('#dica-meta');
+          var texto = $('#dica-texto');
+          if (meta)  meta.textContent  = 'Dia —';
+          if (texto) texto.textContent = 'Dica indisponível (erro ao carregar arquivo).';
+        });
     } catch (e) {
       console.warn('drip init falhou:', e);
       var meta  = $('#dica-meta');
@@ -211,7 +255,7 @@
         table.innerHTML = '';
         return;
       }
-      var fcMax = 220 - a;
+      var fcMax  = 220 - a;
       var alvo50 = karvonenTarget(fcMax, r, 0.50);
       var alvo65 = karvonenTarget(fcMax, r, 0.65);
       out.innerHTML =
