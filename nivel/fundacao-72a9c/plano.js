@@ -179,13 +179,8 @@ if (typeof window.Drip === 'undefined') {
     const semPrev = $('#semPrev');
     const semNext = $('#semNext');
 
-    const SEM_VIEW_KEY = `drip_view_${LEVEL_ID}_${SEM_ID}`;
-    const LS = {
-      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
-
-    let semDay = LS.get(SEM_VIEW_KEY, semIdx);
+    // sem VIEW_KEY / LS aqui: sempre abre na semana atual liberada
+    let semDay = semIdx;
 
     function renderSem() {
       if (!Array.isArray(semanais) || semanais.length === 0) {
@@ -215,7 +210,6 @@ if (typeof window.Drip === 'undefined') {
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
       if (semNext) semNext.disabled = (semDay >= cap);
-      LS.set(SEM_VIEW_KEY, semDay);
     }
 
     semPrev?.addEventListener('click', ()=>{ semDay--; renderSem(); });
@@ -229,8 +223,8 @@ if (typeof window.Drip === 'undefined') {
     const micPrev = $('#micPrev');
     const micNext = $('#micNext');
 
-    const MIC_VIEW_KEY = `drip_view_${LEVEL_ID}_${MIC_ID}`;
-    let micDay = LS.get(MIC_VIEW_KEY, micIdx);
+    // também sem VIEW_KEY: sempre abre no bloco atual liberado
+    let micDay = micIdx;
 
     function renderMic() {
       if (!Array.isArray(micros) || micros.length === 0) {
@@ -251,7 +245,6 @@ if (typeof window.Drip === 'undefined') {
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
       if (micNext) micNext.disabled = (micDay >= cap);
-      LS.set(MIC_VIEW_KEY, micDay);
     }
 
     micPrev?.addEventListener('click', ()=>{ micDay--; renderMic(); });
