@@ -139,8 +139,21 @@ if (typeof window.Drip === 'undefined') {
 
     // ---------- Overrides via querystring ----------
     const qs = new URLSearchParams(location.search);
-    const qsWeek = Math.max(1, Math.min(SEM_MAX, +(qs.get('w') || qs.get('week') || 0) || 0));
-    const qsMicro= Math.max(1, Math.min(MIC_MAX, +(qs.get('m') || qs.get('micro')|| 0) || 0));
+
+    function parseQ(keys, max){
+      let raw = null;
+      for (const k of keys){
+        const v = qs.get(k);
+        if (v !== null && v !== '') { raw = v; break; }
+      }
+      if (!raw) return 0;
+      const n = parseInt(raw, 10);
+      if (!Number.isFinite(n) || n <= 0) return 0;
+      return Math.max(1, Math.min(max, n));
+    }
+
+    const qsWeek  = parseQ(['w','week'],  SEM_MAX);
+    const qsMicro = parseQ(['m','micro'], MIC_MAX);
 
     // ---------- Semanais ----------
     const semMeta = $('#sem-meta');
