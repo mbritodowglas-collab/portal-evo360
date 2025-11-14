@@ -169,11 +169,16 @@ if (typeof window.Drip === 'undefined') {
         if (semNext) semNext.disabled = true;
         return;
       }
-      const cap = semIdx;
-      semDay = Math.max(1, Math.min(semDay, cap));
+
+      // cap de navegação (liberado pelo drip)
+      const capNav = semIdx;
+      // total real de semanas (limitado por SEM_MAX)
+      const totalSem = Math.min(SEM_MAX, semanais.length || SEM_MAX);
+
+      semDay = Math.max(1, Math.min(semDay, capNav));
       const item = semanais[semDay - 1] || {};
 
-      semMeta.textContent = `Semana ${semDay} de ${cap}`;
+      semMeta.textContent = `Semana ${semDay} de ${totalSem}`;
       semTit.textContent  = item.titulo || '—';
       semTxt.innerHTML =
         (item.conceito   ? `<div style="margin-bottom:8px">${item.conceito}</div>`   : '') +
@@ -184,7 +189,7 @@ if (typeof window.Drip === 'undefined') {
       if (!semTxt.innerHTML.trim()) semTxt.textContent = '—';
 
       if (semPrev) semPrev.disabled = (semDay <= 1);
-      if (semNext) semNext.disabled = (semDay >= cap);
+      if (semNext) semNext.disabled = (semDay >= capNav);
       LS.set(SEM_VIEW_KEY, semDay);
     }
 
@@ -214,16 +219,21 @@ if (typeof window.Drip === 'undefined') {
         if (micNext) micNext.disabled = true;
         return;
       }
-      const cap = micIdx;
-      micDay = Math.max(1, Math.min(micDay, cap));
+
+      // cap de navegação (até onde o drip liberou)
+      const capNav = micIdx;
+      // total real de microblocos (limitado por MIC_MAX)
+      const totalMic = Math.min(MIC_MAX, micros.length || MIC_MAX);
+
+      micDay = Math.max(1, Math.min(micDay, capNav));
       const item = micros[micDay - 1] || {};
 
-      micMeta.textContent = `Bloco ${micDay} de ${cap}`;
+      micMeta.textContent = `Bloco ${micDay} de ${totalMic}`;
       micTit.textContent  = item.titulo || '—';
       micTxt.textContent  = (item.texto || '').trim() || '—';
 
       if (micPrev) micPrev.disabled = (micDay <= 1);
-      if (micNext) micNext.disabled = (micDay >= cap);
+      if (micNext) micNext.disabled = (micDay >= capNav);
       LS.set(MIC_VIEW_KEY, micDay);
     }
 
