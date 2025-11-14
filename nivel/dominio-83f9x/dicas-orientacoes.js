@@ -29,7 +29,26 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
       }
     }
 
-    const raw = await load(window.DATA_DICAS);
+    // tenta DATA_DICAS se existir; se não, cai para /data e /_data
+    async function loadAny(urls) {
+      for (const u of urls) {
+        const raw = await load(u);
+        if (raw) {
+          console.info('[dominio/dicas] carregado de:', u);
+          return raw;
+        }
+      }
+      return null;
+    }
+
+    const hinted = (typeof window !== 'undefined') ? window.DATA_DICAS : null;
+    const candidates = [
+      hinted,
+      '../../data/dominio.json',
+      '../../_data/dominio.json'
+    ];
+
+    const raw = await loadAny(candidates);
 
     // Aceita _data como array direto OU como { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
