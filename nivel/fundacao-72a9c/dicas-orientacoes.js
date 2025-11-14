@@ -1,6 +1,6 @@
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (robusto, v24 estável)
+// Página: Dicas e Orientações (robusto, v25)
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -72,7 +72,8 @@ function cacheBust(url){
       set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
     };
 
-    let day = LS.get(VIEW_KEY, todayIdx);
+    // >>> Ajuste principal: sempre iniciar no dia atual do drip <<<
+    let day = todayIdx;
 
     function render() {
       const cap = Math.min(Math.max(1, todayIdx), data.length);
