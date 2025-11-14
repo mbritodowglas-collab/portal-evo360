@@ -1,6 +1,6 @@
 // ============================
 // EVO360 · Fundação
-// Página: Dicas e Orientações (robusto, v25)
+// Página: Dicas e Orientações (robusto, v26)
 // ============================
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -9,22 +9,31 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ---- DRIP shim (fallback local) ----
 (function ensureDrip(){
   if (typeof window.Drip !== 'undefined') return;
+
   const localISO = (d=new Date())=>{
-    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+    const y=d.getFullYear(),
+          m=String(d.getMonth()+1).padStart(2,'0'),
+          dd=String(d.getDate()).padStart(2,'0');
     return `${y}-${m}-${dd}`;
   };
-  const parseISO = (s)=> new Date(`${s}T12:00:00`);
-  const todayISO = ()=> localISO(new Date());
+
+  const parseISO   = (s)=> new Date(`${s}T12:00:00`);
+  const todayISO   = ()=> localISO(new Date());
   const daysBetween = (a,b)=> Math.floor((parseISO(b)-parseISO(a))/86400000);
+
   const LS = {
     get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
     set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
   };
+
   window.Drip = {
     ensureStart(levelId, streamId){
       const KEY = `drip_start_${levelId}_${streamId}`;
       let start = LS.get(KEY, null);
-      if (!(/^\d{4}-\d{2}-\d{2}$/.test(start||''))) { start = todayISO(); LS.set(KEY, start); }
+      if (!(/^\d{4}-\d{2}-\d{2}$/.test(start||''))) {
+        start = todayISO();
+        LS.set(KEY, start);
+      }
       return start;
     },
     getTodayIndex(startISO, maxDays=60){
@@ -36,8 +45,13 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 })();
 
 function cacheBust(url){
-  try { const u = new URL(url, location.href); u.searchParams.set('cb', Date.now()); return u.href; }
-  catch { return url; }
+  try {
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', Date.now());
+    return u.href;
+  } catch {
+    return url;
+  }
 }
 
 // ---------- DRIP: Dica do dia ----------
@@ -48,7 +62,7 @@ function cacheBust(url){
     const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
     const dataPath = cacheBust(window.DATA_DICAS || '../../data/fundacao.json');
 
-    const r = await fetch(dataPath, { cache: 'no-store' });
+    const r   = await fetch(dataPath, { cache: 'no-store' });
     const raw = r.ok ? await r.json() : null;
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
 
@@ -66,13 +80,7 @@ function cacheBust(url){
     const MAX_DAYS = Math.min(60, data.length);
     const todayIdx = Drip.getTodayIndex(startISO, MAX_DAYS);
 
-    const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-    const LS = {
-      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
-
-    // >>> Ajuste principal: sempre iniciar no dia atual do drip <<<
+    // >>> Sem localStorage para o dia visualizado: sempre inicia no dia atual do drip
     let day = todayIdx;
 
     function render() {
@@ -81,22 +89,33 @@ function cacheBust(url){
       const item = data[day - 1];
 
       if (item) {
-        const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : item.categoria === 'nutricao' ? 'Nutrição'
-                     : item.categoria === 'mentalidade' ? 'Mentalidade'
-                     : 'Dica';
+        const rotulo =
+          item.categoria === 'treino'      ? 'Treino'      :
+          item.categoria === 'nutricao'    ? 'Nutrição'    :
+          item.categoria === 'mentalidade' ? 'Mentalidade' :
+                                             'Dica';
 
-        if (meta) meta.textContent = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        if (meta) {
+          meta.textContent =
+            `Dia ${day} de ${MAX_DAYS} — ${rotulo}` +
+            (item.titulo ? ` · ${item.titulo}` : '');
+        }
 
         const blocoHTML = (item.conceito || item.orientacao)
           ? `<div class="dica-bloco">
-               ${item.conceito   ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-               ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
+               ${item.conceito
+                  ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div>
+                     <p style="margin:0 0 10px">${item.conceito}</p>`
+                  : ''}
+               ${item.orientacao
+                  ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div>
+                     <p style="margin:0">${item.orientacao}</p>`
+                  : ''}
              </div>`
           : `<p style="margin:0">${item.texto || ''}</p>`;
 
         if (texto) {
-          texto.innerHTML = blocoHTML;
+          texto.innerHTML         = blocoHTML;
           texto.style.whiteSpace   = 'normal';
           texto.style.overflowWrap = 'anywhere';
           texto.style.wordBreak    = 'break-word';
@@ -110,7 +129,6 @@ function cacheBust(url){
 
       if (prev) prev.disabled = (day <= 1);
       if (next) next.disabled = (day >= cap);
-      LS.set(VIEW_KEY, day);
     }
 
     prev && prev.addEventListener('click', () => { day--; render(); });
@@ -124,7 +142,7 @@ function cacheBust(url){
 
 // ---------- Abas (Calculadoras) ----------
 (function tabs() {
-  const tabs = $$('.tab');
+  const tabs   = $$('.tab');
   const panels = $$('.panel');
   if (!tabs.length || !panels.length) return;
 
@@ -132,7 +150,7 @@ function cacheBust(url){
     tabs.forEach(x => x.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
     tabEl.classList.add('active');
-    const key = tabEl.dataset.tab;
+    const key   = tabEl.dataset.tab;
     const panel = key ? document.querySelector('#panel-' + key) : null;
     (panel || panels[0])?.classList.add('active');
   }
@@ -153,7 +171,8 @@ function cacheBust(url){
 
     if (!idade || !fCR || !out || !table || !btn || !clr) return;
 
-    const karv = (fcMax, fcRep, frac) => Math.round(((fcMax - fcRep) * frac) + fcRep);
+    const karv = (fcMax, fcRep, frac) =>
+      Math.round(((fcMax - fcRep) * frac) + fcRep);
 
     const tabela = (fcMax, fcRep) => {
       const linhas = [];
@@ -161,7 +180,8 @@ function cacheBust(url){
         const alvo = karv(fcMax, fcRep, pct / 100);
         linhas.push(
           `<div class="row" style="justify-content:space-between">
-             <span>${pct}% da FC de reserva</span><strong>${alvo} bpm</strong>
+             <span>${pct}% da FC de reserva</span>
+             <strong>${alvo} bpm</strong>
            </div>`
         );
       }
@@ -178,12 +198,14 @@ function cacheBust(url){
         return;
       }
 
-      const fcMax = 220 - a;
+      const fcMax  = 220 - a;
       const alvo50 = karv(fcMax, r, 0.50);
       const alvo65 = karv(fcMax, r, 0.65);
 
-      out.innerHTML = `FC máx. estimada: <strong>${fcMax} bpm</strong><br>
-                       <span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>`;
+      out.innerHTML =
+        `FC máx. estimada: <strong>${fcMax} bpm</strong><br>` +
+        `<span class="small muted">Faixa sugerida: ${alvo50}–${alvo65} bpm</span>`;
+
       table.innerHTML = tabela(fcMax, r);
     }
 
@@ -199,7 +221,10 @@ function cacheBust(url){
 
     [idade, fCR].forEach(el => {
       el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); calcular(); }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          calcular();
+        }
       });
     });
   } catch (err) {
