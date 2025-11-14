@@ -165,9 +165,31 @@ if (typeof window.Drip === 'undefined') {
     const semNext = $('#semNext');
 
     const SEM_VIEW_KEY = `drip_view_${LEVEL_ID}_${SEM_ID}`;
+
+    // LS só dessa parte: compatível com JSON antigo e valor simples
     const LS = {
-      get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+      get:(k, def=null)=>{
+        try{
+          const raw = localStorage.getItem(k);
+          if (raw == null) return def;
+          // tenta JSON
+          try {
+            const parsed = JSON.parse(raw);
+            if (typeof parsed === 'number') return parsed;
+            if (typeof parsed === 'string' && /^\d+$/.test(parsed)) return parseInt(parsed,10);
+            return parsed ?? def;
+          } catch {
+            // se não for JSON, tenta número direto
+            if (/^\d+$/.test(raw)) return parseInt(raw,10);
+            return def;
+          }
+        } catch {
+          return def;
+        }
+      },
+      set:(k,v)=>{
+        try { localStorage.setItem(k, String(v)); } catch(_) {}
+      }
     };
 
     // permite simular visual via ?sem=4 (sem passar do liberado pelo tempo)
