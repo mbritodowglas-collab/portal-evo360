@@ -7,128 +7,125 @@
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
+// ---- DRIP shim (fallback local) ----
+(function ensureDrip(){
+  if (typeof window.Drip !== 'undefined') return;
+
+  const localISO = (d=new Date())=>{
+    const y=d.getFullYear(),
+          m=String(d.getMonth()+1).padStart(2,'0'),
+          dd=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+  };
+
+  const parseISO    = (s)=> new Date(`${s}T12:00:00`);
+  const todayISO    = ()=> localISO(new Date());
+  const daysBetween = (a,b)=> Math.floor((parseISO(b)-parseISO(a))/86400000);
+
+  const LS = {
+    get:(k,d=null)=>{ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(_){ return d } },
+    set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(_){ } },
+  };
+
+  window.Drip = {
+    ensureStart(levelId, streamId){
+      const KEY = `drip_start_${levelId}_${streamId}`;
+      let start = LS.get(KEY, null);
+      if (!(/^\d{4}-\d{2}-\d{2}$/.test(start||''))) {
+        start = todayISO();
+        LS.set(KEY, start);
+      }
+      return start;
+    },
+    getTodayIndex(startISO, maxDays=60){
+      if (!(/^\d{4}-\d{2}-\d{2}$/.test(startISO||''))) startISO = todayISO();
+      const idx = daysBetween(startISO, todayISO()) + 1;
+      return Math.max(1, Math.min(maxDays, idx));
+    }
+  };
+})();
+
+function cacheBust(url){
+  try {
+    const u = new URL(url, location.href);
+    u.searchParams.set('cb', Date.now());
+    return u.href;
+  } catch {
+    return url;
+  }
+}
+
 // ---------- DRIP: Dica do dia ----------
 (async function dicaDrip() {
   try {
     const LEVEL_ID = window.NIVEL || 'dominio-83f9x';
     const DRIP_ID  = 'card1_dicas_orientacoes';
 
-    // pode não existir se drip.js não carregar, por isso o try/catch
-    const startISO = (typeof Drip !== 'undefined')
-      ? Drip.ensureStart(LEVEL_ID, DRIP_ID)
-      : (new Date()).toISOString().slice(0,10);
+    const startISO = Drip.ensureStart(LEVEL_ID, DRIP_ID);
+    const dataPath = cacheBust(window.DATA_DICAS || '../../data/dominio-dicas.json');
 
-    async function load(url) {
-      try {
-        if (!url) return null;
-        const r = await fetch(url, { cache: 'no-store' });
-        if (!r.ok) throw 0;
-        return await r.json();
-      } catch {
-        return null;
-      }
-    }
+    const r   = await fetch(dataPath, { cache: 'no-store' });
+    const raw = r.ok ? await r.json() : null;
 
-    // tenta DATA_DICAS se existir; se não, cai para /data e /_data
-    async function loadAny(urls) {
-      for (const u of urls) {
-        const raw = await load(u);
-        if (raw) {
-          console.info('[dominio/dicas] carregado de:', u);
-          return raw;
-        }
-      }
-      return null;
-    }
-
-    const hinted = (typeof window !== 'undefined') ? window.DATA_DICAS : null;
-    const candidates = [
-      hinted,
-      '../../data/dominio.json',
-      '../../_data/dominio.json'
-    ];
-
-    const raw = await loadAny(candidates);
-
-    // Aceita _data como array direto OU como { dicas: [...] }
+    // Aceita array direto ou { dicas: [...] }
     const data = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.dicas) ? raw.dicas : []);
-
-    // Se não houver dados válidos, mostra fallback e sai
-    if (!data || data.length === 0) {
-      const meta  = $('#dica-meta');
-      const texto = $('#dica-texto');
-      if (meta)  meta.textContent  = 'Dia —';
-      if (texto) texto.textContent = 'Dica indisponível.';
-      return;
-    }
-
-    // Limite real de dias (até 60)
-    const MAX_DAYS = Math.min(60, data.length);
-
-    // --------- índice por data LOCAL (sem UTC) ---------
-    function todayLocalISO(){
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${dd}`;
-    }
-    function daysBetweenLocal(aISO, bISO){
-      const A = new Date(`${aISO}T12:00:00`);
-      const B = new Date(`${bISO}T12:00:00`);
-      return Math.floor((B - A) / 86400000);
-    }
-    const LIBERADO = Math.max(1, Math.min(MAX_DAYS, daysBetweenLocal(startISO, todayLocalISO()) + 1));
 
     const meta  = $('#dica-meta');
     const texto = $('#dica-texto');
     const prev  = $('#btnPrev');
     const next  = $('#btnNext');
 
-    // garante que textos longos quebrem dentro do card
-    if (texto) {
-      texto.style.whiteSpace   = 'normal';
-      texto.style.overflowWrap = 'anywhere';
-      texto.style.wordBreak    = 'break-word';
-      texto.style.lineHeight   = '1.6';
-      texto.style.marginTop    = '6px';
+    if (!data || !data.length) {
+      if (meta)  meta.textContent  = 'Dia —';
+      if (texto) texto.textContent = 'Dica indisponível.';
+      return;
     }
 
-    const VIEW_KEY = `drip_view_${LEVEL_ID}_${DRIP_ID}`;
-    const LS = {
-      get:(k,def=null)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def }catch(_){ return def } },
-      set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
-    };
+    const MAX_DAYS  = Math.min(60, data.length);
+    const todayIdx  = Drip.getTodayIndex(startISO, MAX_DAYS);
 
-    let day = LS.get(VIEW_KEY, LIBERADO);
-
-    // avanço automático para o dia liberado atual (sem desbloquear futuro)
-    if (day < LIBERADO) { day = LIBERADO; LS.set(VIEW_KEY, day); }
+    // Sem localStorage de "dia visual": sempre começa no dia atual do drip
+    let day = todayIdx;
 
     function render() {
-      const cap = Math.max(1, LIBERADO); // bloqueia futuro
+      const cap = Math.min(Math.max(1, todayIdx), data.length);
       day = Math.max(1, Math.min(day, cap));
       const item = data[day - 1];
 
       if (item) {
-        const rotulo = item.categoria === 'treino' ? 'Treino'
-                     : (item.categoria === 'nutricao' ? 'Nutrição'
-                     : (item.categoria === 'mentalidade' ? 'Mentalidade' : 'Dica'));
+        const rotulo =
+          item.categoria === 'treino'      ? 'Treino'      :
+          item.categoria === 'nutricao'    ? 'Nutrição'    :
+          item.categoria === 'mentalidade' ? 'Mentalidade' :
+                                             'Dica';
 
-        // título no meta (mantendo padrão anterior)
-        if (meta) meta.textContent  = `Dia ${day} de ${MAX_DAYS} — ${rotulo}${item.titulo ? ` · ${item.titulo}` : ''}`;
+        if (meta) {
+          meta.textContent =
+            `Dia ${day} de ${MAX_DAYS} — ${rotulo}` +
+            (item.titulo ? ` · ${item.titulo}` : '');
+        }
 
-        // PRIORIDADE: conceito + orientação; se ausentes, usa texto legado
         const blocoHTML = (item.conceito || item.orientacao)
-          ? `
-            <div class="dica-bloco">
-              ${item.conceito ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div><p style="margin:0 0 10px">${item.conceito}</p>` : ''}
-              ${item.orientacao ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div><p style="margin:0">${item.orientacao}</p>` : ''}
-            </div>
-            `
+          ? `<div class="dica-bloco">
+               ${item.conceito
+                  ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div>
+                     <p style="margin:0 0 10px">${item.conceito}</p>`
+                  : ''}
+               ${item.orientacao
+                  ? `<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div>
+                     <p style="margin:0">${item.orientacao}</p>`
+                  : ''}
+             </div>`
           : `<p style="margin:0">${item.texto || ''}</p>`;
 
-        if (texto) texto.innerHTML = blocoHTML;
+        if (texto) {
+          texto.innerHTML          = blocoHTML;
+          texto.style.whiteSpace   = 'normal';
+          texto.style.overflowWrap = 'anywhere';
+          texto.style.wordBreak    = 'break-word';
+          texto.style.lineHeight   = '1.6';
+          texto.style.marginTop    = '6px';
+        }
       } else {
         if (meta)  meta.textContent  = `Dia ${day} de ${MAX_DAYS}`;
         if (texto) texto.textContent = 'Dica indisponível.';
@@ -136,14 +133,14 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
       if (prev) prev.disabled = (day <= 1);
       if (next) next.disabled = (day >= cap);
-      LS.set(VIEW_KEY, day);
     }
 
-    prev?.addEventListener('click', () => { day--; render(); });
-    next?.addEventListener('click', () => { day++; render(); });
+    prev && prev.addEventListener('click', () => { day--; render(); });
+    next && next.addEventListener('click', () => { day++; render(); });
+
     render();
   } catch (e) {
-    console.warn('drip init falhou:', e);
+    console.warn('[Domínio/Drip] init falhou:', e);
   }
 })();
 
