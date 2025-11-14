@@ -14,8 +14,8 @@
 
     function localISO(d){
       d = d || new Date();
-      var y = d.getFullYear();
-      var m = ('0'+(d.getMonth()+1)).slice(-2);
+      var y  = d.getFullYear();
+      var m  = ('0'+(d.getMonth()+1)).slice(-2);
       var dd = ('0'+d.getDate()).slice(-2);
       return y + '-' + m + '-' + dd;
     }
@@ -27,16 +27,16 @@
     }
 
     var LS = {
-      get: function(k, d){
-        try {
+      get: function(k,d){
+        try{
           var v = localStorage.getItem(k);
           return v ? JSON.parse(v) : d;
         } catch(_) {
           return d;
         }
       },
-      set: function(k, v){
-        try {
+      set: function(k,v){
+        try{
           localStorage.setItem(k, JSON.stringify(v));
         } catch(_) {}
       }
@@ -44,7 +44,7 @@
 
     window.Drip = {
       ensureStart: function(levelId, streamId){
-        var KEY = 'drip_start_' + levelId + '_' + streamId;
+        var KEY   = 'drip_start_' + levelId + '_' + streamId;
         var start = LS.get(KEY, null);
         if (!(/^\d{4}-\d{2}-\d{2}$/.test(start || ''))) {
           start = todayISO();
@@ -79,15 +79,12 @@
     try {
       var LEVEL_ID = (window && window.NIVEL) || 'ascensao-9f3b2';
       var DRIP_ID  = 'card1_dicas_orientacoes';
-
       var startISO = window.Drip.ensureStart(LEVEL_ID, DRIP_ID);
 
-      // Caminho do JSON (igual ao Fundação, mas para ascensão)
-      var dataPathBase = (window && window.DATA_DICAS) || '../../data/ascensao.json';
-      var dataPath = cacheBust(dataPathBase);
+      var dataPath = cacheBust((window && window.DATA_DICAS) || '../../data/ascensao.json');
 
       function coerceTips(raw){
-        // Aceita array direto ou {dicas:[...]}
+        // Igual ao Fundação: array direto ou {dicas:[...]}
         if (!raw) return [];
         if (Array.isArray(raw)) return raw;
         if (raw.dicas && Array.isArray(raw.dicas)) return raw.dicas;
@@ -96,7 +93,7 @@
 
       fetch(dataPath, { cache:'no-store' })
         .then(function(r){
-          if (!r.ok) throw new Error('HTTP '+r.status);
+          if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
         })
         .then(function(raw){
@@ -108,14 +105,14 @@
 
           if (!data || !data.length) {
             if (meta)  meta.textContent  = 'Dia —';
-            if (texto) texto.textContent = 'Nenhuma dica encontrada. Verifique /data/ascensao.json.';
+            if (texto) texto.textContent = 'Dica indisponível.';
             return;
           }
 
           var MAX_DAYS = Math.min(60, data.length);
           var todayIdx = window.Drip.getTodayIndex(startISO, MAX_DAYS);
 
-          // sempre começa no dia liberado (sem guardar dia visual em localStorage)
+          // Sem localStorage do dia visual: sempre começa no dia de hoje
           var day = todayIdx;
 
           function rotuloCategoria(cat){
@@ -130,7 +127,7 @@
             if (day < 1)   day = 1;
             if (day > cap) day = cap;
 
-            var item = data[day-1];
+            var item = data[day - 1];
 
             if (item) {
               var rot = rotuloCategoria(item.categoria);
@@ -144,16 +141,20 @@
               if (item.conceito || item.orientacao) {
                 blocoHTML = '<div class="dica-bloco">';
                 if (item.conceito) {
-                  blocoHTML += '<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div>' +
-                               '<p style="margin:0 0 10px">'+ item.conceito +'</p>';
+                  blocoHTML +=
+                    '<div class="dica-label" ' +
+                    'style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Conceito</div>' +
+                    '<p style="margin:0 0 10px">' + item.conceito + '</p>';
                 }
                 if (item.orientacao) {
-                  blocoHTML += '<div class="dica-label" style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div>' +
-                               '<p style="margin:0">'+ item.orientacao +'</p>';
+                  blocoHTML +=
+                    '<div class="dica-label" ' +
+                    'style="font-weight:700;color:var(--ink-1);margin:6px 0 2px">Orientação</div>' +
+                    '<p style="margin:0">' + item.orientacao + '</p>';
                 }
                 blocoHTML += '</div>';
               } else {
-                blocoHTML = '<p style="margin:0">'+ (item.texto || '') +'</p>';
+                blocoHTML = '<p style="margin:0">' + (item.texto || '') + '</p>';
               }
 
               if (texto) {
@@ -175,6 +176,7 @@
 
           if (prev) prev.addEventListener('click', function(){ day--; render(); });
           if (next) next.addEventListener('click', function(){ day++; render(); });
+
           render();
         })
         .catch(function(err){
@@ -185,7 +187,7 @@
           if (texto) texto.textContent = 'Dica indisponível (erro ao carregar arquivo).';
         });
     } catch (e) {
-      console.warn('drip init falhou:', e);
+      console.warn('[Ascensão/Drip] init falhou:', e);
       var meta  = $('#dica-meta');
       var texto = $('#dica-texto');
       if (meta)  meta.textContent  = 'Dia —';
@@ -195,7 +197,7 @@
 
   // ---------- Abas (Calculadoras) ----------
   (function tabs() {
-    var tabs = $all('.tab');
+    var tabs   = $all('.tab');
     var panels = $all('.panel');
     if (!tabs.length || !panels.length) return;
 
@@ -203,13 +205,15 @@
       tabs.forEach(function(x){ x.classList.remove('active'); });
       panels.forEach(function(p){ p.classList.remove('active'); });
       tabEl.classList.add('active');
-      var key = tabEl.getAttribute('data-tab');
+      var key    = tabEl.getAttribute('data-tab');
       var target = key ? '#panel-' + key : null;
-      var panel = target ? $(target) : null;
+      var panel  = target ? $(target) : null;
       (panel || panels[0]).classList.add('active');
     }
 
-    tabs.forEach(function(tb){ tb.addEventListener('click', function(){ activate(tb); }); });
+    tabs.forEach(function(tb){
+      tb.addEventListener('click', function(){ activate(tb); });
+    });
     var anyActive = tabs.filter(function(t){ return t.classList.contains('active'); })[0] || tabs[0];
     activate(anyActive);
   })();
@@ -301,7 +305,8 @@
 
       if (p > 0 && h > 0 && i > 0) {
         var base = Math.round((10*p) + (6.25*h) - (5*i) + (s === 'f' ? -161 : 5));
-        out.innerHTML = 'Sua TMB estimada: <strong>'+base+' kcal/dia</strong><br>' +
+        out.innerHTML =
+          'Sua TMB estimada: <strong>'+base+' kcal/dia</strong><br>' +
           '<span class="small muted">Autoconhecimento energético — não é um plano alimentar.</span>';
       } else {
         out.textContent = 'Preencha peso, altura e idade.';
