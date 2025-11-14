@@ -97,21 +97,8 @@
         var MAX_DAYS = Math.min(60, data.length);
         var todayIdx = getTodayIndexCompat(startISO, MAX_DAYS);
 
-        // localStorage seguro (sem JSON.parse obrigatório)
-        var VIEW_KEY = 'drip_view_'+LEVEL_ID+'_'+DRIP_ID;
+        // sempre começa no dia liberado (sem localStorage)
         var day = todayIdx;
-        try {
-          var prevVal = localStorage.getItem(VIEW_KEY);
-          if (prevVal != null) {
-            // aceita número puro ou JSON; se quebrar, ignora
-            var parsed = parseInt(prevVal.replace(/[^0-9]/g,''), 10);
-            if (!isNaN(parsed)) day = parsed;
-          }
-        } catch(_){}
-
-        function setLS(k,v){
-          try { localStorage.setItem(k, String(v)); } catch(_){}
-        }
 
         function rotuloCategoria(cat){
           if (cat === 'treino') return 'Treino';
@@ -147,7 +134,6 @@
 
           if (prev) prev.disabled = (day <= 1);
           if (next) next.disabled = (day >= Math.max(1,todayIdx));
-          setLS(VIEW_KEY, day);
         }
 
         if (prev) prev.addEventListener('click', function(){ day--; render(); });
